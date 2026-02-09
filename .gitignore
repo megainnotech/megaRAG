@@ -1,0 +1,12 @@
+public_data/
+temp_mkdocs_project/
+test_mkdocs.zip
+__pycache__/
+*.pyc
+.venv/
+env/
+.env
+.DS_Store
+node_modules/
+dist/
+coverage/
