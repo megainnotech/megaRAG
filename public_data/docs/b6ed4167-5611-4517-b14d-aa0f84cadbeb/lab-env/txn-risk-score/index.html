@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+
+<html data-bs-theme="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="../../img/favicon.ico" rel="shortcut icon"/>
+<title>Transaction Risk Score - PrompGuard Technical Spec</title>
+<link href="../../css/bootstrap.min.css" rel="stylesheet"/>
+<link href="../../css/fontawesome.min.css" rel="stylesheet"/>
+<link href="../../css/brands.min.css" rel="stylesheet"/>
+<link href="../../css/solid.min.css" rel="stylesheet"/>
+<link href="../../css/v4-font-face.min.css" rel="stylesheet"/>
+<link href="../../css/base.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" id="hljs-light" rel="stylesheet"/>
+<link disabled="" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" id="hljs-dark" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+<div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+<div class="container">
+<a class="navbar-brand" href="../..">PrompGuard Technical Spec</a>
+<!-- Expander button -->
+<button aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-bs-target="#navbar-collapse" data-bs-toggle="collapse" type="button">
+<span class="navbar-toggler-icon"></span>
+</button>
+<!-- Expanded navigation -->
+<div class="navbar-collapse collapse" id="navbar-collapse">
+<!-- Main navigation -->
+<ul class="nav navbar-nav">
+<li class="nav-item">
+<a class="nav-link" href="../..">Home</a>
+</li>
+<li class="nav-item dropdown">
+<a aria-current="page" aria-expanded="false" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown" href="#" role="button">Lab Environment</a>
+<ul class="dropdown-menu">
+<li>
+<a class="dropdown-item" href="../intro/">Introduction</a>
+</li>
+<li>
+<a class="dropdown-item" href="../hlds/">High Level Design</a>
+</li>
+<li>
+<a aria-current="page" class="dropdown-item active" href="./">Transaction Risk Score</a>
+</li>
+<li>
+<a class="dropdown-item" href="../data-prep/">Data Preparation</a>
+</li>
+<li>
+<a class="dropdown-item" href="../model-eval/">Model Evaluation Pipeline</a>
+</li>
+<li>
+<a class="dropdown-item" href="../model-train/">Model Training Pipeline</a>
+</li>
+<li>
+<a class="dropdown-item" href="../version-ctrl/">Fraud Engine Version Control</a>
+</li>
+<li class="dropdown-submenu">
+<a class="dropdown-item" href="#">Common Components</a>
+<ul class="dropdown-menu">
+<li>
+<a class="dropdown-item" href="../common-components/redis/">Redis</a>
+</li>
+<li>
+<a class="dropdown-item" href="../common-components/kafka/">Kafka</a>
+</li>
+<li>
+<a class="dropdown-item" href="../common-components/seaweed/">SeaweedFS</a>
+</li>
+<li>
+<a class="dropdown-item" href="../common-components/postgres/">Postgres</a>
+</li>
+<li>
+<a class="dropdown-item" href="../common-components/airflow/">Apache Airflow</a>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="../../prod-env/">Prod Environment</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="../../api-std/">API Standard</a>
+</li>
+</ul>
+<ul class="nav navbar-nav ms-md-auto">
+<li class="nav-item">
+<a class="nav-link" data-bs-target="#mkdocs_search_modal" data-bs-toggle="modal" href="#">
+<i class="fa fa-search"></i> Search
+                            </a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="../hlds/" rel="prev">
+<i class="fa fa-arrow-left"></i> Previous
+                                </a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="../data-prep/" rel="next">
+                                    Next <i class="fa fa-arrow-right"></i>
+</a>
+</li>
+<li class="nav-item dropdown">
+<button aria-expanded="false" aria-label="Toggle theme" class="nav-link dropdown-toggle" data-bs-display="static" data-bs-toggle="dropdown" id="theme-menu">
+<i class="fa-solid fa-circle-half-stroke fa-fw"></i>
+<span class="d-lg-none ms-2">Toggle theme</span>
+</button>
+<ul class="dropdown-menu dropdown-menu-end">
+<li>
+<button aria-pressed="true" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light">
+<i class="fa-solid fa-sun fa-fw"></i>
+<span class="ms-2">Light</span>
+<i class="fa-solid fa-check ms-auto"></i>
+</button>
+</li>
+<li>
+<button aria-pressed="false" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark">
+<i class="fa-solid fa-moon fa-fw"></i>
+<span class="ms-2">Dark</span>
+<i class="fa-solid fa-check ms-auto d-none"></i>
+</button>
+</li>
+<li>
+<button aria-pressed="false" class="dropdown-item d-flex align-items-center" data-bs-theme-value="auto">
+<i class="fa-solid fa-circle-half-stroke fa-fw"></i>
+<span class="ms-2">Auto</span>
+<i class="fa-solid fa-check ms-auto d-none"></i>
+</button>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<script src="../../js/darkmode.js"></script>
+<div class="container">
+<div class="row">
+<div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+<div class="navbar-header">
+<button class="navbar-toggler collapsed" data-bs-target="#toc-collapse" data-bs-toggle="collapse" title="Table of Contents" type="button">
+<span class="fa fa-angle-down"></span>
+</button>
+</div>
+<div class="navbar-collapse collapse card bg-body-tertiary" id="toc-collapse">
+<ul class="nav flex-column">
+<li class="nav-item" data-bs-level="1"><a class="nav-link" href="#transaction-risk-score-service">Transaction risk score service</a>
+<ul class="nav flex-column">
+<li class="nav-item" data-bs-level="2"><a class="nav-link" href="#key-components">Key components</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-item" data-bs-level="1"><a class="nav-link" href="#service-specification">Service specification</a>
+<ul class="nav flex-column">
+<li class="nav-item" data-bs-level="2"><a class="nav-link" href="#core-prediction-service-python-api">Core prediction service (Python API)</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+<li class="nav-item" data-bs-level="2"><a class="nav-link" href="#kafka-consumer-go-worker">Kafka consumer (Go worker)</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+<li class="nav-item" data-bs-level="2"><a class="nav-link" href="#on-demand-transaction-score-service-go-api">On-demand transaction score service (Go API)</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-item" data-bs-level="1"><a class="nav-link" href="#api-specification">API specification</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+<li class="nav-item" data-bs-level="1"><a class="nav-link" href="#redis-schema">Redis schema</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+<li class="nav-item" data-bs-level="1"><a class="nav-link" href="#kafka-topic-and-message-schema">Kafka topic and message schema</a>
+<ul class="nav flex-column">
+<li class="nav-item" data-bs-level="2"><a class="nav-link" href="#promptpay-message-schema">PromptPay message schema</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+<li class="nav-item" data-bs-level="2"><a class="nav-link" href="#predicted-score-and-its-features-schema">Predicted score and its features schema</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-item" data-bs-level="1"><a class="nav-link" href="#prediction-features">Prediction Features</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+</ul>
+</div>
+</div></div>
+<div class="col-md-9" role="main">
+<h1 id="transaction-risk-score-service">Transaction risk score service</h1>
+<p><img alt="Transaction risk score key conponents" src="../images/txn-score-c3.png" title="Transaction risk score key conponents"/></p>
+<h2 id="key-components">Key components</h2>
+<p>There are 3 major components for the transaction risk score.<br/>
+* API services
+    1.  On-demand API service (API for client)
+    1.  Core Prediction service (internal API)
+* Kafka consumer (worker)
+    1.  Prediction worker (Kafka consumer)</p>
+<hr/>
+<h1 id="service-specification">Service specification</h1>
+<blockquote>
+<p>ℹ️ Both API services are gRPC API servers.</p>
+</blockquote>
+<h2 id="core-prediction-service-python-api">Core prediction service (Python API)</h2>
+<ul>
+<li>Python based model serving via API</li>
+<li>Receive only non-PII inputs</li>
+<li>This core service is served for the other 2 modules: Kafka consumer (worker) and API server.</li>
+<li>The inferred result will be output to 3 destinations: caching in Redis, producing to Kafka, and return to the requester.</li>
+<li>The input features and their predicted result, produced to Kafka, are kept in SeaweedFS, for model evaluation pipeline.</li>
+</ul>
+<p>Here is its flow:</p>
+<div class="mermaid">sequenceDiagram
+    participant Req as Score Requestor
+    participant CPS as Core Prediction Service
+    participant R as Redis
+    participant K as Kafka
+    participant SC as Predicted Score Capture
+    participant FS as SeaweedFS
+
+    Req-&gt;&gt;CPS: request with features payload
+    activate CPS
+    activate Req
+    CPS-&gt;&gt;CPS: infer
+    CPS-&gt;&gt;R: cache the score
+    Note over R: promptguard:transactionscore:&lt;correlation_id&gt;
+    CPS-&gt;&gt;K: publish features and score to keep
+    Note over K: promptguard.transactionscore.inferred
+    CPS--&gt;&gt;Req: return predicted score
+    deactivate CPS
+    deactivate Req
+    SC-&gt;&gt;K: consume features and predicted score
+    activate SC
+    activate K
+    K--&gt;&gt;SC: features and score
+    deactivate K
+    SC-&gt;&gt;FS: save features and score &lt;br&gt; for model evaluation pipeline
+    deactivate SC
+</div>
+<p>To evaluate prediction performance later, we need a predicted transaction ID that can be matched with CFR. It is called <code>correlation_id</code>.
+Here is how we construct the <code>correlation_id</code> (python example):</p>
+<pre><code class="language-python">def construct_correlation_id(
+    sender_proxy_id: str,
+    receiver_proxy_id: str,
+    timestamp: str,
+    amount: str,
+    sender_fi_code: Optional[str] = None,
+    receiver_fi_code: Optional[str] = None,
+    sender_proxy_type: str = 'account',
+    receiver_proxy_type: str = 'account',
+) -&gt; str:
+    """
+    Constructs a short, unique correlation ID for a transaction.
+
+    Args:
+        sender_proxy_id: The sender's proxy ID (e.g., account number, phone).
+        receiver_proxy_id: The receiver's proxy ID.
+        timestamp: ISO 8601 formatted timestamp of the transaction.
+        amount: The transaction amount in B.SS format (e.g., 100.50, 27.00).
+        sender_fi_code: The sender's financial institution code. Required if proxy type is 'account'.
+        receiver_fi_code: The receiver's financial institution code. Required if proxy type is 'account'.
+        sender_proxy_type: The type of the sender's proxy.
+        receiver_proxy_type: The type of the receiver's proxy.
+
+    Returns:
+        A 18-character hexadecimal correlation ID.
+
+    Raises:
+        ValueError: If an FI code is missing for an 'account' proxy type.
+    """
+    if (sender_proxy_type == 'account' and not sender_fi_code) or \
+       (receiver_proxy_type == 'account' and not receiver_fi_code):
+        raise ValueError("Financial institution code is required for 'account' proxy types.")
+
+    if sender_proxy_type == 'account':
+        sender_account_number = sender_proxy_id
+    else:
+        sender_fi_code, sender_account_number = proxy_resolve(sender_proxy_id, sender_proxy_type)
+
+    if receiver_proxy_type == 'account':
+        receiver_account_number = receiver_proxy_id
+    else:
+        receiver_fi_code, receiver_account_number = proxy_resolve(receiver_proxy_id, receiver_proxy_type)
+
+    # Securely hash the account numbers with the secret
+    sender_account_hash = hash_with_secret(sender_account_number, HASHING_SECRET)
+    receiver_account_hash = hash_with_secret(receiver_account_number, HASHING_SECRET)
+
+    combined_string = "|".join([
+        str(sender_fi_code), sender_account_hash,
+        str(receiver_fi_code), receiver_account_hash,
+        str(timestamp), str(amount)
+    ])
+
+    hasher = hashlib.sha256(combined_string.encode('utf-8'))
+    # Take the first 18 characters from the hexadecimal representation of the hash.
+    correlation_id = hasher.hexdigest()[:18]
+
+    return correlation_id
+</code></pre>
+<p>The 18-characters length is to avoid id collision for 6000 to 8000 million transactions which are kept for 3 months.    </p>
+<h2 id="kafka-consumer-go-worker">Kafka consumer (Go worker)</h2>
+<p>This worker consumes non-PII PromptPay messages from Kafka, prepares relevant features, then feeds to the Core prediction service</p>
+<div class="mermaid">sequenceDiagram
+    participant LE as Log extractor (Blend / Loki)
+    participant KK as Kafka Topic
+    participant TW as Txn score prediction worker
+    participant R as Redis
+    participant CPS as Core Prediction Service
+
+    LE-&gt;&gt;KK: publish anonym txn
+    note over KK: promptguard.transactionscore.from-pp
+
+    TW-&gt;&gt;KK: consume txn
+    activate TW
+    KK--&gt;&gt;TW: txn data
+    TW-&gt;&gt;R: get account feature
+    activate R
+    R--&gt;&gt;TW: features
+    deactivate R
+
+    TW-&gt;&gt;CPS: request for a score predict
+    activate CPS
+    CPS-&gt;&gt;CPS: infer
+    CPS-&gt;&gt;R: cache the score
+    CPS-&gt;&gt;KK: publish score to save
+    note over KK: promptguard.transactionscore.inferred
+    CPS--&gt;&gt;TW: return predicted score
+    deactivate CPS
+    deactivate TW
+</div>
+<ul>
+<li>The worker is scaled to handle amount of work load (messages) from Kafka topic.</li>
+<li>The feature materials will be got from Redis. They are prepared by <a href="#prediction-features">real-time transaction data preparation module</a> beforehand.</li>
+<li>The worker will compose required features then feed to <a href="#core-prediction-service-python-api">Core prediction service</a></li>
+</ul>
+<h2 id="on-demand-transaction-score-service-go-api">On-demand transaction score service (Go API)</h2>
+<p>This module will be called by API gateway to serve transaction score on-demand. </p>
+<div class="mermaid">sequenceDiagram
+    participant C as Client
+    participant A as Apigee
+    participant TS as Txn score svc
+    participant R as Redis
+    participant CPS as Core Prediction Service
+    participant K as Kafka
+
+    C-&gt;&gt;A: Txn score req
+    activate A
+    activate C
+    A-&gt;&gt;TS: pass auth / required fields
+    activate TS
+
+    TS-&gt;&gt;TS: biz logic validate
+    TS-&gt;&gt;R: Qry cached score
+    activate R
+
+    alt cache hit
+        R--&gt;&gt;TS: return score
+        deactivate R
+    else cache miss
+        activate R
+        R--&gt;&gt;TS: key not found
+        deactivate R
+        TS-&gt;&gt;CPS: request for a fresh score predict
+        activate CPS
+        CPS-&gt;&gt;CPS: infer
+        CPS-&gt;&gt;R: cache the score
+        CPS-&gt;&gt;K: publish score to save
+        Note over K: promptguard.transactionscore.inferred
+        CPS--&gt;&gt;TS: return predicted score
+        deactivate CPS
+    end
+
+    TS--&gt;&gt;A: return txn score
+    deactivate TS
+    A--&gt;&gt;C: return txn score
+    deactivate A
+    deactivate C
+</div>
+<ul>
+<li>In case that <code>/txn-score/svc/qry</code> cannot get any predicted score in Redis, it needs to anonymize PII data before calling the <code>/txn-score/predict/infer</code>. The salt (password to set in the hashing algorithm) must be configurable via k8s secret.</li>
+<li>This headless API service must be fast and lean. Golang is expected to be used.</li>
+</ul>
+<hr/>
+<h1 id="api-specification">API specification</h1>
+<p>Below is the overview of the API spec.</p>
+<p><em>HTTP Header:</em></p>
+<table>
+<thead>
+<tr>
+<th>Header name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>X-API-Version</td>
+<td>v1</td>
+</tr>
+</tbody>
+</table>
+<p><em>API Services:</em> </p>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>API</th>
+<th>Version</th>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Transaction score service</td>
+<td>/txn-score/svc/health</td>
+<td>v1</td>
+<td>GET</td>
+<td>Service health check</td>
+</tr>
+<tr>
+<td></td>
+<td>/txn-score/svc/qry</td>
+<td>v1</td>
+<td>POST</td>
+<td>For client to query a predicted score</td>
+</tr>
+<tr>
+<td>Core transaction score prediction</td>
+<td>/txn-score/predict/health</td>
+<td>v1</td>
+<td>GET</td>
+<td>Service health check</td>
+</tr>
+<tr>
+<td></td>
+<td>/txn-score/predict/infer</td>
+<td>v1</td>
+<td>POST</td>
+<td>For internal score inference. An on-demand based score calculation used if there is no cached score available</td>
+</tr>
+</tbody>
+</table>
+<p>For more detail of the API see OpenAPI spec: <a href="../../../openapi/promptguard-txn-score-api-spec-v0.2.yaml">promptguard-txn-score-api-spec-v0.2.yaml</a><br/>
+Interface Protobuf: <a href="../../../proto/itmx/promptguard/v1/promptguard-txn-score.proto">promptguard-txn-score-v0.1.proto</a></p>
+<hr/>
+<h1 id="redis-schema">Redis schema</h1>
+<p>Key naming convention: see: <a href="../common-components/redis/#key-naming-convention">Key naming convention</a></p>
+<p>Example:
+<code>promptguard:transactionscore:95248989ec91f6d043</code></p>
+<p>Value Data schema:</p>
+<pre><code class="language-json">{
+  "correlation_id": "95248989ec91f6d043",
+  "pp_txn_id": "202408132300010042024081323000180",
+  "risk_score": 23,
+  "timestamp": "2024-05-13T09:45:33+07:00"
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Occurence</th>
+<th>Data type</th>
+<th>Length / Range</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>correlation_id</td>
+<td>[1..1]</td>
+<td>string</td>
+<td>Max: 20</td>
+<td>PromptGuard correlation ID in 18 lower-case hex characters</td>
+</tr>
+<tr>
+<td>pp_txn_id</td>
+<td>[1..1]</td>
+<td>string</td>
+<td>Max: 50</td>
+<td>PromptPay transaction ID. Detail as below</td>
+</tr>
+<tr>
+<td>risk_score</td>
+<td>[1..1]</td>
+<td>integer</td>
+<td>0 to 100</td>
+<td>Infered   transaction risk score. Higher score means more risk.</td>
+</tr>
+<tr>
+<td>timestamp</td>
+<td>[1..1]</td>
+<td>string</td>
+<td>25</td>
+<td>Format: ISO-8601 datetime     Pattern: YYYY-MM-DDThh:mm:ssZ</td>
+</tr>
+</tbody>
+</table>
+<p>PromptPay transaction ID is from account lookup message. It is different for ISO8583 and ISO20022.<br/>
+For ISO8583, it is a concat string of: <code>TSTAMP_LOCAL</code>+<code>INST_ID_RECON_ACQ</code>+<code>RETRIEVAL_REF_NO</code>+<code>TRAN_CLASS</code>.<br/>
+For ISO20022, it is <code>RETRIEVAL_REF_NO</code>.  </p>
+<hr/>
+<h1 id="kafka-topic-and-message-schema">Kafka topic and message schema</h1>
+<p>Naming: see: <a href="../common-components/kafka/#topic-naming-convention">Topic naming convention</a></p>
+<p>Here are the Kafka topics used in this module:</p>
+<ul>
+<li>
+<p><code>promptguard.transactionscore.from-pp</code>
+This topic keeps anonymized transactions streaming from PromptPay in real-time.</p>
+</li>
+<li>
+<p><code>promptguard.transactionscore.infered</code>
+This topic keeps inferred score from Core Prediction Service. There will be a scheduled consumer save this score to SeaweedFS for the evaluation pipeline.</p>
+</li>
+</ul>
+<h2 id="promptpay-message-schema">PromptPay message schema</h2>
+<p>This is expected message schema of <code>promptguard.transactionscore.from-pp</code>:</p>
+<!-- // TODO: expected PP message schema -->
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th style="text-align: center;">Occurence</th>
+<th style="text-align: center;">Data type</th>
+<th style="text-align: center;">Length</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ACCT_1_ID</td>
+<td style="text-align: center;">[1..1]</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: center;">40</td>
+<td>Sender account number</td>
+<td>d7KW4uuNmV+Li9hbecdLz8MYEQpfcdrHgj5UnNk3DsU=</td>
+</tr>
+<tr>
+<td>ACCT_1_NAME</td>
+<td style="text-align: center;">[1..1]</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: center;">150</td>
+<td>Sender account name</td>
+<td>mXFKL6pisfDLOKIGBMRVHMz84kudzSS7ETulJIqbLEY=</td>
+</tr>
+<tr>
+<td>ACCT_2_ID</td>
+<td style="text-align: center;">[1..1]</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: center;">40</td>
+<td>Receiver account number</td>
+<td>6Z1RaS0p9GcjFRV0nLIyvDmNhkvTqGqQwcaNw/rJQ4o=</td>
+</tr>
+<tr>
+<td>ACCT_2_NAME</td>
+<td style="text-align: center;">[1..1]</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: center;">150</td>
+<td>Receiver account name</td>
+<td>udWoJ/3DUAkc8zZClxFvGU6H/3IqPZDwOccrmE7WeiLBe1hQS6ef9rgAu9L1THKG/G/+0ZOJfjppLiCwGFw7Aw==</td>
+</tr>
+<tr>
+<td>ACT_CODE</td>
+<td style="text-align: center;">[1..1]</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: center;">3</td>
+<td>Status code: accept = 000</td>
+<td>000</td>
+</tr>
+<tr>
+<td>AMT_RECON_NET</td>
+<td style="text-align: center;">[1..1]</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: center;">18</td>
+<td>unit: satang</td>
+<td>+000000000000002400.</td>
+</tr>
+<tr>
+<td>BILL_REF1</td>
+<td style="text-align: center;">[1..1]</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: center;">20</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>BILL_REF2</td>
+<td style="text-align: center;">[1..1]</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: center;">20</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>BILL_REF3</td>
+<td style="text-align: center;">[1..1]</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: center;">20</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>FROM_ISO</td>
+<td style="text-align: center;">[1..1]</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: center;">Max: 5</td>
+<td>Original PP message schema.<br/>8583 or 20022</td>
+<td>20022</td>
+</tr>
+<tr>
+<td>INST_ID_RECON_ACQ</td>
+<td style="text-align: center;">[1..1]</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: center;">3</td>
+<td>sender BANK_CODE</td>
+<td>004</td>
+</tr>
+<tr>
+<td>INST_ID_RECON_ISS</td>
+<td style="text-align: center;">[1..1]</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: center;">3</td>
+<td>receiver BANK_CODE</td>
+<td>014</td>
+</tr>
+<tr>
+<td>RECV_PROXY_ID</td>
+<td style="text-align: center;">[1..1]</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: center;">128</td>
+<td></td>
+<td>010753600031508</td>
+</tr>
+<tr>
+<td>RECV_PROXY_TYPE</td>
+<td style="text-align: center;">[1..1]</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: center;">12</td>
+<td></td>
+<td>BILLERID</td>
+</tr>
+<tr>
+<td>RECV_TYPE</td>
+<td style="text-align: center;">[1..1]</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: center;">1</td>
+<td></td>
+<td>H</td>
+</tr>
+<tr>
+<td>RETRIEVAL_REF_NO</td>
+<td style="text-align: center;">[1..1]</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: center;">12</td>
+<td>~RRN - internal transaction id (same ID for all 4-leg of pp transactions)</td>
+<td>155959</td>
+</tr>
+<tr>
+<td>SEND_TYPE</td>
+<td style="text-align: center;">[1..1]</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: center;">1</td>
+<td></td>
+<td>H</td>
+</tr>
+<tr>
+<td>TERM_CLASS</td>
+<td style="text-align: center;">[1..1]</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: center;">2</td>
+<td>User access channel<br/>see the mapping table below.</td>
+<td>80</td>
+</tr>
+<tr>
+<td>TRAN_CLASS</td>
+<td style="text-align: center;">[1..1]</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: center;">3</td>
+<td>transcation: CTF (credit transfer)</td>
+<td>BPA</td>
+</tr>
+<tr>
+<td>TSTAMP_LOCAL</td>
+<td style="text-align: center;">[0..1]</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: center;">14</td>
+<td>Time at user application in GMT+7.<br/>Optional field, avaliable only in ISO8583</td>
+<td>20240813230001</td>
+</tr>
+<tr>
+<td>TSTAMP_TRANS</td>
+<td style="text-align: center;">[1..1]</td>
+<td style="text-align: center;">string</td>
+<td style="text-align: center;">14 to 16</td>
+<td>Tranmission date time to ITMX (Original message in GMT).<br/>Should be the same as <code>TSTAMP_LOCAL</code>. <br/> Legth 16 for 8583 and 14 for 20022.</td>
+<td>2024081323000100 <br/> 20240401000049</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">TERM_CLASS</th>
+<th>Channel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">10</td>
+<td>IVR</td>
+</tr>
+<tr>
+<td style="text-align: center;">20</td>
+<td>Kiosk</td>
+</tr>
+<tr>
+<td style="text-align: center;">30</td>
+<td>ATM</td>
+</tr>
+<tr>
+<td style="text-align: center;">40</td>
+<td>EDC/POS</td>
+</tr>
+<tr>
+<td style="text-align: center;">50</td>
+<td>Counter</td>
+</tr>
+<tr>
+<td style="text-align: center;">60</td>
+<td>Internet</td>
+</tr>
+<tr>
+<td style="text-align: center;">70</td>
+<td>CDM</td>
+</tr>
+<tr>
+<td style="text-align: center;">80</td>
+<td>Mobile</td>
+</tr>
+</tbody>
+</table>
+<h2 id="predicted-score-and-its-features-schema">Predicted score and its features schema</h2>
+<p>This is expected message schema of <code>promptguard.transactionscore.infered</code>:</p>
+<pre><code class="language-json">{
+  "correlation_id": "95248989ec91f6d043",
+  "pp_txn_id": "202408132300010042024081323000180",
+  "risk_score": 23,
+  "timestamp": "2024-05-13T09:45:33+07:00",
+  "features": {
+    &lt;FEATURE_DATA&gt;
+  }
+}
+</code></pre>
+<p>The <a href="../data-prep/#predicted-score-capture">Predicted Score Capture</a> worker will consume this data and save to SeaweedFS for the evaluation pipeline.</p>
+<h1 id="prediction-features">Prediction Features</h1>
+<p>There are 2 kinds of prediction features used, near real-time and daily features.<br>
+For more detail see: <a href="../data-prep/#prediction-feature-updater">Prediction Feature Updater</a></br></p></div>
+</div>
+</div>
+<footer class="col-md-12">
+<hr/>
+<p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+</footer>
+<script src="../../js/bootstrap.bundle.min.js"></script>
+<script>
+            var base_url = "../..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+<script src="../../js/base.js"></script>
+<script src="../../search/main.js"></script>
+<div aria-hidden="true" aria-labelledby="searchModalLabel" class="modal" id="mkdocs_search_modal" role="dialog" tabindex="-1">
+<div class="modal-dialog modal-lg">
+<div class="modal-content">
+<div class="modal-header">
+<h4 class="modal-title" id="searchModalLabel">Search</h4>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<p>From here you can search these documents. Enter your search terms below.</p>
+<form>
+<div class="form-group">
+<input class="form-control" id="mkdocs-search-query" placeholder="Search..." title="Type search term here" type="search"/>
+</div>
+</form>
+<div data-no-results-text="No results found" id="mkdocs-search-results"></div>
+</div>
+<div class="modal-footer">
+</div>
+</div>
+</div>
+</div><div aria-hidden="true" aria-labelledby="keyboardModalLabel" class="modal" id="mkdocs_keyboard_modal" role="dialog" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<table class="table">
+<thead>
+<tr>
+<th style="width: 20%;">Keys</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="help shortcut"><kbd>?</kbd></td>
+<td>Open this help</td>
+</tr>
+<tr>
+<td class="next shortcut"><kbd>n</kbd></td>
+<td>Next page</td>
+</tr>
+<tr>
+<td class="prev shortcut"><kbd>p</kbd></td>
+<td>Previous page</td>
+</tr>
+<tr>
+<td class="search shortcut"><kbd>s</kbd></td>
+<td>Search</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="modal-footer">
+</div>
+</div>
+</div>
+</div>
+<script type="module">import mermaid from "https://unpkg.com/mermaid@11.12.2/dist/mermaid.esm.min.mjs";
+mermaid.initialize({});</script></body>
+</html>

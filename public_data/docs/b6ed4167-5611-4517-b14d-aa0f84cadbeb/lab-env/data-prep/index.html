@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+
+<html data-bs-theme="light" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="../../img/favicon.ico" rel="shortcut icon"/>
+<title>Data Preparation - PrompGuard Technical Spec</title>
+<link href="../../css/bootstrap.min.css" rel="stylesheet"/>
+<link href="../../css/fontawesome.min.css" rel="stylesheet"/>
+<link href="../../css/brands.min.css" rel="stylesheet"/>
+<link href="../../css/solid.min.css" rel="stylesheet"/>
+<link href="../../css/v4-font-face.min.css" rel="stylesheet"/>
+<link href="../../css/base.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" id="hljs-light" rel="stylesheet"/>
+<link disabled="" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css" id="hljs-dark" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body>
+<div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+<div class="container">
+<a class="navbar-brand" href="../..">PrompGuard Technical Spec</a>
+<!-- Expander button -->
+<button aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-bs-target="#navbar-collapse" data-bs-toggle="collapse" type="button">
+<span class="navbar-toggler-icon"></span>
+</button>
+<!-- Expanded navigation -->
+<div class="navbar-collapse collapse" id="navbar-collapse">
+<!-- Main navigation -->
+<ul class="nav navbar-nav">
+<li class="nav-item">
+<a class="nav-link" href="../..">Home</a>
+</li>
+<li class="nav-item dropdown">
+<a aria-current="page" aria-expanded="false" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown" href="#" role="button">Lab Environment</a>
+<ul class="dropdown-menu">
+<li>
+<a class="dropdown-item" href="../intro/">Introduction</a>
+</li>
+<li>
+<a class="dropdown-item" href="../hlds/">High Level Design</a>
+</li>
+<li>
+<a class="dropdown-item" href="../txn-risk-score/">Transaction Risk Score</a>
+</li>
+<li>
+<a aria-current="page" class="dropdown-item active" href="./">Data Preparation</a>
+</li>
+<li>
+<a class="dropdown-item" href="../model-eval/">Model Evaluation Pipeline</a>
+</li>
+<li>
+<a class="dropdown-item" href="../model-train/">Model Training Pipeline</a>
+</li>
+<li>
+<a class="dropdown-item" href="../version-ctrl/">Fraud Engine Version Control</a>
+</li>
+<li class="dropdown-submenu">
+<a class="dropdown-item" href="#">Common Components</a>
+<ul class="dropdown-menu">
+<li>
+<a class="dropdown-item" href="../common-components/redis/">Redis</a>
+</li>
+<li>
+<a class="dropdown-item" href="../common-components/kafka/">Kafka</a>
+</li>
+<li>
+<a class="dropdown-item" href="../common-components/seaweed/">SeaweedFS</a>
+</li>
+<li>
+<a class="dropdown-item" href="../common-components/postgres/">Postgres</a>
+</li>
+<li>
+<a class="dropdown-item" href="../common-components/airflow/">Apache Airflow</a>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="../../prod-env/">Prod Environment</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="../../api-std/">API Standard</a>
+</li>
+</ul>
+<ul class="nav navbar-nav ms-md-auto">
+<li class="nav-item">
+<a class="nav-link" data-bs-target="#mkdocs_search_modal" data-bs-toggle="modal" href="#">
+<i class="fa fa-search"></i> Search
+                            </a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="../txn-risk-score/" rel="prev">
+<i class="fa fa-arrow-left"></i> Previous
+                                </a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="../model-eval/" rel="next">
+                                    Next <i class="fa fa-arrow-right"></i>
+</a>
+</li>
+<li class="nav-item dropdown">
+<button aria-expanded="false" aria-label="Toggle theme" class="nav-link dropdown-toggle" data-bs-display="static" data-bs-toggle="dropdown" id="theme-menu">
+<i class="fa-solid fa-circle-half-stroke fa-fw"></i>
+<span class="d-lg-none ms-2">Toggle theme</span>
+</button>
+<ul class="dropdown-menu dropdown-menu-end">
+<li>
+<button aria-pressed="true" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light">
+<i class="fa-solid fa-sun fa-fw"></i>
+<span class="ms-2">Light</span>
+<i class="fa-solid fa-check ms-auto"></i>
+</button>
+</li>
+<li>
+<button aria-pressed="false" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark">
+<i class="fa-solid fa-moon fa-fw"></i>
+<span class="ms-2">Dark</span>
+<i class="fa-solid fa-check ms-auto d-none"></i>
+</button>
+</li>
+<li>
+<button aria-pressed="false" class="dropdown-item d-flex align-items-center" data-bs-theme-value="auto">
+<i class="fa-solid fa-circle-half-stroke fa-fw"></i>
+<span class="ms-2">Auto</span>
+<i class="fa-solid fa-check ms-auto d-none"></i>
+</button>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<script src="../../js/darkmode.js"></script>
+<div class="container">
+<div class="row">
+<div class="col-md-3"><div class="navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+<div class="navbar-header">
+<button class="navbar-toggler collapsed" data-bs-target="#toc-collapse" data-bs-toggle="collapse" title="Table of Contents" type="button">
+<span class="fa fa-angle-down"></span>
+</button>
+</div>
+<div class="navbar-collapse collapse card bg-body-tertiary" id="toc-collapse">
+<ul class="nav flex-column">
+<li class="nav-item" data-bs-level="1"><a class="nav-link" href="#real-time-transaction-data-preparation">Real-time Transaction Data Preparation</a>
+<ul class="nav flex-column">
+<li class="nav-item" data-bs-level="2"><a class="nav-link" href="#sequence-diagram">Sequence Diagram</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-item" data-bs-level="1"><a class="nav-link" href="#promptpay-transaction-recorder">PromptPay Transaction recorder</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+<li class="nav-item" data-bs-level="1"><a class="nav-link" href="#proxy-updater">Proxy Updater</a>
+<ul class="nav flex-column">
+<li class="nav-item" data-bs-level="2"><a class="nav-link" href="#proxy-mapper-proxy-to-account-mapping">Proxy mapper (Proxy to account mapping)</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+<li class="nav-item" data-bs-level="2"><a class="nav-link" href="#reverse-proxy-mapper-account-to-proxies-mapping">Reverse proxy mapper (Account to proxies mapping)</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-item" data-bs-level="1"><a class="nav-link" href="#prediction-feature-updater">Prediction Feature Updater</a>
+<ul class="nav flex-column">
+<li class="nav-item" data-bs-level="2"><a class="nav-link" href="#near-real-time-features">Near Real-time Features</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+<li class="nav-item" data-bs-level="2"><a class="nav-link" href="#daily-aggregated-features">Daily aggregated features</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+</ul>
+</li>
+<li class="nav-item" data-bs-level="1"><a class="nav-link" href="#scheduled-data-preparation">Scheduled Data Preparation</a>
+<ul class="nav flex-column">
+<li class="nav-item" data-bs-level="2"><a class="nav-link" href="#predicted-score-capture">Predicted Score Capture</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+<li class="nav-item" data-bs-level="2"><a class="nav-link" href="#cfr-data-capture">CFR Data Capture</a>
+<ul class="nav flex-column">
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div></div>
+<div class="col-md-9" role="main">
+<h1 id="real-time-transaction-data-preparation">Real-time Transaction Data Preparation</h1>
+<p>Real-time transaction data prep consumes message from the Kafka topic: <code>promptguard.transactionscore.from-pp</code>.<br/>
+There are 3 sub modules here:</p>
+<ol>
+<li>Transaction recorder: to save transactions for using in daily feature preparation and evaluation pipeline (data profile shifing check)</li>
+<li>Proxy Updater: to update bank account proxy id</li>
+<li>Prediction feature preparation: to use in prediction pipeline</li>
+</ol>
+<div class="mermaid">graph TD
+  LS[PP Log Streamer] -- produce --&gt; KK[Kafka &lt;br&gt;topic: promptguard.transactionscore.from-pp]
+
+  KK -- "consume msg" --&gt; TR["Transaction Recorder&lt;br&gt; (Lookup &amp; Credit transfer)&lt;br&gt; (Go)"]
+  TR -- accumulate &amp; save --&gt; SF["SeaweedFS &lt;br&gt; (Parquet)"]
+
+  KK -- "consume msg" --&gt; PU["Proxy Updater&lt;br&gt; (only Lookup msg)&lt;br&gt; (Go)"]
+  PU -- "Update proxy and reverse proxy" --&gt; R["Redis"]
+
+  KK -- "consume msg" --&gt; FT["Prediction Feature Updater&lt;br&gt; (only Credit transfer msg)&lt;br&gt; (Go)"]
+  FT -- "Update account recent transactions (10-min feature)" --&gt; R
+</div>
+<h2 id="sequence-diagram">Sequence Diagram</h2>
+<div class="mermaid">sequenceDiagram
+    participant LE as Log extractor (Blend / Loki)
+    participant KK as Kafka Topic
+    participant TA as Transaction recorder
+    participant RP as Real-time feature prep
+    participant R as Redis
+    participant SF as SeaweedFS
+    participant DDP as Daily feature prep
+    participant PUD as Proxy updater
+
+    LE-&gt;&gt;KK: publish anonym txn
+    note over KK: promptguard.transactionscore.from-pp
+
+    TA-&gt;&gt;KK: consume txn data
+    activate TA
+    activate KK
+    KK--&gt;&gt;TA: txn data
+    deactivate KK
+    TA-&gt;&gt;TA: batch packing
+    TA-&gt;&gt;SF: batch data store
+    deactivate TA
+
+    PUD-&gt;&gt;KK: consume txn data
+    activate PUD
+    activate KK
+    KK--&gt;&gt;PUD: txn data
+    deactivate KK
+    PUD-&gt;&gt;R: update proxy to Redis
+    deactivate PUD
+
+    RP-&gt;&gt;KK: consume txn data
+    activate RP
+    activate KK
+    KK--&gt;&gt;RP: txn data
+    deactivate KK
+    RP-&gt;&gt;R: update recent txn feature
+    deactivate RP
+
+    DDP-&gt;&gt;SF: daily read txn data
+    activate DDP
+    activate SF
+    SF--&gt;&gt;DDP: data
+    deactivate SF
+    DDP-&gt;&gt;DDP: cal daily features
+    DDP-&gt;&gt;R: save daily features
+    DDP-&gt;&gt;SF: save daily features
+    deactivate DDP
+</div>
+<h1 id="promptpay-transaction-recorder">PromptPay Transaction recorder</h1>
+<p>This module will consume the PromptPay transaction from <code>promptguard.transactionscore.from-pp</code> topic. It accommulates the transaction data then saves to SeaweedFS, in Parquet (Zstd) format.  </p>
+<div class="mermaid">graph LR
+  LS[PP Log Streamer] -- produce --&gt; KK[Kafka &lt;br&gt;topic: promptguard.transactionscore.from-pp]
+
+  KK -- "consume msg" --&gt; TR["Transaction Recorder&lt;br&gt; (Lookup &amp; Credit transfer)&lt;br&gt; (Go)"]
+  TR -- accumulate &amp; save --&gt; SF["SeaweedFS &lt;br&gt; (Parquet)"]
+</div>
+<p>The transaction schema is defined here: <a href="../txn-risk-score/#promptpay-message-schema">PromptPay message schema</a>.</p>
+<p>These saved transactions will be used by <a href="#daily-aggregated-features">Daily Feature Preparation</a>, <a href="../model-eval/">Evaluation</a>, and <a href="../model-train/">Training</a> pipelines.</p>
+<h1 id="proxy-updater">Proxy Updater</h1>
+<p>This module consumes the PromptPay transaction from <code>promptguard.transactionscore.from-pp</code> topic. It extracts proxy and actual account information, if any, then update to proxy mapper in Redis.</p>
+<div class="mermaid">graph LR
+    KK[Kafka &lt;br&gt;topic: promptguard.transactionscore.from-pp] -- "consume msg" --&gt; PU["Proxy Updater &lt;br&gt; (Go)"]
+
+    PU -- "Update proxy and reverse proxy" --&gt; R["Redis"]
+</div>
+<h2 id="proxy-mapper-proxy-to-account-mapping">Proxy mapper (Proxy to account mapping)</h2>
+<p><strong>Redis Key:</strong> <code>promptguard:proxy-mapper:&lt;proxy_id&gt;</code><br/>
+<strong>Value:</strong></p>
+<pre><code class="language-json">{
+  "fi_code": "014",
+  "actual_account": "12e345g66f78a9b", // hashed
+  "proxy_type": "mobile",
+  "last_updated": 1735900000   // unix timestamp
+}
+</code></pre>
+<p>Available proxy types: </p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>PromptPay Proxy Type</th>
+<th>PromptGuard Proxy Type</th>
+<th>Proxy Updater Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actual Account</td>
+<td>-</td>
+<td>account</td>
+<td>Ignore</td>
+</tr>
+<tr>
+<td>National ID</td>
+<td>NATID</td>
+<td>nat_id</td>
+<td>Update to Redis. <br/> Map <code>nat_id</code> with bank account.</td>
+</tr>
+<tr>
+<td>Mobile Number</td>
+<td>MSISDN</td>
+<td>mobile</td>
+<td>Update to Redis. <br/> Map <code>mobile</code> with bank account.</td>
+</tr>
+<tr>
+<td>Biller ID</td>
+<td>BILLERID</td>
+<td>biller_id</td>
+<td>Update to Redis. <br/> Map <code>biller_id</code> with bank account.</td>
+</tr>
+<tr>
+<td>E-Wallet</td>
+<td>EWALLETID</td>
+<td>wallet_id</td>
+<td>Update to Redis. <br/> The <code>actual_account</code> is <code>wallet_id</code>, <br/> Ex. <code>wallet_id</code>: 1400917891000 means: <br/> <code>actual_account</code> = 1400917891000</td>
+</tr>
+<tr>
+<td>E-Mail</td>
+<td>EMAIL</td>
+<td>email</td>
+<td>Update to Redis. <br/> Curretly not existed in PP</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>ℹ️ NOTE
+* PromptPay proxy_id is originally global unique.<br>
+* Multiple E-Wallet users can have only one common bank account, except KBank QR receiving wallet. That's why, we do not aggregate the <code>wallet_id</code> into one translated bank account.
+* As per 2025 Nov, CFR has defined the <code>fi_code</code> for Thai e-wallet providers, as seen in <a href="https://github.com/itmx-rnd/silo-101/blob/main/bank_info.csv">bank_info.csv</a>.
+  * For any provider not listed there, we will use their TEPA code instead.</br></p>
+</blockquote>
+<p>The Proxy Updater updates the proxy mapper to Redis for every transaction, except the actual account transaction. It does not “check then update” – just always overwrite, for the fastest strategy. It also update the reverse-lookup sets, to retreive all proxies of an account. </p>
+<h2 id="reverse-proxy-mapper-account-to-proxies-mapping">Reverse proxy mapper (Account to proxies mapping)</h2>
+<p><strong>Redis Key:</strong> <code>promptguard:proxy-reverse:&lt;fi_code&gt;-&lt;account_id&gt;</code> </p>
+<blockquote>
+<p>ℹ️ <em>account_id</em> is hashed to be matched with CFR data.</p>
+</blockquote>
+<p><strong>Value:</strong></p>
+<pre><code class="language-json">[
+  {
+    "proxy_id": "0987654321",
+    "proxy_type": "mobile"
+  },
+  {
+    "proxy_id": "12345667891234",
+    "proxy_type": "nat_id"
+  }
+]
+</code></pre>
+<p>Here are the relavant Redis commands:</p>
+<pre><code class="language-bash"># Add proxy mapping
+SET promptguard:proxy-mapper:&lt;proxy_id&gt; &lt;account_json&gt;
+
+# Add reverse proxy mapping in the set
+SADD index:promptguard:proxy-reverse:&lt;fi_code&gt;-&lt;account_id&gt; &lt;proxy_json&gt;
+
+# Remove a reverse proxy in the set
+SREM index:promptguard:proxy-reverse:&lt;fi_code&gt;-&lt;account_id&gt; &lt;proxy_json&gt;
+
+# Get all proxies of an account
+SMEMBERS index:promptguard:proxy-reverse:&lt;fi_code&gt;-&lt;account_id&gt;
+</code></pre>
+<h1 id="prediction-feature-updater">Prediction Feature Updater</h1>
+<p>This module consumes PromptPay transactions from Kafka and SeaweedFS, then update prediction features to Redis. There are 2 sub-modules shown as below:</p>
+<div class="mermaid">graph LR
+  subgraph "Real-time (from Kafka)"
+    direction LR
+    KK[Kafka] -- "consume msg" --&gt; RT_FU["Real-time Feature Updater&lt;br&gt;(Go)"]
+    RT_FU --&gt; R1["Redis&lt;br&gt;key: promptguard:recent-txn:..."]
+  end
+  subgraph "Daily Batch (from SeaweedFS)"
+    direction LR
+    FS[SeaweedFS] -- "read daily files" --&gt; D_FU["Daily Feature Updater&lt;br&gt;(Go)"]
+    D_FU --&gt; R2["Redis&lt;br&gt;key: promptguard:daily-features:..."]
+  end
+</div>
+<h2 id="near-real-time-features">Near Real-time Features</h2>
+<p>These prediction features are 10-min raw transaction data consumed from Kafka and cached on Redis.</p>
+<p><strong>Key:</strong> <code>promptguard:recent-txn:&lt;fi_code&gt;-&lt;account_id&gt;</code> </p>
+<blockquote>
+<p>ℹ️ <em>account_id</em> is hashed to be matched with CFR data.</p>
+</blockquote>
+<p><strong>Value:</strong></p>
+<pre><code class="language-json">[
+  {
+    "action": "send",
+    "amount": 200,
+    "timestamp": "2023-01-01T00:00:00+07:00",
+    "counterparty_account_id": "&lt;hash_of_account_b&gt;",
+    "counterparty_fi_code": "bank_b"
+  },
+  {
+    "action": "receive",
+    "amount": 550,
+    "timestamp": "2024-01-01T00:00:00+07:00",
+    "counterparty_account_id": "&lt;hash_of_account_c&gt;",
+    "counterparty_fi_code": "bank_c"
+  }
+]
+</code></pre>
+<p>These features is kept with Redis ZADD (sorted set), sorting by unix timestamp (in seconds).
+The transaction score Kafka consumer (worker) and API server will aggregate these prediction features before calling the Core Prediction Service.</p>
+<h3 id="sequence-diagram_1">Sequence Diagram</h3>
+<p>This feature updater will comsume the PromptPay transaction from Kafka and add a new transaction to Redis. For each account, it must refresh 10-min TTL of the key and remove transaction records older than 10 minutes to maintain memory usage.</p>
+<div class="mermaid">sequenceDiagram
+    participant RP as Real-time feature prep
+    participant KK as Kafka Topic
+    participant R as Redis
+
+    note over KK: promptguard.transactionscore.from-pp
+
+    RP-&gt;&gt;KK: consume txn data
+    activate RP
+    activate KK
+    KK--&gt;&gt;RP: txn data
+    deactivate KK
+
+    note over R: promptguard:recent-txn:&lt;fi_code&gt;-&lt;account_id&gt;
+    RP-&gt;&gt;R: Add new txn to 10-min features &lt;br&gt;for both sender &amp; reciever &lt;br&gt; (ZADD with 10 min TTL)
+    RP-&gt;&gt;R: Remove sender &amp; reciever features &lt;br&gt;Older than 10 min &lt;br&gt; (ZREMRANGEBYSCORE)
+    deactivate RP
+</div>
+<p>Here are the relavant Redis commands:</p>
+<pre><code class="language-bash"># Add transaction
+ZADD promptguard:recent-txn:&lt;fi_code&gt;-&lt;account_id&gt; &lt;timestamp&gt; &lt;json&gt;
+
+# set 10-min TTL
+EXPIRE promptguard:recent-txn:&lt;fi_code&gt;-&lt;account_id&gt; 600
+
+# Remove old ones (10+ min)
+ZREMRANGEBYSCORE promptguard:recent-txn:&lt;fi_code&gt;-&lt;account_id&gt; -inf &lt;now-600&gt;
+
+# Read recent ones (10- min)
+ZRANGEBYSCORE promptguard:recent-txn:&lt;fi_code&gt;-&lt;account_id&gt; &lt;now-600&gt; +inf
+
+# Read all
+ZRANGE promptguard:recent-txn:&lt;fi_code&gt;-&lt;account_id&gt; 0 -1
+</code></pre>
+<h2 id="daily-aggregated-features">Daily aggregated features</h2>
+<p><strong>Key:</strong> <code>promptguard:daily-features:&lt;fi_code&gt;-&lt;account_id&gt;</code><br>
+<em>account_id</em> is hashed to be matched with CFR data.</br></p>
+<p><strong>Value:</strong></p>
+<pre><code class="language-json">{ 
+    "f1": 150,
+    "f2": 500,
+    "f3": 30,
+    ...
+    "f300": 300.0
+}
+</code></pre>
+<!-- // TODO update features from Nicky   -->
+<p>These features will be daily processed from SeaweedFS, then kept in Redis.<br>
+We can use GET and SET commands for Redis without expiration set.<br>
+If the cache lost, we can retrieve them from SeaweedFS.</br></br></p>
+<h3 id="sequence-diagram_2">Sequence Diagram</h3>
+<div class="mermaid">sequenceDiagram
+    participant DDP as Daily feature prep
+    participant SF as SeaweedFS
+    participant R as Redis
+
+    DDP-&gt;&gt;SF: daily read txn data
+    activate DDP
+    activate SF
+    SF--&gt;&gt;DDP: data
+    deactivate SF
+    DDP-&gt;&gt;DDP: calculate daily features
+
+    note over R: promptguard:daily-features:&lt;fi_code&gt;-&lt;account_id&gt;
+    DDP-&gt;&gt;R: save daily features
+    DDP-&gt;&gt;SF: save daily features
+    deactivate DDP
+</div>
+<p>TODO: idempotent, prevent loss</p>
+<h1 id="scheduled-data-preparation">Scheduled Data Preparation</h1>
+<p>These are scheduled data prep for evaluation pipeline. It composes of:</p>
+<ul>
+<li>Predicted score capture</li>
+<li>CFR data capture</li>
+</ul>
+<h2 id="predicted-score-capture">Predicted Score Capture</h2>
+<p>This worker consumes score messages from Kafka topic: <code>promptguard.transactionscore.inferred</code>, then save to SeaweedFS for later used in model evaluation pipeline.</p>
+<div class="mermaid">graph LR
+    KK[Kafka] -- "consume msg from topic: promptguard.transactionscore.inferred" --&gt; SC["Predicted Score Capture &lt;br&gt; (python)"]
+
+    SC -- Append a batch of new score --&gt; SW["SeaweedFS &lt;br&gt; (Parquet)"]
+</div>
+<p>The worker use python for easily handle the data in paquete format. It will keep the predicted data in daily partitioned folder, splitted by an optimal size.  </p>
+<p>The predicted data retention period is set to 13 months, for seasoning behavior understanding.
+We can set the SeaweedFS bucket lifecycle via this s3 command:</p>
+<pre><code class="language-bash">aws --endpoint-url http://seaweedfs-s3-endpoint:8333 s3api put-bucket-lifecycle-configuration \
+  --bucket my-bucket \
+  --lifecycle-configuration '{
+    "Rules": [
+      {
+        "ID": "DeleteOldData",
+        "Prefix": "transactionscore_inferred/",
+        "Status": "Enabled",
+        "Expiration": { "Days": 397 }
+      }
+    ]
+  }'
+</code></pre>
+<h2 id="cfr-data-capture">CFR Data Capture</h2>
+<p>This worker will be scheduled pulling anonymous CFR data from Production. The firewall between the worker and CFR networks are separated, and will be opened as agreed with GRC team.</p>
+<blockquote>
+<p>ℹ️ As per 2025 Nov, we agreed to open it every 15 day for 3 hours.</p>
+</blockquote>
+<div class="mermaid">graph LR
+    OC[Oracle &lt;br&gt; CFR Prod] -- "read CFR data &lt;br&gt; (temp firewall)" --&gt; CDC["CFR Data Capture &lt;br&gt; (python)"]
+
+    CDC -- Parquet store --&gt; SW["SeaweedFS &lt;br&gt; (Parquet)"]
+</div>
+<p>Estimated size of CFR data: <a href="../common-components/seaweed/#base-estimation">SeaweedFS Sizing</a>.</p></div>
+</div>
+</div>
+<footer class="col-md-12">
+<hr/>
+<p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+</footer>
+<script src="../../js/bootstrap.bundle.min.js"></script>
+<script>
+            var base_url = "../..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+<script src="../../js/base.js"></script>
+<script src="../../search/main.js"></script>
+<div aria-hidden="true" aria-labelledby="searchModalLabel" class="modal" id="mkdocs_search_modal" role="dialog" tabindex="-1">
+<div class="modal-dialog modal-lg">
+<div class="modal-content">
+<div class="modal-header">
+<h4 class="modal-title" id="searchModalLabel">Search</h4>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<p>From here you can search these documents. Enter your search terms below.</p>
+<form>
+<div class="form-group">
+<input class="form-control" id="mkdocs-search-query" placeholder="Search..." title="Type search term here" type="search"/>
+</div>
+</form>
+<div data-no-results-text="No results found" id="mkdocs-search-results"></div>
+</div>
+<div class="modal-footer">
+</div>
+</div>
+</div>
+</div><div aria-hidden="true" aria-labelledby="keyboardModalLabel" class="modal" id="mkdocs_keyboard_modal" role="dialog" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+<div class="modal-header">
+<h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+<button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+</div>
+<div class="modal-body">
+<table class="table">
+<thead>
+<tr>
+<th style="width: 20%;">Keys</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="help shortcut"><kbd>?</kbd></td>
+<td>Open this help</td>
+</tr>
+<tr>
+<td class="next shortcut"><kbd>n</kbd></td>
+<td>Next page</td>
+</tr>
+<tr>
+<td class="prev shortcut"><kbd>p</kbd></td>
+<td>Previous page</td>
+</tr>
+<tr>
+<td class="search shortcut"><kbd>s</kbd></td>
+<td>Search</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="modal-footer">
+</div>
+</div>
+</div>
+</div>
+<script type="module">import mermaid from "https://unpkg.com/mermaid@11.12.2/dist/mermaid.esm.min.mjs";
+mermaid.initialize({});</script></body>
+</html>
