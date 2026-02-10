@@ -99,6 +99,34 @@ const SearchPage = () => {
         }
     };
 
+    const handleProcess = async (doc) => {
+        if (!window.confirm(`Process "${doc.title}" into RAG Knowledge Base?`)) {
+            return;
+        }
+
+        // Optimistic update
+        setDocuments(prev => prev.map(d => d.id === doc.id ? { ...d, ragStatus: 'processing' } : d));
+        toast.info("Started processing document...");
+
+        try {
+            const response = await fetch(`http://localhost:3001/api/documents/${doc.id}/process`, {
+                method: 'POST',
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to start processing');
+            }
+
+            toast.success("Processing started. Check 'Retrieve' page later.");
+            // Re-fetch to get latest status if needed, but optimistic is fine for now
+        } catch (error) {
+            toast.error(error.message || "Failed to process document");
+            // Revert status on error
+            setDocuments(prev => prev.map(d => d.id === doc.id ? { ...d, ragStatus: doc.ragStatus || 'not_indexed' } : d));
+        }
+    };
+
     // Pagination Logic
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;

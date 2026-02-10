@@ -72,9 +72,10 @@ exports.processMkDocs = async (repoPath, repoId) => {
     // Let's rely on simple text processing for now to avoid new deps if we can, but `js-yaml` is safer.
     // User wants "link system".
     // Let's try to append `site_url: /docs/${repoId}/` to end of file. Most parsers use the last occurrence.
-    const siteUrlConfig = `\nsite_url: /docs/${repoId}/\n`;
+    // MkDocs requires a full URL including scheme for site_url
+    const siteUrlConfig = `\nsite_url: http://localhost:3001/docs/${repoId}/\n`;
     fs.appendFileSync(mkdocsPath, siteUrlConfig);
-    console.log(`Injected site_url: /docs/${repoId}/ into mkdocs.yml`);
+    console.log(`Injected site_url: http://localhost:3001/docs/${repoId}/ into mkdocs.yml`);
 
     const outputPath = path.join(DOCS_DIR, repoId);
     console.log(`Building MkDocs for ${repoId} to ${outputPath}...`);

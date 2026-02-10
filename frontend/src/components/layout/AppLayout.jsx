@@ -1,6 +1,6 @@
 
 import React, { useContext } from 'react';
-import { Moon, Sun, Menu, Search as SearchIcon, FileText, Upload, LayoutDashboard } from 'lucide-react';
+import { Moon, Sun, Menu, Search as SearchIcon, FileText, Upload, LayoutDashboard, Settings } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -13,6 +13,7 @@ const MobileNav = () => {
         { name: 'Documents', path: '/', icon: FileText },
         { name: 'Add Document', path: '/input', icon: Upload },
         { name: 'Retrieve', path: '/retrieve', icon: SearchIcon },
+        { name: 'Settings', path: '/config', icon: Settings }, // Settings icon needs import
     ];
 
     return (

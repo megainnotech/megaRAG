@@ -4,6 +4,7 @@ import AppLayout from '@/components/layout/AppLayout';
 import SearchPage from '@/pages/SearchPage';
 import InputPage from '@/pages/InputPage';
 import RetrievePage from '@/pages/RetrievePage';
+import ConfigPage from '@/pages/ConfigPage';
 import { Toaster } from '@/components/ui/sonner';
 
 // Export ThemeContext so other components can use it
@@ -31,6 +32,7 @@ function App() {
             <Route path="/" element={<SearchPage />} />
             <Route path="/input" element={<InputPage />} />
             <Route path="/retrieve" element={<RetrievePage />} />
+            <Route path="/config" element={<ConfigPage />} />
           </Routes>
         </AppLayout>
         <Toaster />

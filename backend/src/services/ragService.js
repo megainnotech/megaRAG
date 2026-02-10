@@ -28,15 +28,31 @@ exports.deleteDocument = async (docId) => {
     }
 };
 
-exports.query = async (query, mode = 'hybrid') => {
+exports.query = async (query, mode = 'hybrid', llmConfig = {}) => {
     try {
         const response = await axios.post(`${RAG_SERVICE_URL}/query`, {
             query: query,
-            mode: mode
+            mode: mode,
+            llm_config: llmConfig // Match Python Pydantic field name (snake_case)
         });
         return response.data;
     } catch (error) {
-        console.error('RAG Query Error:', error.message);
+        // Enhanced logging for Grafana/Loki
+        if (error.response) {
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+            console.error('RAG Query Error Response:', {
+                status: error.response.status,
+                data: error.response.data,
+                headers: error.response.headers
+            });
+        } else if (error.request) {
+            // The request was made but no response was received
+            console.error('RAG Query No Response:', error.request);
+        } else {
+            // Something happened in setting up the request that triggered an Error
+            console.error('RAG Query Setup Error:', error.message);
+        }
         throw error;
     }
 };

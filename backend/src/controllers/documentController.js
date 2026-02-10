@@ -269,16 +269,20 @@ exports.processDocument = async (req, res) => {
 
 exports.queryRAG = async (req, res) => {
     try {
-        const { query, mode } = req.body;
+        const { query, mode, llmConfig } = req.body;
         if (!query) {
             return res.status(400).json({ message: 'Query is required' });
         }
 
-        const response = await ragService.query(query, mode);
+        const response = await ragService.query(query, mode, llmConfig);
         res.json(response);
     } catch (error) {
-        console.error('Query RAG Error:', error);
-        res.status(500).json({ message: 'Internal Server Error', error: error.message });
+        console.error('Query RAG Controller Error:', error); // Log full error object
+        res.status(500).json({
+            message: 'Internal Server Error',
+            error: error.message,
+            details: error.response ? error.response.data : null
+        });
     }
 };
 

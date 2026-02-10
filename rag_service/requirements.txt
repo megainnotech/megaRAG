@@ -1,13 +1,15 @@
 fastapi
 uvicorn
-pYDANTIC
+pydantic
 requests
 neo4j
 qdrant-client
-lightrag
+lightrag-hku
 pdfplumber
 python-multipart
 psycopg2-binary
 openai
 google-generativeai
 tenacity
+prometheus-fastapi-instrumentator
+ollama
