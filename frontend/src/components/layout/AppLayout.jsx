@@ -12,6 +12,7 @@ const MobileNav = () => {
     const navItems = [
         { name: 'Documents', path: '/', icon: FileText },
         { name: 'Add Document', path: '/input', icon: Upload },
+        { name: 'Retrieve', path: '/retrieve', icon: SearchIcon },
     ];
 
     return (

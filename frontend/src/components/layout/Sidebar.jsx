@@ -1,13 +1,14 @@
 
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { FileText, Upload, LayoutDashboard, Settings } from 'lucide-react';
+import { FileText, Upload, LayoutDashboard, Settings, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const Sidebar = () => {
     const navItems = [
         { name: 'Documents', path: '/', icon: FileText },
         { name: 'Add Document', path: '/input', icon: Upload },
+        { name: 'Retrieve', path: '/retrieve', icon: Search },
     ];
 
     return (

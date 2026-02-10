@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+pYDANTIC
+requests
+neo4j
+qdrant-client
+lightrag
+pdfplumber
+python-multipart
+psycopg2-binary
+openai
+google-generativeai
+tenacity

@@ -5,6 +5,8 @@ const upload = require('../config/upload');
 
 router.post('/git', documentController.createGitDocument);
 router.post('/upload', upload.single('file'), documentController.createFileDocument);
+router.post('/:id/process', documentController.processDocument);
+router.post('/query', documentController.queryRAG);
 router.get('/', documentController.getAllDocuments);
 router.delete('/:id', documentController.deleteDocument);
 

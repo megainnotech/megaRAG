@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AppLayout from '@/components/layout/AppLayout';
 import SearchPage from '@/pages/SearchPage';
 import InputPage from '@/pages/InputPage';
+import RetrievePage from '@/pages/RetrievePage';
 import { Toaster } from '@/components/ui/sonner';
 
 // Export ThemeContext so other components can use it
@@ -29,6 +30,7 @@ function App() {
           <Routes>
             <Route path="/" element={<SearchPage />} />
             <Route path="/input" element={<InputPage />} />
+            <Route path="/retrieve" element={<RetrievePage />} />
           </Routes>
         </AppLayout>
         <Toaster />

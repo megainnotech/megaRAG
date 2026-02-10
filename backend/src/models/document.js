@@ -29,6 +29,11 @@ module.exports = (sequelize, DataTypes) => {
         branch: {
             type: DataTypes.STRING,
             allowNull: true,
+        },
+        ragStatus: {
+            type: DataTypes.ENUM('not_indexed', 'processing', 'indexed', 'failed'),
+            defaultValue: 'not_indexed',
+            allowNull: false,
         }
     });
 

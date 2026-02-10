@@ -92,12 +92,12 @@ exports.processMkDocs = async (repoPath, repoId) => {
             console.log(`MkDocs build output: ${stdout}`);
 
             // Clean up temp repo after successful build
-            try {
-                console.log(`Cleaning up temp repo: ${repoPath}`);
-                fs.rmSync(repoPath, { recursive: true, force: true });
-            } catch (cleanupError) {
-                console.warn('Failed to cleanup temp repo:', cleanupError);
-            }
+            // try {
+            //    console.log(`Cleaning up temp repo: ${repoPath}`);
+            //    fs.rmSync(repoPath, { recursive: true, force: true });
+            // } catch (cleanupError) {
+            //    console.warn('Failed to cleanup temp repo:', cleanupError);
+            // }
 
             resolve({ outputPath, relativePath: `/docs/${repoId}` });
         });

@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Loader2, Search, Filter, ExternalLink, SlidersHorizontal, Plus, X, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Loader2, Search, Filter, ExternalLink, SlidersHorizontal, Plus, X, Trash2, ChevronLeft, ChevronRight, PlayCircle, RefreshCw, CheckCircle, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import {
     Select,
@@ -288,6 +288,12 @@ const SearchPage = () => {
                                                                 </Badge>
                                                             </div>
                                                             <span className="text-xs text-muted-foreground">{new Date(doc.createdAt).toLocaleDateString()}</span>
+                                                            <div className="flex items-center gap-1 mt-1">
+                                                                {doc.ragStatus === 'indexed' && <Badge variant="outline" className="text-[10px] text-green-600 border-green-200 bg-green-50"><CheckCircle className="w-3 h-3 mr-1" /> Indexed</Badge>}
+                                                                {doc.ragStatus === 'processing' && <Badge variant="outline" className="text-[10px] text-blue-600 border-blue-200 bg-blue-50"><RefreshCw className="w-3 h-3 mr-1 animate-spin" /> Processing</Badge>}
+                                                                {doc.ragStatus === 'failed' && <Badge variant="outline" className="text-[10px] text-red-600 border-red-200 bg-red-50"><AlertCircle className="w-3 h-3 mr-1" /> Failed</Badge>}
+                                                                {doc.ragStatus === 'not_indexed' && <Badge variant="outline" className="text-[10px] text-muted-foreground border-muted bg-muted/30">Not Indexed</Badge>}
+                                                            </div>
                                                         </div>
                                                     </TableCell>
                                                     <TableCell className="py-3">
@@ -310,6 +316,16 @@ const SearchPage = () => {
                                                                 >
                                                                     <ExternalLink className="h-4 w-4" />
                                                                 </a>
+                                                            </Button>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="h-8 w-8 text-muted-foreground hover:text-blue-600"
+                                                                onClick={() => handleProcess(doc)}
+                                                                title="Process into RAG"
+                                                                disabled={doc.ragStatus === 'processing'}
+                                                            >
+                                                                <PlayCircle className="h-4 w-4" />
                                                             </Button>
                                                             <Button
                                                                 variant="ghost"

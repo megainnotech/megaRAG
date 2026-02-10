@@ -1,5 +1,6 @@
 const db = require('../config/db');
 const gitService = require('../services/gitService');
+const ragService = require('../services/ragService');
 const Document = db.Document;
 const path = require('path');
 const fs = require('fs');
@@ -204,10 +205,7 @@ exports.deleteDocument = async (req, res) => {
         }
 
         // Resolve absolute path
-        // document.localPath is relative to public folder (e.g. /files/abc.pdf or /docs/xyz)
-        // We need to map it to /app/public/...
         const absolutePath = path.join(__dirname, '../../public', document.localPath);
-
         console.log(`Deleting document path: ${absolutePath}`);
 
         if (fs.existsSync(absolutePath)) {
@@ -217,10 +215,10 @@ exports.deleteDocument = async (req, res) => {
             } else {
                 fs.unlinkSync(absolutePath);
             }
-            console.log('Filesystem cleanup successful.');
-        } else {
-            console.warn(`File not found at ${absolutePath}, skipping filesystem cleanup.`);
         }
+
+        // Cleanup RAG
+        await ragService.deleteDocument(id);
 
         await document.destroy();
         res.json({ message: 'Document deleted' });
@@ -228,3 +226,59 @@ exports.deleteDocument = async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error', error: error.message });
     }
 };
+
+exports.processDocument = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const document = await Document.findByPk(id);
+
+        if (!document) {
+            return res.status(404).json({ message: 'Document not found' });
+        }
+
+        // Update status
+        document.ragStatus = 'processing';
+        await document.save();
+
+        // Determine correct path for RAG
+        // If git, we need the repoId (folder name in temp_repos)
+        // localPath is like /docs/{repoId}
+        let ragLocalPath = document.localPath;
+        if (document.type === 'git') {
+            ragLocalPath = document.localPath.replace('/docs/', '');
+        }
+
+        // Trigger RAG Ingestion (Async)
+        ragService.ingestDocument(document.id, document.type, ragLocalPath, document.tags)
+            .then(async () => {
+                document.ragStatus = 'indexed';
+                await document.save();
+            })
+            .catch(async (err) => {
+                console.error('RAG Ingestion Failed:', err);
+                document.ragStatus = 'failed';
+                await document.save();
+            });
+
+        res.json({ message: 'Processing started', status: 'processing' });
+    } catch (error) {
+        console.error('Process Document Error:', error);
+        res.status(500).json({ message: 'Internal Server Error', error: error.message });
+    }
+};
+
+exports.queryRAG = async (req, res) => {
+    try {
+        const { query, mode } = req.body;
+        if (!query) {
+            return res.status(400).json({ message: 'Query is required' });
+        }
+
+        const response = await ragService.query(query, mode);
+        res.json(response);
+    } catch (error) {
+        console.error('Query RAG Error:', error);
+        res.status(500).json({ message: 'Internal Server Error', error: error.message });
+    }
+};
+
