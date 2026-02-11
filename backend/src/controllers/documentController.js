@@ -123,11 +123,9 @@ exports.createFileDocument = async (req, res) => {
                     // I'll return error to inform user it failed to build.
                     return res.status(400).json({ message: 'MkDocs build failed', error: buildError.message });
                 } finally {
-                    // Cleanup extracted temp folder (zip file remains in uploads)
-                    try {
-                        console.log(`Final cleanup of extract path: ${extractPath}`);
-                        fs.rmSync(extractPath, { recursive: true, force: true });
-                    } catch (e) { console.warn('Cleanup failed', e); }
+                    // We DO NOT clean up the extracted folder here because the RAG service needs it.
+                    // It will remain in temp_repos for ingestion.
+                    console.log(`Keeping extracted path for RAG: ${extractPath}`);
                 }
             }
         }
@@ -274,8 +272,21 @@ exports.queryRAG = async (req, res) => {
             return res.status(400).json({ message: 'Query is required' });
         }
 
-        const response = await ragService.query(query, mode, llmConfig);
-        res.json(response);
+        const stream = await ragService.query(query, mode, llmConfig);
+
+        // Set headers for SSE
+        res.setHeader('Content-Type', 'text/event-stream');
+        res.setHeader('Cache-Control', 'no-cache');
+        res.setHeader('Connection', 'keep-alive');
+
+        // Pipe the stream from ragService to the client
+        stream.pipe(res);
+
+        // Handle stream errors
+        stream.on('error', (err) => {
+            console.error('Stream Error:', err);
+            res.end();
+        });
     } catch (error) {
         console.error('Query RAG Controller Error:', error); // Log full error object
         res.status(500).json({

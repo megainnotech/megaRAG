@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG Ingestion & Management</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .container { border: 1px solid #ccc; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        textarea, input[type="text"] { width: 100%; padding: 8px; margin-bottom: 10px; box-sizing: border-box; }
+        button { padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        button.delete { background-color: #dc3545; }
+        button.delete:hover { background-color: #c82333; }
+        #status { margin-top: 10px; padding: 10px; display: none; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+    <h1>RAG Ingestion & Management</h1>
+
+    <div class="container">
+        <h2>Ingest Text</h2>
+        <form id="ingestForm">
+            <label for="ingestText">Text Content:</label>
+            <textarea id="ingestText" rows="10" required></textarea>
+            
+            <label for="ingestTag">Tag (Group ID):</label>
+            <input type="text" id="ingestTag" placeholder="e.g., experiment-1" required>
+
+            <button type="submit">Ingest</button>
+        </form>
+    </div>
+
+    <div class="container">
+        <h2>Delete by Tag</h2>
+        <p>Delete all documents associated with a specific tag.</p>
+        <form id="deleteForm">
+            <label for="deleteTag">Tag (Group ID):</label>
+            <input type="text" id="deleteTag" placeholder="e.g., experiment-1" required>
+
+            <button type="submit" class="delete">Delete Tagged Documents</button>
+        </form>
+    </div>
+
+    <div id="status"></div>
+
+    <script>
+        const statusDiv = document.getElementById('status');
+
+        function showStatus(message, type) {
+            statusDiv.textContent = message;
+            statusDiv.className = type;
+            statusDiv.style.display = 'block';
+            setTimeout(() => { statusDiv.style.display = 'none'; }, 5000);
+        }
+
+        document.getElementById('ingestForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = document.getElementById('ingestText').value;
+            const tag = document.getElementById('ingestTag').value;
+            // Generate a simple doc_id or let server handle
+            // For now, let's just send text and tags. Server should assign a doc_id if not provided, 
+            // but the IngestRequest model requires doc_id. Let's generate one here or make it optional in backend.
+            // Let's generate a random one.
+            const doc_id = 'doc_' + Math.random().toString(36).substr(2, 9);
+
+            try {
+                const response = await fetch('/ingest', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        doc_id: doc_id,
+                        type: 'text',
+                        text_content: text,
+                        tags: { start_tag: tag } // Using dictionary for tags as per model
+                    })
+                });
+                
+                if (response.ok) {
+                    showStatus('Ingestion started for ' + doc_id, 'success');
+                    document.getElementById('ingestText').value = '';
+                } else {
+                    const err = await response.json();
+                    showStatus('Error: ' + (err.detail || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                showStatus('Network Error: ' + error.message, 'error');
+            }
+        });
+
+        document.getElementById('deleteForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const tag = document.getElementById('deleteTag').value;
+
+            if (!confirm('Are you sure you want to delete all documents with tag: ' + tag + '?')) return;
+
+            try {
+                const response = await fetch('/delete-by-tag?tag=' + encodeURIComponent(tag), {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    const res = await response.json();
+                    showStatus(res.message, 'success');
+                } else {
+                    const err = await response.json();
+                    showStatus('Error: ' + (err.detail || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                showStatus('Network Error: ' + error.message, 'error');
+            }
+        });
+    </script>
+</body>
+</html>

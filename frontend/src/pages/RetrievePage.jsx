@@ -12,6 +12,7 @@ const RetrievePage = () => {
     const [response, setResponse] = useState('');
     const [loading, setLoading] = useState(false);
     const [mode, setMode] = useState('hybrid');
+    const [statusMessage, setStatusMessage] = useState('');
 
     const handleQuery = async (e) => {
         e.preventDefault();
@@ -19,6 +20,7 @@ const RetrievePage = () => {
 
         setLoading(true);
         setResponse(''); // Clear previous response
+        setStatusMessage('Initializing...');
 
         try {
             // Read config from local storage at request time
@@ -44,12 +46,44 @@ const RetrievePage = () => {
 
             if (!res.ok) throw new Error('Failed to query RAG');
 
-            const data = await res.json();
-            setResponse(data.response || "No response generated.");
+            // Stream reading logic
+            const reader = res.body.getReader();
+            const decoder = new TextDecoder();
+            let accumulatedResponse = '';
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                const chunk = decoder.decode(value, { stream: true });
+                // Parse SSE format: data: {...}
+                const lines = chunk.split('\n\n');
+                for (const line of lines) {
+                    if (line.startsWith('data: ')) {
+                        const jsonStr = line.substring(6);
+                        try {
+                            const data = JSON.parse(jsonStr);
+                            if (data.type === 'status') {
+                                setStatusMessage(data.content);
+                            } else if (data.type === 'answer') {
+                                accumulatedResponse = data.content;
+                                setResponse(accumulatedResponse);
+                                // We keep loading true until done? Or stream might continue?
+                                // Usually answer is final. But let's keep loading until loop finishes.
+                            }
+                        } catch (e) {
+                            console.error('Error parsing SSE data', e);
+                        }
+                    }
+                }
+            }
+
         } catch (error) {
             toast.error(error.message);
+            setResponse(prev => prev || "Error generating response.");
         } finally {
             setLoading(false);
+            setStatusMessage('');
         }
     };
 
@@ -114,7 +148,7 @@ const RetrievePage = () => {
                             <div className="flex items-center justify-center h-full">
                                 <div className="flex flex-col items-center gap-4 text-muted-foreground animate-pulse">
                                     <Loader2 className="h-8 w-8 animate-spin" />
-                                    <span>Processing your query...</span>
+                                    <span>{statusMessage || 'Processing your query...'}</span>
                                 </div>
                             </div>
                         )}

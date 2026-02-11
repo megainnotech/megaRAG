@@ -1,0 +1,231 @@
+﻿docker : INFO:     Started server process [1]
+At line:1 char:1
++ docker logs docs_chunk-rag_service-1 2>&1 | 
+Out-File -Encoding utf8 l ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (INFO 
+   :     Started server process [1]:String) [],   
+  RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+INFO:     Waiting for application startup.
+INFO:main:Application startup: Initializing RAG 
+Engine...
+INFO:main:Initializing LightRAG in 
+/app/public_data/rag_index...
+WARNING: Qdrant collection: lightrag_vdb_entities 
+missing suffix. Pls add model_name to 
+embedding_func for proper workspace data 
+isolation.
+WARNING: Qdrant collection: 
+lightrag_vdb_relationships missing suffix. Pls 
+add model_name to embedding_func for proper 
+workspace data isolation.
+WARNING: Qdrant collection: lightrag_vdb_chunks 
+missing suffix. Pls add model_name to 
+embedding_func for proper workspace data 
+isolation.
+INFO:main:Initializing LightRAG storages...
+INFO: [] Process 1 KV load full_docs with 2 
+records
+INFO: [] Process 1 KV load text_chunks with 4 
+records
+INFO: [] Process 1 KV load full_entities with 0 
+records
+INFO: [] Process 1 KV load full_relations with 0 
+records
+INFO: [] Process 1 KV load entity_chunks with 0 
+records
+INFO: [] Process 1 KV load relation_chunks with 0 
+records
+INFO: Qdrant: Collection 'lightrag_vdb_entities' 
+created successfully
+WARNING: Qdrant: Ensure this new collection 
+creation is caused by new workspace setup and not 
+an unexpected embedding model change.
+INFO: [] Qdrant collection 'entities' initialized 
+successfully
+INFO: Qdrant: Collection 
+'lightrag_vdb_relationships' created successfully
+WARNING: Qdrant: Ensure this new collection 
+creation is caused by new workspace setup and not 
+an unexpected embedding model change.
+INFO: [] Qdrant collection 'relationships' 
+initialized successfully
+INFO: Qdrant: Collection 'lightrag_vdb_chunks' 
+created successfully
+WARNING: Qdrant: Ensure this new collection 
+creation is caused by new workspace setup and not 
+an unexpected embedding model change.
+INFO: [] Qdrant collection 'chunks' initialized 
+successfully
+ERROR: [base] Database chunk-entity-relation at 
+bolt://neo4j:7687 is not available
+ERROR:main:Failed to initialize LightRAG: 
+Couldn't connect to neo4j:7687 (resolved to 
+('172.22.0.6:7687',)):
+Failed to establish connection to 
+ResolvedIPv4Address(('172.22.0.6', 7687)) (reason 
+[Errno 111] Connect call failed ('172.22.0.6', 
+7687))
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/ne
+o4j/_async_compat/network/_bolt_socket.py", line 
+242, in _connect_secure
+    await wait_for(loop.sock_connect(s, 
+resolved_address), timeout)
+  File "/usr/local/lib/python3.11/site-packages/ne
+o4j/_async_compat/shims/__init__.py", line 118, 
+in wait_for
+    return fut.result()
+           ^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/asyncio/selector
+_events.py", line 638, in sock_connect
+    return await fut
+           ^^^^^^^^^
+  File "/usr/local/lib/python3.11/asyncio/selector
+_events.py", line 678, in _sock_connect_cb
+    raise OSError(err, f'Connect call failed 
+{address}')
+ConnectionRefusedError: [Errno 111] Connect call 
+failed ('172.22.0.6', 7687)
+
+The above exception was the direct cause of the 
+following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/ne
+o4j/_async/io/_bolt_socket.py", line 329, in 
+connect
+    s = await cls._connect_secure(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/ne
+o4j/_async_compat/network/_bolt_socket.py", line 
+317, in _connect_secure
+    raise ServiceUnavailable(
+neo4j.exceptions.ServiceUnavailable: Failed to 
+establish connection to 
+ResolvedIPv4Address(('172.22.0.6', 7687)) (reason 
+[Errno 111] Connect call failed ('172.22.0.6', 
+7687))
+
+The above exception was the direct cause of the 
+following exception:
+
+Traceback (most recent call last):
+  File "/app/main.py", line 258, in 
+initialize_lightrag
+    await self.rag.initialize_storages()
+  File "/usr/local/lib/python3.11/site-packages/li
+ghtrag/lightrag.py", line 705, in 
+initialize_storages
+    await storage.initialize()
+  File "/usr/local/lib/python3.11/site-packages/li
+ghtrag/kg/neo4j_impl.py", line 212, in initialize
+    raise e
+  File "/usr/local/lib/python3.11/site-packages/li
+ghtrag/kg/neo4j_impl.py", line 201, in initialize
+    result = await session.run("MATCH (n) RETURN 
+n LIMIT 0")
+             
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/ne
+o4j/_async/work/session.py", line 305, in run
+    await 
+self._connect(self._config.default_access_mode)
+  File "/usr/local/lib/python3.11/site-packages/ne
+o4j/_async/work/session.py", line 126, in _connect
+    await super()._connect(
+  File "/usr/local/lib/python3.11/site-packages/ne
+o4j/_async/work/workspace.py", line 184, in 
+_connect
+    self._connection = await 
+self._pool.acquire(**acquire_kwargs_)
+                       
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/ne
+o4j/_async/io/_pool.py", line 681, in acquire
+    return await self._acquire(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/ne
+o4j/_async/io/_pool.py", line 421, in _acquire
+    return await connection_creator()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/ne
+o4j/_async/io/_pool.py", line 234, in 
+connection_creator
+    connection = await self.opener(
+                 ^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/ne
+o4j/_async/io/_pool.py", line 641, in opener
+    return await AsyncBolt.open(
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/ne
+o4j/_async/io/_bolt.py", line 368, in open
+    s, protocol_version = await 
+AsyncBoltSocket.connect(
+                          
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/ne
+o4j/_async/io/_bolt_socket.py", line 380, in 
+connect
+    raise ServiceUnavailable(
+neo4j.exceptions.ServiceUnavailable: Couldn't 
+connect to neo4j:7687 (resolved to 
+('172.22.0.6:7687',)):
+Failed to establish connection to 
+ResolvedIPv4Address(('172.22.0.6', 7687)) (reason 
+[Errno 111] Connect call failed ('172.22.0.6', 
+7687))
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 
+(Press CTRL+C to quit)
+INFO:     172.22.0.7:38936 - "GET /metrics HTTP/1.1" 200 OK
+INFO:main:Starting ingestion task for DocID: 
+apollo_program_wiki, Type: text
+INFO:     127.0.0.1:51300 - "POST /ingest HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47626 - "POST /query HTTP/1.1" 200 OK
+INFO:main:Processing raw text ingestion (Length: 
+590)
+ERROR:main:Ingestion failed: RAG Engine not ready 
+(Status: error)
+INFO:main:Ingestion completed successfully for 
+apollo_program_wiki
+ERROR: Query failed: 'NoneType' object does not 
+support the asynchronous context manager protocol
+INFO:     172.22.0.7:37482 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.7:56738 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.7:34032 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.7:38480 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.7:39876 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.7:34236 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.7:47574 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.7:49976 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.7:41254 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.7:51046 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.7:46390 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.7:55348 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.7:55730 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.7:38428 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.7:48302 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.7:34592 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.7:58994 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.7:46802 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.7:59800 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.7:54026 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.7:52554 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.7:54076 - "GET /metrics HTTP/1.1" 200 OK
+INFO: Embedding func: 8 new workers initialized 
+(Timeouts: Func: 30s, Worker: 60s, Health Check: 
+75s)
+INFO:     127.0.0.1:37392 - "POST /query HTTP/1.1" 200 OK
+INFO:     172.22.0.7:50980 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.7:59306 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.7:46338 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.7:44260 - "GET /metrics HTTP/1.1" 200 OK
+INFO: Naive query: 0 chunks (chunk_top_k:20 
+cosine:0.2)
+INFO: [naive_query] No relevant document chunks 
+found; returning no-result.
+ERROR: Query failed: 'NoneType' object does not 
+support the asynchronous context manager protocol

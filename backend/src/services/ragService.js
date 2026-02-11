@@ -33,9 +33,11 @@ exports.query = async (query, mode = 'hybrid', llmConfig = {}) => {
         const response = await axios.post(`${RAG_SERVICE_URL}/query`, {
             query: query,
             mode: mode,
-            llm_config: llmConfig // Match Python Pydantic field name (snake_case)
+            llm_config: llmConfig
+        }, {
+            responseType: 'stream'
         });
-        return response.data;
+        return response.data; // This is now a stream
     } catch (error) {
         // Enhanced logging for Grafana/Loki
         if (error.response) {
