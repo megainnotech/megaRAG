@@ -1,0 +1,2999 @@
+﻿docker : INFO:     Started 
+server process [1]
+At line:1 char:1
++ docker logs 
+docs_chunk-rag_service-1 2>&1 
+| Out-File -Encoding utf8 l ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~
+    + CategoryInfo          :  
+   NotSpecified: (INFO:     S  
+  tarted server process [1]:   
+ String) [], RemoteExceptio    
+n
+    + FullyQualifiedErrorId :  
+   NativeCommandError
+ 
+INFO:     Waiting for 
+application startup.
+INFO:main:Application startup: 
+Waiting for dependent 
+services...
+INFO:main:Waiting for service 
+at neo4j:7687...
+INFO:main:Service at 
+neo4j:7687 is available.
+INFO:main:Waiting for service 
+at qdrant:6333...
+INFO:main:Service at 
+qdrant:6333 is available.
+INFO:main:All dependent 
+services are reachable. 
+Initializing RAG Engine...
+INFO:main:Initializing 
+LightRAG in 
+/app/public_data/rag_index...
+WARNING: Qdrant collection: 
+lightrag_vdb_entities missing 
+suffix. Pls add model_name to 
+embedding_func for proper 
+workspace data isolation.
+WARNING: Qdrant collection: 
+lightrag_vdb_relationships 
+missing suffix. Pls add 
+model_name to embedding_func 
+for proper workspace data 
+isolation.
+WARNING: Qdrant collection: 
+lightrag_vdb_chunks missing 
+suffix. Pls add model_name to 
+embedding_func for proper 
+workspace data isolation.
+INFO:main:Initializing 
+LightRAG storages...
+INFO: [] Process 1 KV load 
+full_docs with 107 records
+INFO: [] Process 1 KV load 
+text_chunks with 304 records
+INFO: [] Process 1 KV load 
+full_entities with 95 records
+INFO: [] Process 1 KV load 
+full_relations with 76 records
+INFO: [] Process 1 KV load 
+entity_chunks with 2356 records
+INFO: [] Process 1 KV load 
+relation_chunks with 1961 
+records
+INFO: Qdrant: Found legacy 
+collection 
+'lightrag_vdb_entities' 
+(namespace=entities, 
+workspace=_)
+INFO: [] Qdrant collection 
+'entities' initialized 
+successfully
+INFO: Qdrant: Found legacy 
+collection 
+'lightrag_vdb_relationships' 
+(namespace=relationships, 
+workspace=_)
+INFO: [] Qdrant collection 
+'relationships' initialized 
+successfully
+INFO: Qdrant: Found legacy 
+collection 
+'lightrag_vdb_chunks' 
+(namespace=chunks, workspace=_)
+INFO: [] Qdrant collection 
+'chunks' initialized 
+successfully
+INFO: [base] Database 
+chunk-entity-relation at 
+bolt://neo4j:7687 not found. 
+Try to create specified 
+database.
+WARNING: [base] This Neo4j 
+instance does not support 
+creating databases. Try to use 
+Neo4j Desktop/Enterprise 
+version or DozerDB instead. 
+Fallback to use the default 
+database.
+INFO: [base] Connected to None 
+at bolt://neo4j:7687
+INFO: [base] Ensured B-Tree 
+index on entity_id for base in 
+None
+INFO: [base] Found existing 
+index 
+'entity_id_fulltext_idx_base' 
+with state: ONLINE
+INFO: [base] Full-text index 
+'entity_id_fulltext_idx_base' 
+already exists and is online. 
+Skipping recreation.
+INFO: [] Process 1 KV load 
+llm_response_cache with 684 
+records
+INFO: [] Process 1 doc status 
+load doc_status with 107 
+records
+INFO:main:LightRAG initialized 
+successfully with Neo4j and 
+Qdrant.
+INFO:main:Graph Storage 
+Instance: <class 'lightrag.kg.n
+eo4j_impl.Neo4JStorage'>
+INFO:main:Vector Storage 
+Instance: <class 'lightrag.kg.q
+drant_impl.QdrantVectorDBStorag
+e'>
+INFO:main:KV Storage Instance: 
+<class 'lightrag.kg.json_kv_imp
+l.JsonKVStorage'>
+INFO:main:Doc Status Storage 
+Instance: <class 'lightrag.kg.j
+son_doc_status_impl.JsonDocStat
+usStorage'>
+INFO:     Application startup 
+complete.
+INFO:     Uvicorn running on 
+http://0.0.0.0:8000 (Press 
+CTRL+C to quit)
+WARNING: low_level_keywords is 
+empty
+INFO: Embedding func: 8 new 
+workers initialized (Timeouts: 
+Func: 30s, Worker: 60s, Health 
+Check: 75s)
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:     172.22.0.5:60768 - "GET /metrics HTTP/1.1" 200 OK
+INFO:main:Embedding [Success]: 
+Duration=0.56s
+INFO:     172.22.0.8:49624 - "POST /query HTTP/1.1" 200 OK
+INFO: Query edges: Prompt 
+guard, Biller profile, Working 
+principle (top_k:40, 
+cosine:0.2)
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=0.22s
+INFO: Global query: 51 
+entites, 40 relations
+INFO: Raw search results: 51 
+entities, 40 relations, 0 
+vector chunks
+INFO: After truncation: 51 
+entities, 40 relations
+INFO: Selecting 106 from 106 
+entity-related chunks by 
+vector similarity
+INFO: Find no additional 
+relations-related chunks from 
+40 relations
+INFO: Round-robin merged 
+chunks: 106 -> 106 
+(deduplicated 0)
+WARNING: Rerank is enabled but 
+no rerank model is configured. 
+Please set up a rerank model 
+or set enable_rerank=False in 
+query parameters.
+INFO: Final context: 51 
+entities, 40 relations, 19 
+chunks
+INFO: Final chunks S+F/O: E1/1 
+E5/2 E3/3 E1/4 E1/5 E4/6 E3/7 
+E1/8 E2/9 E3/10 E5/11 E1/12 
+E9/13 E1/14 E1/15 E2/16 E2/17 
+E3/18 E8/19
+INFO:  == LLM cache == Query 
+cache hit, using cached 
+response as query result
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=0.27s
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+ERROR:main:Embedding failed: 
+The truth value of an array 
+with more than one element is 
+ambiguous. Use a.any() or 
+a.all()
+INFO:main:Total RAG Query 
+Duration: 1.83s
+INFO:     172.22.0.5:38572 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:52876 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:55572 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:57936 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.8:49532 - "POST /query HTTP/1.1" 200 OK
+WARNING: low_level_keywords is 
+empty
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=0.40s
+INFO: Query edges: Prompt 
+guard, Biller profile, Working 
+principle (top_k:40, 
+cosine:0.2)
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=0.30s
+INFO: Global query: 51 
+entites, 40 relations
+INFO: Raw search results: 51 
+entities, 40 relations, 0 
+vector chunks
+INFO: After truncation: 51 
+entities, 40 relations
+INFO: Selecting 106 from 106 
+entity-related chunks by 
+vector similarity
+INFO: Find no additional 
+relations-related chunks from 
+40 relations
+INFO: Round-robin merged 
+chunks: 106 -> 106 
+(deduplicated 0)
+WARNING: Rerank is enabled but 
+no rerank model is configured. 
+Please set up a rerank model 
+or set enable_rerank=False in 
+query parameters.
+INFO: Final context: 51 
+entities, 40 relations, 19 
+chunks
+INFO: Final chunks S+F/O: E1/1 
+E5/2 E3/3 E1/4 E1/5 E4/6 E3/7 
+E1/8 E2/9 E3/10 E5/11 E1/12 
+E9/13 E1/14 E1/15 E2/16 E2/17 
+E3/18 E8/19
+INFO:     172.22.0.5:45868 - "GET /metrics HTTP/1.1" 200 OK
+INFO:  == LLM cache == Query 
+cache hit, using cached 
+response as query result
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=0.26s
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+ERROR:main:Embedding failed: 
+The truth value of an array 
+with more than one element is 
+ambiguous. Use a.any() or 
+a.all()
+INFO:main:Total RAG Query 
+Duration: 1.25s
+INFO:     172.22.0.8:35088 - "POST /query HTTP/1.1" 200 OK
+INFO:     172.22.0.5:40968 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:57814 - "GET /metrics HTTP/1.1" 200 OK
+INFO: LLM func: 4 new workers 
+initialized (Timeouts: Func: 
+180s, Worker: 360s, Health 
+Check: 375s)
+INFO:main:LLM Call [Start]: 
+Job='Unknown Job', Type=local, 
+Model=qwen3:14b, PromptLen=2845
+INFO:main:LLM Config: {'type': 
+'local', 'apiKey': '', 
+'baseUrl': 'http://host.docker.
+internal:11434/v1', 'model': 
+'qwen3:14b ', 'stream_queue': 
+<Queue at 0x7fc39aadb990 
+maxsize=0 _getters[1] tasks=1>}
+INFO:main:LLM Call [Success]: 
+Job='Unknown Job', 
+Duration=28.09s, 
+ResponseLen=226, 
+PromptSnippet='---Role--- You 
+are an expert keyword 
+extractor, specializing in 
+analyzing user queries for a 
+Retriev...'
+INFO:main:DEBUG: 
+llm_model_func returning: {
+  "high_level_keywords": 
+["Prompt guard mechanism", 
+"Biller profile", "Security 
+protocols"],
+  "low_level_keywords": 
+["Billing information", "User 
+authentication", "Access 
+control", "Data encryption", 
+"Profile validation"]
+}
+INFO:  == LLM cache == saving: 
+global:keywords:2b308035fd93fe0
+44ac5804f5449c83d
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=-0.35s
+INFO: Query edges: Prompt 
+guard mechanism, Biller 
+profile, Security protocols 
+(top_k:40, cosine:0.2)
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=-0.62s
+INFO: Global query: 53 
+entites, 40 relations
+INFO: Raw search results: 53 
+entities, 40 relations, 0 
+vector chunks
+INFO: After truncation: 53 
+entities, 40 relations
+INFO: Selecting 111 from 111 
+entity-related chunks by 
+vector similarity
+INFO: Find no additional 
+relations-related chunks from 
+40 relations
+INFO: Round-robin merged 
+chunks: 111 -> 111 
+(deduplicated 0)
+WARNING: Rerank is enabled but 
+no rerank model is configured. 
+Please set up a rerank model 
+or set enable_rerank=False in 
+query parameters.
+INFO: Final context: 53 
+entities, 40 relations, 19 
+chunks
+INFO: Final chunks S+F/O: E1/1 
+E5/2 E1/3 E1/4 E1/5 E3/6 E3/7 
+E1/8 E2/9 E3/10 E4/11 E1/12 
+E9/13 E1/14 E1/15 E2/16 E3/17 
+E9/18 E1/19
+INFO:main:LLM Call [Start]: 
+Job='Unknown Job', Type=local, 
+Model=qwen3:14b, PromptLen=66
+INFO:main:LLM Config: {'type': 
+'local', 'apiKey': '', 
+'baseUrl': 'http://host.docker.
+internal:11434/v1', 'model': 
+'qwen3:14b ', 'stream_queue': 
+<Queue at 0x7fc39aadb990 
+maxsize=0 _getters[1] 
+tasks=2>, 'last_response': 
+'{\n  "high_level_keywords": 
+["Prompt guard mechanism", 
+"Biller profile", "Security 
+protocols"],\n  
+"low_level_keywords": 
+["Billing information", "User 
+authentication", "Access 
+control", "Data encryption", 
+"Profile validation"]\n}'}
+INFO:main:LLM Call [Success]: 
+Job='Unknown Job', 
+Duration=88.71s, 
+ResponseLen=3870, PromptSnippet
+='α╕¡α╕ÿα╕┤α╕Üα╕▓α╕óα╕½α╕Ñα╕▒α╕
+üα╕üα╕▓α╕úα╕ùα╕│α╕çα╕▓α╕Öα╕éα╕¡
+α╕ç prompt guard α╕ùα╕╡α╣êα╣Çα╕
+üα╕╡α╣êα╕óα╕ºα╕éα╣ëα╕¡α╕çα╕üα╕▒
+α╕Ü biller profile'
+INFO:main:DEBUG: 
+llm_model_func returning: **α╕½
+α╕Ñα╕▒α╕üα╕üα╕▓α╕úα╕ùα╕│α╕çα╕▓α
+╕Öα╕éα╕¡α╕ç Prompt Guard α╕ùα╕╡
+α╣êα╣Çα╕üα╕╡α╣êα╕óα╕ºα╕éα╣ëα╕¡α
+╕çα╕üα╕▒α╕Ü Biller Profile**  
+INFO:     172.22.0.5:33560 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:59780 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:45054 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:50856 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:54364 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:48734 - "GET /metrics HTTP/1.1" 200 OK
+Prompt Guard α╕äα╕╖α╕¡α╕üα╕Ñα╣ä
+α╕üα╕äα╕ºα╕▓α╕íα╕¢α╕Ñα╕¡α╕öα╕áα
+╕▒α╕óα╕ùα╕╡α╣êα╣âα╕èα╣ëα╕òα╕úα╕
+ºα╕êα╕¬α╕¡α╕Üα╣üα╕Ñα╕░α╕äα╕ºα╕Ü
+α╕äα╕╕α╕íα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╣âα
+╕Ö **Biller Profile** α╣Çα╕₧α╕╖
+α╣êα╕¡α╕¢α╣ëα╕¡α╕çα╕üα╕▒α╕Öα╕üα
+╕▓α╕úα╣âα╕èα╣ëα╕çα╕▓α╕Öα╕ùα╕╡α╣
+êα╣äα╕íα╣êα╣äα╕öα╣ëα╕úα╕▒α╕Üα╕¡
+α╕Öα╕╕α╕ìα╕▓α╕ò α╕½α╕úα╕╖α╕¡α╕é
+α╣ëα╕¡α╕íα╕╣α╕Ñα╕ùα╕╡α╣êα╣äα╕íα
+╣êα╕ûα╕╣α╕üα╕òα╣ëα╕¡α╕çα╣âα╕Öα╕
+úα╕░α╕Üα╕Üα╕üα╕▓α╕úα╕èα╕│α╕úα╕░
+α╣Çα╕çα╕┤α╕Öα╕¡α╕┤α╣Çα╕Ñα╣çα╕üα
+╕ùα╕úα╕¡α╕Öα╕┤α╕üα╕¬α╣î 
+(α╣Çα╕èα╣êα╕Ö PromptPay) α╕ïα╕╢
+α╣êα╕çα╕íα╕╡α╕¬α╣êα╕ºα╕Öα╕¬α╕│α
+╕äα╕▒α╕ìα╕òα╣êα╕¡α╕üα╕▓α╕úα╕úα╕
+▒α╕üα╕⌐α╕▓α╕äα╕ºα╕▓α╕íα╕¢α╕Ñα╕¡
+α╕öα╕áα╕▒α╕óα╣üα╕Ñα╕░α╕¢α╕Åα╕┤α
+╕Üα╕▒α╕òα╕┤α╕òα╕▓α╕íα╕éα╣ëα╕¡α╕
+üα╕│α╕½α╕Öα╕öα╕öα╣ëα╕▓α╕Ö AML 
+(Anti-Money Laundering) 
+α╣üα╕Ñα╕░ CFT 
+(Counter-Terrorism Financing) 
+α╕öα╕▒α╕çα╕Öα╕╡α╣ë:
+
+---
+INFO:     172.22.0.5:50918 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:33810 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:42688 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:35752 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:59102 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:54978 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:44590 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:35746 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:37592 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:33942 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.8:53550 - "POST /query HTTP/1.1" 200 OK
+
+### 1. **α╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα
+╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╣âα╕Ö Biller 
+Profile α╕òα╕▓α╕íα╕üα╕Äα╣Çα╕üα╕
+ôα╕æα╣î**
+- **α╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕Üα╕▒α╕ç
+α╕äα╕▒α╕Ü (Mandatory 
+Fields):**  
+  Prompt Guard α╕êα╕░α╕òα╕úα╕ºα
+╕êα╕¬α╕¡α╕Üα╕ºα╣êα╕▓α╕éα╣ëα╕¡α╕
+íα╕╣α╕Ñα╕¬α╕│α╕äα╕▒α╕ìα╣âα╕Ö 
+Biller Profile α╣Çα╕èα╣êα╕Ö  
+  - **Sender Tax ID / Receiver 
+Tax ID** (α╣Çα╕Ñα╕éα╕¢α╕úα╕░α╕ê
+α╕│α╕òα╕▒α╕ºα╕£α╕╣α╣ëα╣Çα╕¬α╕╡α
+╕óα╕áα╕▓α╕⌐α╕╡)  
+  - **Bank Branch Code** (α╕úα╕
+½α╕▒α╕¬α╕¬α╕▓α╕éα╕▓α╕ÿα╕Öα╕▓α╕ä
+α╕▓α╕ú)  
+  - **Type of Transfer** (α╕¢α╕
+úα╕░α╣Çα╕áα╕ùα╕üα╕▓α╕úα╣éα╕¡α╕Ö
+α╣Çα╕çα╕┤α╕Ö: 0 = 
+α╣äα╕íα╣êα╕íα╕╡ WHT/VAT, 1 = 
+α╕íα╕╡ WHT/VAT)  
+  - **Proxy Type** (α╕¢α╕úα╕░α╣
+Çα╕áα╕ùα╕òα╕▒α╕ºα╣üα╕ùα╕Ö 
+α╣Çα╕èα╣êα╕Ö "BILLERID" α╕¬α╕│α
+╕½α╕úα╕▒α╕Üα╕£α╕╣α╣ëα╣Çα╕úα╕╡α╕
+óα╕üα╣Çα╕üα╣çα╕Üα╣Çα╕çα╕┤α╕Ö)  
+  α╕ûα╕╣α╕üα╕üα╕úα╕¡α╕üα╕¡α╕óα╣
+êα╕▓α╕çα╕ûα╕╣α╕üα╕òα╣ëα╕¡α╕çα╕ò
+α╕▓α╕íα╕éα╣ëα╕¡α╕üα╕│α╕½α╕Öα╕öα
+╕éα╕¡α╕çα╕úα╕░α╕Üα╕Ü
+
+- **α╕üα╕▓α╕úα╕¢α╣ëα╕¡α╕çα╕üα╕▒
+α╕Öα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕ùα╕╡α╣êα
+╣äα╕íα╣êα╣Çα╕üα╕╡α╣êα╕óα╕ºα╕éα╣
+ëα╕¡α╕ç:**  
+  α╕ûα╣ëα╕▓α╕üα╕▓α╕úα╣éα╕¡α╕Öα╣
+Çα╕çα╕┤α╕Öα╣äα╕íα╣êα╣Çα╕üα╕╡α╣ê
+α╕óα╕ºα╕éα╣ëα╕¡α╕çα╕üα╕▒α╕Ü 
+WHT/VAT (Type of Transfer = 0) 
+α╕úα╕░α╕Üα╕Üα╕êα╕░α╕Üα╕▒α╕çα╕äα
+╕▒α╕Üα╣âα╕½α╣ëα╕éα╣ëα╕¡α╕íα╕╣α╕
+Ñα╣âα╕Ö **48.18-48.31** 
+(α╣Çα╕èα╣êα╕Ö VAT, Withholding 
+Tax, α╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕£α╕╣α╣
+ëα╕¬α╣êα╕ç/α╕£α╕╣α╣ëα╕úα╕▒α╕Ü) 
+α╕ûα╕╣α╕üα╣üα╕ùα╕Öα╕öα╣ëα╕ºα╕ó 
+**Space** α╣Çα╕₧α╕╖α╣êα╕¡α╕¢α╣ë
+α╕¡α╕çα╕üα╕▒α╕Öα╕üα╕▓α╕úα╣âα╕èα
+╣ëα╕çα╕▓α╕Öα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕
+ùα╕╡α╣êα╣äα╕íα╣êα╕êα╕│α╣Çα╕¢α╣ç
+α╕Ö
+
+---
+
+### 2. **α╕äα╕ºα╕Üα╕äα╕╕α╕íα╕üα
+╕▓α╕úα╣Çα╕éα╣ëα╕▓α╕ûα╕╢α╕çα╕£α╣
+êα╕▓α╕Ö Proxy Type**
+- **Proxy Type** α╕úα╕░α╕Üα╕╕α╕
+¢α╕úα╕░α╣Çα╕áα╕ùα╕éα╕¡α╕çα╕òα╕▒
+α╕ºα╣üα╕ùα╕Öα╕ùα╕╡α╣êα╣âα╕èα╣ëα
+╣âα╕Öα╕üα╕▓α╕úα╕ùα╕│α╕ÿα╕╕α╕úα╕
+üα╕úα╕úα╕í α╣Çα╕èα╣êα╕Ö:  
+  - **BILLERID:** α╕¬α╕│α╕½α╕úα
+╕▒α╕Üα╕£α╕╣α╣ëα╣Çα╕úα╕╡α╕óα╕üα╣
+Çα╕üα╣çα╕Üα╣Çα╕çα╕┤α╕Ö 
+(Biller)  
+  - 
+α╕¢α╕úα╕░α╣Çα╕áα╕ùα╕¡α╕╖α╣êα╕Ö 
+α╣å 
+α╕ùα╕╡α╣êα╕üα╕│α╕½α╕Öα╕öα╣âα╕Ö 
+Appendix J  
+  Prompt Guard α╕êα╕░α╕òα╕úα╕ºα
+╕êα╕¬α╕¡α╕Üα╕ºα╣êα╕▓ **Proxy 
+Type** 
+α╕ùα╕╡α╣êα╕úα╕░α╕Üα╕╕α╣âα╕Ö 
+Biller Profile α╕òα╕úα╕çα╕üα╕▒α
+╕Üα╕¢α╕úα╕░α╣Çα╕áα╕ùα╕ùα╕╡α╣êα╕
+¡α╕Öα╕╕α╕ìα╕▓α╕òα╣âα╕Öα╕úα╕░α╕Ü
+α╕Ü α╣Çα╕₧α╕╖α╣êα╕¡α╕¢α╣ëα╕¡α╕ç
+α╕üα╕▒α╕Öα╕üα╕▓α╕úα╣âα╕èα╣ëα╕çα
+╕▓α╕Öα╕£α╕┤α╕öα╕¢α╕úα╕░α╣Çα╕áα╕
+ù
+
+---
+
+### 3. **α╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα
+╕äα╕ºα╕▓α╕íα╕ûα╕╣α╕üα╕òα╣ëα╕¡α╕
+çα╕éα╕¡α╕çα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕ü
+α╕▓α╕úα╕èα╕│α╕úα╕░α╣Çα╕çα╕┤α╕Ö*
+*
+- **α╕üα╕▓α╕úα╕äα╕│α╕Öα╕ºα╕ôα╕ä
+α╣êα╕▓α╕ÿα╕úα╕úα╕íα╣Çα╕Öα╕╡α╕óα
+╕í (Fees):**  
+  Prompt Guard α╕êα╕░α╕òα╕úα╕ºα
+╕êα╕¬α╕¡α╕Üα╕ºα╣êα╕▓α╕äα╣êα╕▓α╕
+ÿα╕úα╕úα╕íα╣Çα╕Öα╕╡α╕óα╕íα╕ùα╕╡
+α╣êα╕úα╕░α╕Üα╕╕α╣âα╕Ö **48.1 
+(Sender Fee), 48.2 (Transferer 
+Fee), 48.3 (Transferee Fee)** α
+╕ûα╕╣α╕üα╕üα╕úα╕¡α╕üα╕¡α╕óα╣êα╕
+▓α╕çα╕ûα╕╣α╕üα╕òα╣ëα╕¡α╕ç α╣üα╕
+Ñα╕░α╕òα╕úα╕çα╕üα╕▒α╕Üα╕Öα╣éα╕ó
+α╕Üα╕▓α╕óα╕éα╕¡α╕çα╕ÿα╕Öα╕▓α╕äα
+╕▓α╕úα╕½α╕úα╕╖α╕¡α╕£α╕╣α╣ëα╣âα╕
+½α╣ëα╕Üα╕úα╕┤α╕üα╕▓α╕ú  
+  - α╕¬α╕│α╕½α╕úα╕▒α╕Üα╕üα╕▓α╕ú
+α╕èα╕│α╕úα╕░α╣Çα╕çα╕┤α╕Ö (Bill 
+Payment): α╕äα╣êα╕▓α╕ÿα╕úα╕úα╕í
+α╣Çα╕Öα╕╡α╕óα╕íα╕äα╕ºα╕úα╣Çα╕¢α
+╣çα╕Ö **0** (α╕ûα╣ëα╕▓α╣äα╕íα╣ê
+α╕íα╕╡α╕üα╕▓α╕úα╣Çα╕üα╣çα╕Üα╕äα
+╣êα╕▓α╕ÿα╕úα╕úα╕íα╣Çα╕Öα╕╡α╕óα╕
+íα╕êα╕▓α╕üα╕£α╕╣α╣ëα╣âα╕èα╣ë)  
+  - α╕ûα╣ëα╕▓α╕íα╕╡α╕üα╕▓α╕úα╣Ç
+α╕üα╣çα╕Üα╕äα╣êα╕▓α╕ÿα╕úα╕úα╕íα
+╣Çα╕Öα╕╡α╕óα╕í α╕úα╕░α╕Üα╕Üα╕êα
+╕░α╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕ºα╣êα╕
+▓α╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕ûα╕╣α╕üα╕¬
+α╣êα╕çα╕êα╕▓α╕ü **Biller 
+Sponsor Bank** 
+α╕½α╕úα╕╖α╕¡α╣äα╕íα╣ê
+
+- **α╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕éα╣ë
+α╕¡α╕íα╕╣α╕Ñα╕üα╕▓α╕úα╣éα╕¡α╕Öα
+╣Çα╕çα╕┤α╕Ö:**  
+  - α╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Ü 
+**Reference Number** α╕ùα╕╡α╣êα
+╣âα╕èα╣ëα╣âα╕Öα╕üα╕▓α╕úα╕òα╕┤α╕
+öα╕òα╕▓α╕íα╕ÿα╕╕α╕úα╕üα╕úα╕úα╕í
+  
+  - α╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Ü 
+**VAT Rates** α╣üα╕Ñα╕░ 
+**Withholding Tax Rates** α╣âα╕
+½α╣ëα╕¡α╕óα╕╣α╣êα╣âα╕Öα╕èα╣êα╕º
+α╕çα╕ùα╕╡α╣êα╕üα╕│α╕½α╕Öα╕ö 
+(00.00ΓÇô99.99)
+
+---
+
+### 4. **α╕¢α╣ëα╕¡α╕çα╕üα╕▒α╕Öα
+╕üα╕▓α╕úα╕¢α╕Ñα╕¡α╕íα╣üα╕¢α╕Ñα╕
+çα╕éα╣ëα╕¡α╕íα╕╣α╕Ñ (Data 
+Integrity)**
+- **α╕üα╕▓α╕úα╕òα╕úα╕ºα╕êα╕¬α╕¡
+α╕Üα╕úα╕╣α╕¢α╣üα╕Üα╕Üα╕éα╣ëα╕¡α
+╕íα╕╣α╕Ñ:**  
+  - α╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕òα╕▒α╕º
+α╕¡α╕▒α╕üα╕⌐α╕úα╣âα╕Ö **Sender 
+Account Name** α╕½α╕úα╕╖α╕¡ 
+**Biller ID** 
+α╕òα╣ëα╕¡α╕çα╣âα╕èα╣ë **ASCII 
+8-bit Code Page 874** (α╕úα╕¡α╕
+çα╕úα╕▒α╕Üα╕òα╕▒α╕ºα╕¡α╕▒α╕üα╕⌐
+α╕úα╣äα╕ùα╕óα╣üα╕Ñα╕░α╕òα╕▒α╕ºα
+╕¡α╕▒α╕üα╕⌐α╕úα╕₧α╕┤α╣Çα╕¿α╕⌐) 
+ 
+  - 
+α╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕ºα╣êα╕▓ 
+**Biller ID** α╕íα╕╡α╕úα╕╣α╕¢α╣
+üα╕Üα╕Üα╕ùα╕╡α╣êα╕ûα╕╣α╕üα╕òα╣ë
+α╕¡α╕ç (Tax ID 13 α╕½α╕Ñα╕▒α╕ü 
++ Suffix 2 α╕½α╕Ñα╕▒α╕ü)
+
+- **α╕üα╕▓α╕úα╕òα╕úα╕ºα╕êα╕¬α╕¡
+α╕Üα╕äα╕ºα╕▓α╕íα╕¬α╕íα╕Üα╕╣α╕úα
+╕ôα╣îα╕éα╕¡α╕çα╕éα╣ëα╕¡α╕íα╕╣α╕
+Ñ:**  
+  Prompt Guard α╕êα╕░α╕òα╕úα╕ºα
+╕êα╕¬α╕¡α╕Üα╕ºα╣êα╕▓α╕éα╣ëα╕¡α╕
+íα╕╣α╕Ñα╣âα╕Ö Biller Profile α╣
+äα╕íα╣êα╕ûα╕╣α╕üα╣üα╕üα╣ëα╣äα╕é
+α╕½α╕úα╕╖α╕¡α╕ûα╕╣α╕üα╕¢α╣ëα╕¡α
+╕Öα╕£α╕┤α╕öα╕₧α╕Ñα╕▓α╕ö 
+(α╣Çα╕èα╣êα╕Ö α╕éα╣ëα╕¡α╕íα╕╣α╕
+Ñα╕ùα╕╡α╣êα╣äα╕íα╣êα╕¬α╕¡α╕öα╕ä
+α╕Ñα╣ëα╕¡α╕çα╕üα╕▒α╕Üα╕Éα╕▓α╕Öα
+╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕éα╕¡α╕çα╕ÿα╕
+Öα╕▓α╕äα╕▓α╕ú)
+
+---
+
+### 5. **α╕¢α╕Åα╕┤α╕Üα╕▒α╕òα╕┤α
+╕òα╕▓α╕íα╕éα╣ëα╕¡α╕üα╕│α╕½α╕Öα╕
+öα╕öα╣ëα╕▓α╕Ö AML/CFT**
+- **α╕üα╕▓α╕úα╕úα╕░α╕Üα╕╕α╕éα╣ë
+α╕¡α╕íα╕╣α╕Ñα╕£α╕╣α╣ëα╕¬α╣êα╕ç/
+α╕£α╕╣α╣ëα╕úα╕▒α╕Ü:**  
+  α╣Çα╕íα╕╖α╣êα╕¡α╕üα╕▓α╕úα╣éα╕
+¡α╕Öα╣Çα╕çα╕┤α╕Öα╕íα╕╡α╕éα╣ëα╕¡
+α╕íα╕╣α╕Ñ AML (α╣Çα╕èα╣êα╕Ö α╕é
+α╣ëα╕¡α╕íα╕╣α╕Ñα╕£α╕╣α╣ëα╕¬α╣êα
+╕ç/α╕£α╕╣α╣ëα╕úα╕▒α╕Ü) α╕úα╕░α╕
+Üα╕Üα╕êα╕░α╕Üα╕▒α╕çα╕äα╕▒α╕Üα╣â
+α╕½α╣ëα╕üα╕úα╕¡α╕üα╕éα╣ëα╕¡α╕íα
+╕╣α╕Ñ **48.18ΓÇô48.20, 
+48.22ΓÇô48.31** α╕¡α╕óα╣êα╕▓α╕ç
+α╕ûα╕╣α╕üα╕òα╣ëα╕¡α╕ç 
+(α╣Çα╕èα╣êα╕Ö **Sender Tax 
+ID**, **Receiver Tax ID**) α╣Çα
+╕₧α╕╖α╣êα╕¡α╣âα╕½α╣ëα╕¬α╕▓α╕íα╕
+▓α╕úα╕ûα╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕ò
+α╕▒α╕ºα╕òα╕Öα╣äα╕öα╣ë  
+  - α╕ûα╣ëα╕▓α╣äα╕íα╣êα╕íα╕╡α╕é
+α╣ëα╕¡α╕íα╕╣α╕Ñ AML α╕úα╕░α╕Üα╕
+Üα╕êα╕░α╕Üα╕▒α╕çα╕äα╕▒α╕Üα╣âα╕½
+α╣ëα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╣Çα╕½α╕Ñα
+╣êα╕▓α╕Öα╕╡α╣ëα╣Çα╕¢α╣çα╕Ö 
+**Space**
+
+- **α╕üα╕▓α╕úα╕Üα╕▒α╕Öα╕ùα╕╢α╕ü
+α╕üα╕▓α╕úα╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Ü:
+**  
+  α╕£α╕Ñα╕üα╕▓α╕úα╕òα╕úα╕ºα╕êα╕
+¬α╕¡α╕Üα╕éα╕¡α╕ç Prompt Guard α
+╕êα╕░α╕ûα╕╣α╕üα╕Üα╕▒α╕Öα╕ùα╕╢α╕
+üα╣âα╕Ö **CRBPR_<SEQ>_<BBBB>_<Y
+YMMDD>.03 (ERR)** α╕½α╕úα╕╖α╕¡ 
+**CRBPR_<SEQ>_<BBBB>_<YYMMDD>.0
+2 (SUC)** α╣Çα╕₧α╕╖α╣êα╕¡α╣âα╕½
+α╣ëα╕¬α╕▓α╕íα╕▓α╕úα╕ûα╕òα╕úα╕ºα
+╕êα╕¬α╕¡α╕Üα╣äα╕öα╣ëα╣âα╕Öα╕üα╕
+úα╕ôα╕╡α╣Çα╕üα╕┤α╕öα╕éα╣ëα╕¡α╕£
+α╕┤α╕öα╕₧α╕Ñα╕▓α╕ö
+
+---
+
+### 6. **α╕üα╕▓α╕úα╕òα╕¡α╕Üα╕¬α
+╕Öα╕¡α╕çα╕òα╣êα╕¡α╕üα╕▓α╕úα╕òα╕
+úα╕ºα╕êα╕¬α╕¡α╕Ü (Response 
+Handling)**
+- α╕½α╕▓α╕üα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕
+£α╣êα╕▓α╕Öα╕üα╕▓α╕úα╕òα╕úα╕ºα╕ê
+α╕¬α╕¡α╕Üα╕éα╕¡α╕ç Prompt 
+Guard:  
+  - 
+α╕úα╕░α╕Üα╕Üα╕êα╕░α╕¬α╣êα╕ç 
+**ACK (CRBPR_<SEQ>_<BBBB>_<YYMM
+DD>.01)** α╣âα╕Öα╕ºα╕▒α╕Öα╕ùα╕╡
+α╣êα╕¬α╣êα╕çα╕éα╣ëα╕¡α╕íα╕╣α╕Ñ 
+(Day: T)  
+  - α╣üα╕Ñα╕░ **SUC (CRBPR_<SEQ
+>_<BBBB>_<YYMMDD>.02)** 
+α╣âα╕Öα╕ºα╕▒α╕Öα╕ûα╕▒α╕öα╣äα╕¢ 
+(Day: T+1)
+
+- α╕½α╕▓α╕üα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╣
+äα╕íα╣êα╕£α╣êα╕▓α╕Öα╕üα╕▓α╕úα╕ò
+α╕úα╕ºα╕êα╕¬α╕¡α╕Ü:  
+  - 
+α╕úα╕░α╕Üα╕Üα╕êα╕░α╕¬α╣êα╕ç 
+**ERR (CRBPR_<SEQ>_<BBBB>_<YYMM
+DD>.03)** α╕₧α╕úα╣ëα╕¡α╕íα╕úα╕░
+α╕Üα╕╕α╕¬α╕▓α╣Çα╕½α╕òα╕╕α╕éα╣ëα
+╕¡α╕£α╕┤α╕öα╕₧α╕Ñα╕▓α╕ö 
+(α╣Çα╕èα╣êα╕Ö α╕éα╣ëα╕¡α╕íα╕╣α╕
+Ñα╣äα╕íα╣êα╕äα╕úα╕Üα╕ûα╣ëα╕ºα╕Ö
+, α╕úα╕╣α╕¢α╣üα╕Üα╕Üα╣äα╕íα╣êα╕
+ûα╕╣α╕üα╕òα╣ëα╕¡α╕ç)
+
+---
+
+### α╕¬α╕úα╕╕α╕¢
+Prompt Guard α╕ùα╕│α╕çα╕▓α╕Öα╕£
+α╣êα╕▓α╕Öα╕üα╕▓α╕úα╕òα╕úα╕ºα╕êα
+╕¬α╕¡α╕Üα╣üα╕Ñα╕░α╕äα╕ºα╕Üα╕äα╕
+╕α╕íα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╣âα╕Ö 
+Biller Profile α╕òα╕▓α╕íα╕üα╕Äα
+╣Çα╕üα╕ôα╕æα╣îα╕öα╣ëα╕▓α╕Öα╕äα╕
+ºα╕▓α╕íα╕¢α╕Ñα╕¡α╕öα╕áα╕▒α╕ó 
+α╕üα╕▓α╕úα╣Çα╕çα╕┤α╕Ö 
+α╣üα╕Ñα╕░α╕üα╕Äα╕½α╕íα╕▓α╕ó α╕ù
+α╕▒α╣ëα╕çα╣âα╕Öα╕úα╕░α╕öα╕▒α╕Üα
+╕üα╕▓α╕úα╕¢α╣ëα╕¡α╕çα╕üα╕▒α╕Öα╕
+üα╕▓α╕úα╕¢α╕Ñα╕¡α╕íα╣üα╕¢α╕Ñα╕ç
+α╕éα╣ëα╕¡α╕íα╕╣α╕Ñ α╕üα╕▓α╕úα╕ä
+α╕ºα╕Üα╕äα╕╕α╕íα╕üα╕▓α╕úα╣Çα╕éα
+╣ëα╕▓α╕ûα╕╢α╕çα╕£α╣êα╕▓α╕Ö 
+Proxy Type α╣üα╕Ñα╕░α╕üα╕▓α╕úα╕
+¢α╕Åα╕┤α╕Üα╕▒α╕òα╕┤α╕òα╕▓α╕íα╕é
+α╣ëα╕¡α╕üα╕│α╕½α╕Öα╕ö AML/CFT α
+╣Çα╕₧α╕╖α╣êα╕¡α╣âα╕½α╣ëα╕úα╕░α╕
+Üα╕Üα╕üα╕▓α╕úα╕èα╕│α╕úα╕░α╣Çα╕ç
+α╕┤α╕Öα╕¡α╕┤α╣Çα╕Ñα╣çα╕üα╕ùα╕úα
+╕¡α╕Öα╕┤α╕üα╕¬α╣îα╕íα╕╡α╕äα╕ºα╕
+▓α╕íα╕Öα╣êα╕▓α╣Çα╕èα╕╖α╣êα╕¡α╕û
+α╕╖α╕¡α╣üα╕Ñα╕░α╕¢α╕Ñα╕¡α╕öα╕áα
+╕▒α╕ó
+INFO:  == LLM cache == saving: 
+global:query:926a760f907a3effda
+5eb0490fc3de8b
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=0.31s
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+ERROR:main:Embedding failed: 
+The truth value of an array 
+with more than one element is 
+ambiguous. Use a.any() or 
+a.all()
+INFO:main:Total RAG Query 
+Duration: 116.64s
+INFO:main:LLM Call [Start]: 
+Job='Unknown Job', Type=local, 
+Model=qwen3:14b, PromptLen=2831
+INFO:main:LLM Config: {'type': 
+'local', 'apiKey': '', 
+'baseUrl': 'http://host.docker.
+internal:11434/v1', 'model': 
+'qwen3:14b ', 'stream_queue': 
+<Queue at 0x7fc39aadb990 
+maxsize=0 tasks=5>, 
+'last_response': '**α╕½α╕Ñα╕▒α╕
+üα╕üα╕▓α╕úα╕ùα╕│α╕çα╕▓α╕Öα╕éα╕¡
+α╕ç Prompt Guard α╕ùα╕╡α╣êα╣Çα╕
+üα╕╡α╣êα╕óα╕ºα╕éα╣ëα╕¡α╕çα╕üα╕▒
+α╕Ü Biller Profile**  \nPrompt 
+Guard α╕äα╕╖α╕¡α╕üα╕Ñα╣äα╕üα╕äα
+╕ºα╕▓α╕íα╕¢α╕Ñα╕¡α╕öα╕áα╕▒α╕óα╕
+ùα╕╡α╣êα╣âα╕èα╣ëα╕òα╕úα╕ºα╕êα╕¬
+α╕¡α╕Üα╣üα╕Ñα╕░α╕äα╕ºα╕Üα╕äα╕╕α
+╕íα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╣âα╕Ö 
+**Biller Profile** α╣Çα╕₧α╕╖α╣ê
+α╕¡α╕¢α╣ëα╕¡α╕çα╕üα╕▒α╕Öα╕üα╕▓α
+╕úα╣âα╕èα╣ëα╕çα╕▓α╕Öα╕ùα╕╡α╣êα╣
+äα╕íα╣êα╣äα╕öα╣ëα╕úα╕▒α╕Üα╕¡α╕Ö
+α╕╕α╕ìα╕▓α╕ò α╕½α╕úα╕╖α╕¡α╕éα╣ë
+α╕¡α╕íα╕╣α╕Ñα╕ùα╕╡α╣êα╣äα╕íα╣êα
+╕ûα╕╣α╕üα╕òα╣ëα╕¡α╕çα╣âα╕Öα╕úα╕
+░α╕Üα╕Üα╕üα╕▓α╕úα╕èα╕│α╕úα╕░α╣Ç
+α╕çα╕┤α╕Öα╕¡α╕┤α╣Çα╕Ñα╣çα╕üα╕ùα
+╕úα╕¡α╕Öα╕┤α╕üα╕¬α╣î 
+(α╣Çα╕èα╣êα╕Ö PromptPay) α╕ïα╕╢
+α╣êα╕çα╕íα╕╡α╕¬α╣êα╕ºα╕Öα╕¬α╕│α
+╕äα╕▒α╕ìα╕òα╣êα╕¡α╕üα╕▓α╕úα╕úα╕
+▒α╕üα╕⌐α╕▓α╕äα╕ºα╕▓α╕íα╕¢α╕Ñα╕¡
+α╕öα╕áα╕▒α╕óα╣üα╕Ñα╕░α╕¢α╕Åα╕┤α
+╕Üα╕▒α╕òα╕┤α╕òα╕▓α╕íα╕éα╣ëα╕¡α╕
+üα╕│α╕½α╕Öα╕öα╕öα╣ëα╕▓α╕Ö AML 
+(Anti-Money Laundering) 
+α╣üα╕Ñα╕░ CFT 
+(Counter-Terrorism Financing) α
+╕öα╕▒α╕çα╕Öα╕╡α╣ë:\n\n---\n\n##
+# 1. **α╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕é
+α╣ëα╕¡α╕íα╕╣α╕Ñα╣âα╕Ö Biller 
+Profile α╕òα╕▓α╕íα╕üα╕Äα╣Çα╕üα╕
+ôα╕æα╣î**\n- **α╕éα╣ëα╕¡α╕íα╕╣α
+╕Ñα╕Üα╕▒α╕çα╕äα╕▒α╕Ü 
+(Mandatory Fields):**  \n  
+Prompt Guard α╕êα╕░α╕òα╕úα╕ºα╕ê
+α╕¬α╕¡α╕Üα╕ºα╣êα╕▓α╕éα╣ëα╕¡α╕íα
+╕╣α╕Ñα╕¬α╕│α╕äα╕▒α╕ìα╣âα╕Ö 
+Biller Profile α╣Çα╕èα╣êα╕Ö  
+\n  - **Sender Tax ID / 
+Receiver Tax ID** (α╣Çα╕Ñα╕éα╕¢
+α╕úα╕░α╕êα╕│α╕òα╕▒α╕ºα╕£α╕╣α╣ëα
+╣Çα╕¬α╕╡α╕óα╕áα╕▓α╕⌐α╕╡)  \n  
+- **Bank Branch Code** (α╕úα╕½α
+╕▒α╕¬α╕¬α╕▓α╕éα╕▓α╕ÿα╕Öα╕▓α╕äα╕
+▓α╕ú)  \n  - **Type of 
+Transfer** (α╕¢α╕úα╕░α╣Çα╕áα╕ùα
+╕üα╕▓α╕úα╣éα╕¡α╕Öα╣Çα╕çα╕┤α╕Ö: 
+0 = α╣äα╕íα╣êα╕íα╕╡ WHT/VAT, 1 
+= α╕íα╕╡ WHT/VAT)  \n  - 
+**Proxy Type** (α╕¢α╕úα╕░α╣Çα╕á
+α╕ùα╕òα╕▒α╕ºα╣üα╕ùα╕Ö 
+α╣Çα╕èα╣êα╕Ö "BILLERID" α╕¬α╕│α
+╕½α╕úα╕▒α╕Üα╕£α╕╣α╣ëα╣Çα╕úα╕╡α╕
+óα╕üα╣Çα╕üα╣çα╕Üα╣Çα╕çα╕┤α╕Ö)  
+\n  α╕ûα╕╣α╕üα╕üα╕úα╕¡α╕üα╕¡α╕ó
+α╣êα╕▓α╕çα╕ûα╕╣α╕üα╕òα╣ëα╕¡α╕çα
+╕òα╕▓α╕íα╕éα╣ëα╕¡α╕üα╕│α╕½α╕Öα╕
+öα╕éα╕¡α╕çα╕úα╕░α╕Üα╕Ü\n\n- **α
+╕üα╕▓α╕úα╕¢α╣ëα╕¡α╕çα╕üα╕▒α╕Öα╕
+éα╣ëα╕¡α╕íα╕╣α╕Ñα╕ùα╕╡α╣êα╣äα╕í
+α╣êα╣Çα╕üα╕╡α╣êα╕óα╕ºα╕éα╣ëα╕¡α
+╕ç:**  \n  α╕ûα╣ëα╕▓α╕üα╕▓α╕úα╣
+éα╕¡α╕Öα╣Çα╕çα╕┤α╕Öα╣äα╕íα╣êα╣Ç
+α╕üα╕╡α╣êα╕óα╕ºα╕éα╣ëα╕¡α╕çα╕üα
+╕▒α╕Ü WHT/VAT (Type of 
+Transfer = 0) α╕úα╕░α╕Üα╕Üα╕êα╕
+░α╕Üα╕▒α╕çα╕äα╕▒α╕Üα╣âα╕½α╣ëα╕é
+α╣ëα╕¡α╕íα╕╣α╕Ñα╣âα╕Ö 
+**48.18-48.31** (α╣Çα╕èα╣êα╕Ö 
+VAT, Withholding Tax, α╕éα╣ëα╕¡
+α╕íα╕╣α╕Ñα╕£α╕╣α╣ëα╕¬α╣êα╕ç/α╕£
+α╕╣α╣ëα╕úα╕▒α╕Ü) 
+α╕ûα╕╣α╕üα╣üα╕ùα╕Öα╕öα╣ëα╕ºα╕ó 
+**Space** α╣Çα╕₧α╕╖α╣êα╕¡α╕¢α╣ë
+α╕¡α╕çα╕üα╕▒α╕Öα╕üα╕▓α╕úα╣âα╕èα
+╣ëα╕çα╕▓α╕Öα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕
+ùα╕╡α╣êα╣äα╕íα╣êα╕êα╕│α╣Çα╕¢α╣ç
+α╕Ö\n\n---\n\n### 2. **α╕äα╕ºα╕
+Üα╕äα╕╕α╕íα╕üα╕▓α╕úα╣Çα╕éα╣ëα╕▓
+α╕ûα╕╢α╕çα╕£α╣êα╕▓α╕Ö Proxy 
+Type**\n- **Proxy Type** α╕úα╕░
+α╕Üα╕╕α╕¢α╕úα╕░α╣Çα╕áα╕ùα╕éα╕¡α
+╕çα╕òα╕▒α╕ºα╣üα╕ùα╕Öα╕ùα╕╡α╣êα╣
+âα╕èα╣ëα╣âα╕Öα╕üα╕▓α╕úα╕ùα╕│α╕ÿ
+α╕╕α╕úα╕üα╕úα╕úα╕í 
+α╣Çα╕èα╣êα╕Ö:  \n  - 
+**BILLERID:** α╕¬α╕│α╕½α╕úα╕▒α╕
+Üα╕£α╕╣α╣ëα╣Çα╕úα╕╡α╕óα╕üα╣Çα╕ü
+α╣çα╕Üα╣Çα╕çα╕┤α╕Ö (Biller)  
+\n  - 
+α╕¢α╕úα╕░α╣Çα╕áα╕ùα╕¡α╕╖α╣êα╕Ö 
+α╣å 
+α╕ùα╕╡α╣êα╕üα╕│α╕½α╕Öα╕öα╣âα╕Ö 
+Appendix J  \n  Prompt Guard α╕
+êα╕░α╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕ºα╣ê
+α╕▓ **Proxy Type** 
+α╕ùα╕╡α╣êα╕úα╕░α╕Üα╕╕α╣âα╕Ö 
+Biller Profile α╕òα╕úα╕çα╕üα╕▒α
+╕Üα╕¢α╕úα╕░α╣Çα╕áα╕ùα╕ùα╕╡α╣êα╕
+¡α╕Öα╕╕α╕ìα╕▓α╕òα╣âα╕Öα╕úα╕░α╕Ü
+α╕Ü α╣Çα╕₧α╕╖α╣êα╕¡α╕¢α╣ëα╕¡α╕ç
+α╕üα╕▒α╕Öα╕üα╕▓α╕úα╣âα╕èα╣ëα╕çα
+╕▓α╕Öα╕£α╕┤α╕öα╕¢α╕úα╕░α╣Çα╕áα╕
+ù\n\n---\n\n### 3. **α╕òα╕úα╕ºα
+╕êα╕¬α╕¡α╕Üα╕äα╕ºα╕▓α╕íα╕ûα╕╣α╕
+üα╕òα╣ëα╕¡α╕çα╕éα╕¡α╕çα╕éα╣ëα╕¡
+α╕íα╕╣α╕Ñα╕üα╕▓α╕úα╕èα╕│α╕úα╕░α
+╣Çα╕çα╕┤α╕Ö**\n- **α╕üα╕▓α╕úα╕ä
+α╕│α╕Öα╕ºα╕ôα╕äα╣êα╕▓α╕ÿα╕úα╕úα
+╕íα╣Çα╕Öα╕╡α╕óα╕í (Fees):**  
+\n  Prompt Guard α╕êα╕░α╕òα╕úα╕
+ºα╕êα╕¬α╕¡α╕Üα╕ºα╣êα╕▓α╕äα╣êα╕▓
+α╕ÿα╕úα╕úα╕íα╣Çα╕Öα╕╡α╕óα╕íα╕ùα
+╕╡α╣êα╕úα╕░α╕Üα╕╕α╣âα╕Ö **48.1 
+(Sender Fee), 48.2 (Transferer 
+Fee), 48.3 (Transferee Fee)** α
+╕ûα╕╣α╕üα╕üα╕úα╕¡α╕üα╕¡α╕óα╣êα╕
+▓α╕çα╕ûα╕╣α╕üα╕òα╣ëα╕¡α╕ç α╣üα╕
+Ñα╕░α╕òα╕úα╕çα╕üα╕▒α╕Üα╕Öα╣éα╕ó
+α╕Üα╕▓α╕óα╕éα╕¡α╕çα╕ÿα╕Öα╕▓α╕äα
+╕▓α╕úα╕½α╕úα╕╖α╕¡α╕£α╕╣α╣ëα╣âα╕
+½α╣ëα╕Üα╕úα╕┤α╕üα╕▓α╕ú  \n  - α
+╕¬α╕│α╕½α╕úα╕▒α╕Üα╕üα╕▓α╕úα╕èα╕
+│α╕úα╕░α╣Çα╕çα╕┤α╕Ö (Bill 
+Payment): α╕äα╣êα╕▓α╕ÿα╕úα╕úα╕í
+α╣Çα╕Öα╕╡α╕óα╕íα╕äα╕ºα╕úα╣Çα╕¢α
+╣çα╕Ö **0** (α╕ûα╣ëα╕▓α╣äα╕íα╣ê
+α╕íα╕╡α╕üα╕▓α╕úα╣Çα╕üα╣çα╕Üα╕äα
+╣êα╕▓α╕ÿα╕úα╕úα╕íα╣Çα╕Öα╕╡α╕óα╕
+íα╕êα╕▓α╕üα╕£α╕╣α╣ëα╣âα╕èα╣ë)  
+\n  - α╕ûα╣ëα╕▓α╕íα╕╡α╕üα╕▓α╕úα
+╣Çα╕üα╣çα╕Üα╕äα╣êα╕▓α╕ÿα╕úα╕úα╕
+íα╣Çα╕Öα╕╡α╕óα╕í α╕úα╕░α╕Üα╕Üα╕
+êα╕░α╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕ºα╣ê
+α╕▓α╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕ûα╕╣α╕üα
+╕¬α╣êα╕çα╕êα╕▓α╕ü **Biller 
+Sponsor Bank** 
+α╕½α╕úα╕╖α╕¡α╣äα╕íα╣ê\n\n- **α╕
+òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕éα╣ëα╕¡α╕í
+α╕╣α╕Ñα╕üα╕▓α╕úα╣éα╕¡α╕Öα╣Çα╕çα
+╕┤α╕Ö:**  \n  - 
+α╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Ü 
+**Reference Number** α╕ùα╕╡α╣êα
+╣âα╕èα╣ëα╣âα╕Öα╕üα╕▓α╕úα╕òα╕┤α╕
+öα╕òα╕▓α╕íα╕ÿα╕╕α╕úα╕üα╕úα╕úα╕í
+  \n  - α╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Ü 
+**VAT Rates** α╣üα╕Ñα╕░ 
+**Withholding Tax Rates** α╣âα╕
+½α╣ëα╕¡α╕óα╕╣α╣êα╣âα╕Öα╕èα╣êα╕º
+α╕çα╕ùα╕╡α╣êα╕üα╕│α╕½α╕Öα╕ö 
+(00.00ΓÇô99.99)\n\n---\n\n### 
+4. **α╕¢α╣ëα╕¡α╕çα╕üα╕▒α╕Öα╕üα╕
+▓α╕úα╕¢α╕Ñα╕¡α╕íα╣üα╕¢α╕Ñα╕çα╕é
+α╣ëα╕¡α╕íα╕╣α╕Ñ (Data 
+Integrity)**\n- **α╕üα╕▓α╕úα╕òα
+╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕úα╕╣α╕¢α╣üα╕
+Üα╕Üα╕éα╣ëα╕¡α╕íα╕╣α╕Ñ:**  \n  
+- α╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕òα╕▒α╕ºα╕
+¡α╕▒α╕üα╕⌐α╕úα╣âα╕Ö **Sender 
+Account Name** α╕½α╕úα╕╖α╕¡ 
+**Biller ID** 
+α╕òα╣ëα╕¡α╕çα╣âα╕èα╣ë **ASCII 
+8-bit Code Page 874** (α╕úα╕¡α╕
+çα╕úα╕▒α╕Üα╕òα╕▒α╕ºα╕¡α╕▒α╕üα╕⌐
+α╕úα╣äα╕ùα╕óα╣üα╕Ñα╕░α╕òα╕▒α╕ºα
+╕¡α╕▒α╕üα╕⌐α╕úα╕₧α╕┤α╣Çα╕¿α╕⌐) 
+ \n  - 
+α╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕ºα╣êα╕▓ 
+**Biller ID** α╕íα╕╡α╕úα╕╣α╕¢α╣
+üα╕Üα╕Üα╕ùα╕╡α╣êα╕ûα╕╣α╕üα╕òα╣ë
+α╕¡α╕ç (Tax ID 13 α╕½α╕Ñα╕▒α╕ü 
++ Suffix 2 α╕½α╕Ñα╕▒α╕ü)\n\n- *
+*α╕üα╕▓α╕úα╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Ü
+α╕äα╕ºα╕▓α╕íα╕¬α╕íα╕Üα╕╣α╕úα╕ôα
+╣îα╕éα╕¡α╕çα╕éα╣ëα╕¡α╕íα╕╣α╕Ñ:*
+*  \n  Prompt Guard α╕êα╕░α╕òα╕
+úα╕ºα╕êα╕¬α╕¡α╕Üα╕ºα╣êα╕▓α╕éα╣ë
+α╕¡α╕íα╕╣α╕Ñα╣âα╕Ö Biller 
+Profile α╣äα╕íα╣êα╕ûα╕╣α╕üα╣üα╕
+üα╣ëα╣äα╕éα╕½α╕úα╕╖α╕¡α╕ûα╕╣α╕ü
+α╕¢α╣ëα╕¡α╕Öα╕£α╕┤α╕öα╕₧α╕Ñα╕▓α
+╕ö (α╣Çα╕èα╣êα╕Ö α╕éα╣ëα╕¡α╕íα╕
+╣α╕Ñα╕ùα╕╡α╣êα╣äα╕íα╣êα╕¬α╕¡α╕ö
+α╕äα╕Ñα╣ëα╕¡α╕çα╕üα╕▒α╕Üα╕Éα╕▓α
+╕Öα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕éα╕¡α╕çα╕
+ÿα╕Öα╕▓α╕äα╕▓α╕ú)\n\n---\n\n###
+ 5. **α╕¢α╕Åα╕┤α╕Üα╕▒α╕òα╕┤α╕òα
+╕▓α╕íα╕éα╣ëα╕¡α╕üα╕│α╕½α╕Öα╕öα╕
+öα╣ëα╕▓α╕Ö AML/CFT**\n- **α╕üα╕
+▓α╕úα╕úα╕░α╕Üα╕╕α╕éα╣ëα╕¡α╕íα╕╣
+α╕Ñα╕£α╕╣α╣ëα╕¬α╣êα╕ç/α╕£α╕╣α╣ë
+α╕úα╕▒α╕Ü:**  \n  α╣Çα╕íα╕╖α╣êα
+╕¡α╕üα╕▓α╕úα╣éα╕¡α╕Öα╣Çα╕çα╕┤α╕
+Öα╕íα╕╡α╕éα╣ëα╕¡α╕íα╕╣α╕Ñ AML 
+(α╣Çα╕èα╣êα╕Ö α╕éα╣ëα╕¡α╕íα╕╣α╕
+Ñα╕£α╕╣α╣ëα╕¬α╣êα╕ç/α╕£α╕╣α╣ëα╕
+úα╕▒α╕Ü) α╕úα╕░α╕Üα╕Üα╕êα╕░α╕Üα
+╕▒α╕çα╕äα╕▒α╕Üα╣âα╕½α╣ëα╕üα╕úα╕
+¡α╕üα╕éα╣ëα╕¡α╕íα╕╣α╕Ñ 
+**48.18ΓÇô48.20, 
+48.22ΓÇô48.31** α╕¡α╕óα╣êα╕▓α╕ç
+α╕ûα╕╣α╕üα╕òα╣ëα╕¡α╕ç 
+(α╣Çα╕èα╣êα╕Ö **Sender Tax 
+ID**, **Receiver Tax ID**) α╣Çα
+╕₧α╕╖α╣êα╕¡α╣âα╕½α╣ëα╕¬α╕▓α╕íα╕
+▓α╕úα╕ûα╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕ò
+α╕▒α╕ºα╕òα╕Öα╣äα╕öα╣ë  \n  - α╕
+ûα╣ëα╕▓α╣äα╕íα╣êα╕íα╕╡α╕éα╣ëα╕¡
+α╕íα╕╣α╕Ñ AML α╕úα╕░α╕Üα╕Üα╕êα╕
+░α╕Üα╕▒α╕çα╕äα╕▒α╕Üα╣âα╕½α╣ëα╕é
+α╣ëα╕¡α╕íα╕╣α╕Ñα╣Çα╕½α╕Ñα╣êα╕▓α
+╕Öα╕╡α╣ëα╣Çα╕¢α╣çα╕Ö 
+**Space**\n\n- **α╕üα╕▓α╕úα╕Üα╕
+▒α╕Öα╕ùα╕╢α╕üα╕üα╕▓α╕úα╕òα╕úα╕º
+α╕êα╕¬α╕¡α╕Ü:**  \n  α╕£α╕Ñα╕üα
+╕▓α╕úα╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕éα╕
+¡α╕ç Prompt Guard α╕êα╕░α╕ûα╕╣α
+╕üα╕Üα╕▒α╕Öα╕ùα╕╢α╕üα╣âα╕Ö **CR
+BPR_<SEQ>_<BBBB>_<YYMMDD>.03 
+(ERR)** α╕½α╕úα╕╖α╕¡ **CRBPR_<S
+EQ>_<BBBB>_<YYMMDD>.02 (SUC)** 
+α╣Çα╕₧α╕╖α╣êα╕¡α╣âα╕½α╣ëα╕¬α╕▓α
+╕íα╕▓α╕úα╕ûα╕òα╕úα╕ºα╕êα╕¬α╕¡α╕
+Üα╣äα╕öα╣ëα╣âα╕Öα╕üα╕úα╕ôα╕╡α╣Ç
+α╕üα╕┤α╕öα╕éα╣ëα╕¡α╕£α╕┤α╕öα╕₧α
+╕Ñα╕▓α╕ö\n\n---\n\n### 6. **α╕ü
+α╕▓α╕úα╕òα╕¡α╕Üα╕¬α╕Öα╕¡α╕çα╕òα
+╣êα╕¡α╕üα╕▓α╕úα╕òα╕úα╕ºα╕êα╕¬α╕
+¡α╕Ü (Response Handling)**\n- α
+╕½α╕▓α╕üα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕£α╣
+êα╕▓α╕Öα╕üα╕▓α╕úα╕òα╕úα╕ºα╕êα╕¬
+α╕¡α╕Üα╕éα╕¡α╕ç Prompt Guard:  
+\n  - 
+α╕úα╕░α╕Üα╕Üα╕êα╕░α╕¬α╣êα╕ç 
+**ACK (CRBPR_<SEQ>_<BBBB>_<YYMM
+DD>.01)** α╣âα╕Öα╕ºα╕▒α╕Öα╕ùα╕╡
+α╣êα╕¬α╣êα╕çα╕éα╣ëα╕¡α╕íα╕╣α╕Ñ 
+(Day: T)  \n  - α╣üα╕Ñα╕░ 
+**SUC (CRBPR_<SEQ>_<BBBB>_<YYMM
+DD>.02)** 
+α╣âα╕Öα╕ºα╕▒α╕Öα╕ûα╕▒α╕öα╣äα╕¢ 
+(Day: T+1)\n\n- α╕½α╕▓α╕üα╕éα╣ë
+α╕¡α╕íα╕╣α╕Ñα╣äα╕íα╣êα╕£α╣êα╕▓α
+╕Öα╕üα╕▓α╕úα╕òα╕úα╕ºα╕êα╕¬α╕¡α╕
+Ü:  \n  - 
+α╕úα╕░α╕Üα╕Üα╕êα╕░α╕¬α╣êα╕ç 
+**ERR (CRBPR_<SEQ>_<BBBB>_<YYMM
+DD>.03)** α╕₧α╕úα╣ëα╕¡α╕íα╕úα╕░
+α╕Üα╕╕α╕¬α╕▓α╣Çα╕½α╕òα╕╕α╕éα╣ëα
+╕¡α╕£α╕┤α╕öα╕₧α╕Ñα╕▓α╕ö 
+(α╣Çα╕èα╣êα╕Ö α╕éα╣ëα╕¡α╕íα╕╣α╕
+Ñα╣äα╕íα╣êα╕äα╕úα╕Üα╕ûα╣ëα╕ºα╕Ö
+, α╕úα╕╣α╕¢α╣üα╕Üα╕Üα╣äα╕íα╣êα╕
+ûα╕╣α╕üα╕òα╣ëα╕¡α╕ç)\n\n---\n\n
+### α╕¬α╕úα╕╕α╕¢\nPrompt Guard 
+α╕ùα╕│α╕çα╕▓α╕Öα╕£α╣êα╕▓α╕Öα╕üα
+╕▓α╕úα╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╣üα╕
+Ñα╕░α╕äα╕ºα╕Üα╕äα╕╕α╕íα╕éα╣ëα╕¡
+α╕íα╕╣α╕Ñα╣âα╕Ö Biller Profile 
+α╕òα╕▓α╕íα╕üα╕Äα╣Çα╕üα╕ôα╕æα╣îα
+╕öα╣ëα╕▓α╕Öα╕äα╕ºα╕▓α╕íα╕¢α╕Ñα╕
+¡α╕öα╕áα╕▒α╕ó 
+α╕üα╕▓α╕úα╣Çα╕çα╕┤α╕Ö 
+α╣üα╕Ñα╕░α╕üα╕Äα╕½α╕íα╕▓α╕ó α╕ù
+α╕▒α╣ëα╕çα╣âα╕Öα╕úα╕░α╕öα╕▒α╕Üα
+╕üα╕▓α╕úα╕¢α╣ëα╕¡α╕çα╕üα╕▒α╕Öα╕
+üα╕▓α╕úα╕¢α╕Ñα╕¡α╕íα╣üα╕¢α╕Ñα╕ç
+α╕éα╣ëα╕¡α╕íα╕╣α╕Ñ α╕üα╕▓α╕úα╕ä
+α╕ºα╕Üα╕äα╕╕α╕íα╕üα╕▓α╕úα╣Çα╕éα
+╣ëα╕▓α╕ûα╕╢α╕çα╕£α╣êα╕▓α╕Ö 
+Proxy Type α╣üα╕Ñα╕░α╕üα╕▓α╕úα╕
+¢α╕Åα╕┤α╕Üα╕▒α╕òα╕┤α╕òα╕▓α╕íα╕é
+α╣ëα╕¡α╕üα╕│α╕½α╕Öα╕ö AML/CFT α
+╣Çα╕₧α╕╖α╣êα╕¡α╣âα╕½α╣ëα╕úα╕░α╕
+Üα╕Üα╕üα╕▓α╕úα╕èα╕│α╕úα╕░α╣Çα╕ç
+α╕┤α╕Öα╕¡α╕┤α╣Çα╕Ñα╣çα╕üα╕ùα╕úα
+╕¡α╕Öα╕┤α╕üα╕¬α╣îα╕íα╕╡α╕äα╕ºα╕
+▓α╕íα╕Öα╣êα╕▓α╣Çα╕èα╕╖α╣êα╕¡α╕û
+α╕╖α╕¡α╣üα╕Ñα╕░α╕¢α╕Ñα╕¡α╕öα╕áα
+╕▒α╕ó'}
+INFO:main:LLM Call [Success]: 
+Job='Unknown Job', 
+Duration=38.99s, 
+ResponseLen=130, 
+PromptSnippet='---Role--- You 
+are an expert keyword 
+extractor, specializing in 
+analyzing user queries for a 
+Retriev...'
+INFO:main:DEBUG: 
+llm_model_func returning: {
+  "high_level_keywords": 
+["system security", "billing 
+management"],
+  "low_level_keywords": 
+["prompt guard", "biller 
+profile"]
+}
+INFO:  == LLM cache == saving: 
+global:keywords:bdda6c3cf76b9c0
+fe69e1b2c3e3d358b
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=0.41s
+INFO: Query edges: system 
+security, billing management 
+(top_k:40, cosine:0.2)
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=0.29s
+INFO:     172.22.0.5:36062 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:43170 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:54392 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:45986 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:58056 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:34026 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:47862 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:60168 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:60726 - "GET /metrics HTTP/1.1" 200 OK
+INFO: Global query: 54 
+entites, 40 relations
+INFO: Raw search results: 54 
+entities, 40 relations, 0 
+vector chunks
+INFO: After truncation: 54 
+entities, 40 relations
+INFO: Selecting 135 from 158 
+entity-related chunks by 
+vector similarity
+INFO: Find 2 additional chunks 
+in 2 relations (deduplicated 
+28)
+INFO: Selecting 2 from 2 
+relation-related chunks by 
+vector similarity
+INFO: Round-robin merged 
+chunks: 137 -> 137 
+(deduplicated 0)
+WARNING: Rerank is enabled but 
+no rerank model is configured. 
+Please set up a rerank model 
+or set enable_rerank=False in 
+query parameters.
+INFO: Final context: 54 
+entities, 40 relations, 18 
+chunks
+INFO: Final chunks S+F/O: E3/1 
+R1/1 E1/2 R1/2 E4/3 E5/4 E3/5 
+E5/6 E1/7 E4/8 E3/9 E2/10 
+E5/11 E2/12 E1/13 E2/14 E1/15 
+E2/16
+INFO:main:LLM Call [Start]: 
+Job='Unknown Job', Type=local, 
+Model=qwen3:14b, PromptLen=52
+INFO:main:LLM Config: {'type': 
+'local', 'apiKey': '', 
+'baseUrl': 'http://host.docker.
+internal:11434/v1', 'model': 
+'qwen3:14b ', 'stream_queue': 
+<Queue at 0x7fc39aadb990 
+maxsize=0 _queue=[{'type': 
+'status', 'content': 
+'Processing (Unknown Job)... 
+(Model: qwen3:14b)'}] 
+tasks=6>, 'last_response': 
+'{\n  "high_level_keywords": 
+["system security", "billing 
+management"],\n  
+"low_level_keywords": ["prompt 
+guard", "biller profile"]\n}'}
+INFO:main:LLM Call [Success]: 
+Job='Unknown Job', 
+Duration=88.39s, 
+ResponseLen=3511, 
+PromptSnippet='prompt guard 
+α╣üα╕Ñα╕░ biller profile α╣Çα╕ü
+α╕╡α╣êα╕óα╕ºα╕éα╣ëα╕¡α╕çα╕üα╕▒α
+╕Öα╕¡α╕óα╣êα╕▓α╕çα╣äα╕ú'
+INFO:main:DEBUG: 
+llm_model_func returning: 
+**Prompt Guard α╣üα╕Ñα╕░ 
+Biller Profile α╕íα╕╡α╕äα╕ºα╕▓α
+╕íα╣Çα╕üα╕╡α╣êα╕óα╕ºα╕éα╣ëα╕¡α╕
+çα╕üα╕▒α╕Öα╣âα╕Öα╕Üα╕úα╕┤α╕Üα╕ù
+α╕éα╕¡α╕çα╕üα╕▓α╕úα╕úα╕▒α╕üα╕⌐α
+╕▓α╕äα╕ºα╕▓α╕íα╕¢α╕Ñα╕¡α╕öα╕áα╕
+▒α╕óα╣üα╕Ñα╕░α╕òα╕úα╕ºα╕êα╕¬α╕¡
+α╕Üα╕äα╕ºα╕▓α╕íα╕ûα╕╣α╕üα╕òα╣ëα
+╕¡α╕çα╕éα╕¡α╕çα╕éα╣ëα╕¡α╕íα╕╣α╕
+Ñα╣âα╕Öα╕üα╕▓α╕úα╣éα╕¡α╕Öα╣Çα╕ç
+α╕┤α╕Öα╕£α╣êα╕▓α╕Öα╕úα╕░α╕Üα╕Ü 
+PromptPay** α╕öα╕▒α╕çα╕Öα╕╡α╣ë:
+
+---
+
+### **1. 
+α╕Üα╕ùα╕Üα╕▓α╕ùα╕éα╕¡α╕ç 
+Biller Profile**
+- **Biller Profile** α╣Çα╕¢α╣çα
+╕Öα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕¬α╣êα╕ºα╕
+Öα╕òα╕▒α╕ºα╕éα╕¡α╕çα╕£α╕╣α╣ëα╣â
+α╕½α╣ëα╕Üα╕úα╕┤α╕üα╕▓α╕úα╕½α╕úα
+╕╖α╕¡α╕£α╕╣α╣ëα╕úα╕▒α╕Üα╣Çα╕çα╕
+┤α╕Ö (α╣Çα╕èα╣êα╕Ö 
+α╣éα╕úα╕çα╕₧α╕óα╕▓α╕Üα╕▓α╕Ñ 
+α╣éα╕úα╕çα╣Çα╕úα╕╡α╕óα╕Ö α╕½α╕ú
+α╕╖α╕¡α╕Üα╕úα╕┤α╕⌐α╕▒α╕ù) α╕ùα╕
+╡α╣êα╕úα╕░α╕Üα╕╕α╕éα╣ëα╕¡α╕íα╕╣
+α╕Ñα╕¬α╕│α╕äα╕▒α╕ì 
+α╣Çα╕èα╣êα╕Ö:
+  - **Biller ID** (α╕úα╕½α╕▒α╕¬
+α╕£α╕╣α╣ëα╕úα╕▒α╕Üα╣Çα╕çα╕┤α╕Ö)
+  - **Tax ID** (α╣Çα╕Ñα╕éα╕¢α╕ú
+α╕░α╕êα╕│α╕òα╕▒α╕ºα╕£α╕╣α╣ëα╣Çα
+╕¬α╕╡α╕óα╕áα╕▓α╕⌐α╕╡)
+  - **α╕èα╕╖α╣êα╕¡α╕£α╕╣α╣ëα╕úα
+╕▒α╕Üα╣Çα╕çα╕┤α╕Ö (α╕áα╕▓α╕⌐α╕▓
+α╣äα╕ùα╕ó/α╕áα╕▓α╕⌐α╕▓α╕¡α╕▒α╕ç
+α╕üα╕ñα╕⌐)**
+  - **α╕ùα╕╡α╣êα╕¡α╕óα╕╣α╣ê** (
+α╕úα╕▓α╕óα╕Ñα╕░α╣Çα╕¡α╕╡α╕óα╕öα
+╕ùα╕╡α╣êα╕¡α╕óα╕╣α╣êα╕éα╕¡α╕çα╕
+£α╕╣α╣ëα╕úα╕▒α╕Üα╣Çα╕çα╕┤α╕Ö)
+  - **α╕¢α╕úα╕░α╣Çα╕áα╕ùα╕ÿα╕╕α
+╕úα╕üα╕úα╕úα╕í** (α╣Çα╕èα╣êα╕Ö 
+α╕üα╕▓α╕úα╕èα╕│α╕úα╕░α╕äα╣êα╕▓α
+╕¬α╕▓α╕ÿα╕▓α╕úα╕ôα╕╣α╕¢α╣éα╕áα╕
+ä α╕üα╕▓α╕úα╕èα╕│α╕úα╕░α╕äα╣êα╕
+▓α╕Üα╕úα╕┤α╕üα╕▓α╕ú)
+  - **α╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕üα╕▓α
+╕úα╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Ü** 
+(α╣Çα╕èα╣êα╕Ö Whitelist 
+α╕¬α╕│α╕½α╕úα╕▒α╕Ü e-Donation)
+
+- **Biller Profile** α╕ûα╕╣α╕üα
+╣âα╕èα╣ëα╣âα╕Öα╕üα╕▓α╕úα╕òα╕úα╕
+ºα╕êα╕¬α╕¡α╕Üα╕ºα╣êα╕▓α╕éα╣ëα╕¡
+α╕íα╕╣α╕Ñα╕üα╕▓α╕úα╣éα╕¡α╕Öα╣Çα
+╕çα╕┤α╕Öα╕òα╕úα╕çα╕üα╕▒α╕Üα╕£α╕
+╣α╣ëα╕úα╕▒α╕Üα╣Çα╕çα╕┤α╕Öα╕ùα╕╡
+α╣êα╕úα╕░α╕Üα╕╕α╣äα╕ºα╣ëα╣âα╕Öα
+╕úα╕░α╕Üα╕Ü α╣Çα╕₧α╕╖α╣êα╕¡α╕¢α
+╣ëα╕¡α╕çα╕üα╕▒α╕Öα╕üα╕▓α╕úα╣éα╕
+¡α╕Öα╣Çα╕çα╕┤α╕Öα╣äα╕¢α╕óα╕▒α╕ç
+α╕£α╕╣α╣ëα╣äα╕íα╣êα╣äα╕öα╣ëα╕úα
+╕▒α╕Üα╕¡α╕Öα╕╕α╕ìα╕▓α╕òα╕½α╕úα╕
+╖α╕¡α╕£α╕┤α╕öα╕₧α╕Ñα╕▓α╕ö
+
+---
+
+### **2. 
+α╕Üα╕ùα╕Üα╕▓α╕ùα╕éα╕¡α╕ç 
+Prompt Guard**
+- **Prompt Guard** α╕¡α╕▓α╕êα╣Ç
+α╕¢α╣çα╕Öα╕úα╕░α╕Üα╕Üα╕½α╕úα╕╖α
+╕¡α╣éα╕íα╕öα╕╣α╕Ñα╕áα╕▓α╕óα╣âα╕
+Öα╕úα╕░α╕Üα╕Ü PromptPay α╕ùα╕╡α
+╣êα╕ùα╕│α╕½α╕Öα╣ëα╕▓α╕ùα╕╡α╣ê *
+*α╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕äα╕ºα╕▓
+α╕íα╕ûα╕╣α╕üα╕òα╣ëα╕¡α╕çα╕éα╕¡α
+╕çα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕ÿα╕╕α╕úα╕
+üα╕úα╕úα╕í** α╕üα╣êα╕¡α╕Öα╕ùα╕╡
+α╣êα╕êα╕░α╕¬α╣êα╕çα╕òα╣êα╕¡α╣äα
+╕¢α╕óα╕▒α╕çα╕£α╕╣α╣ëα╕úα╕▒α╕Üα╣
+Çα╕çα╕┤α╕Ö 
+α╕ïα╕╢α╣êα╕çα╕úα╕ºα╕íα╕ûα╕╢α╕ç:
+  - **α╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕éα
+╣ëα╕¡α╕íα╕╣α╕Ñα╕£α╕╣α╣ëα╕¬α╣êα╕
+çα╣üα╕Ñα╕░α╕£α╕╣α╣ëα╕úα╕▒α╕Üα╣Ç
+α╕çα╕┤α╕Ö** α╕ºα╣êα╕▓α╕òα╕úα╕çα
+╕üα╕▒α╕Üα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╣âα╕
+Ö Biller Profile 
+α╕½α╕úα╕╖α╕¡α╣äα╕íα╣ê
+  - **α╕¢α╣ëα╕¡α╕çα╕üα╕▒α╕Öα╕üα
+╕▓α╕úα╣éα╕êα╕íα╕òα╕╡α╕ùα╕▓α╕çα╣
+äα╕ïα╣Çα╕Üα╕¡α╕úα╣î** 
+α╣Çα╕èα╣êα╕Ö α╕üα╕▓α╕úα╕¢α╕Ñα╕¡
+α╕íα╣üα╕¢α╕Ñα╕çα╕éα╣ëα╕¡α╕íα╕╣α
+╕Ñ QR Code α╕½α╕úα╕╖α╕¡α╕éα╣ëα╕
+¡α╕íα╕╣α╕Ñα╣âα╕Ö XML Tags
+  - **α╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕üα
+╕▓α╕úα╕¬α╕¡α╕öα╣üα╕ùα╕úα╕üα╕éα╣
+ëα╕¡α╕íα╕╣α╕Ñα╣Çα╕₧α╕┤α╣êα╕íα╣Ç
+α╕òα╕┤α╕í** (α╣Çα╕èα╣êα╕Ö 
+Additional Data α╣âα╕Ö XML) α╕ù
+α╕╡α╣êα╕¡α╕▓α╕êα╕¬α╣êα╕çα╕£α╕Ñα
+╕òα╣êα╕¡α╕üα╕▓α╕úα╣éα╕¡α╕Öα╣Çα╕
+çα╕┤α╕Ö
+
+- **Prompt Guard** α╕¡α╕▓α╕êα╣â
+α╕èα╣ëα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕êα╕▓α
+╕ü Biller Profile α╣Çα╕₧α╕╖α╣êα
+╕¡α╣Çα╕¢α╕úα╕╡α╕óα╕Üα╣Çα╕ùα╕╡α╕
+óα╕Üα╕üα╕▒α╕Üα╕éα╣ëα╕¡α╕íα╕╣α╕Ñ
+α╣âα╕Öα╕ÿα╕╕α╕úα╕üα╕úα╕úα╕í 
+α╣Çα╕èα╣êα╕Ö:
+  - 
+α╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕ºα╣êα╕▓ 
+**Tax ID** α╕éα╕¡α╕çα╕£α╕╣α╣ëα╕
+úα╕▒α╕Üα╣Çα╕çα╕┤α╕Öα╣âα╕Ö 
+Biller Profile α╕òα╕úα╕çα╕üα╕▒α
+╕Üα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╣âα╕Ö XML 
+Tags α╕½α╕úα╕╖α╕¡ QR Code 
+α╕½α╕úα╕╖α╕¡α╣äα╕íα╣ê
+  - 
+α╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕ºα╣êα╕▓ 
+**Biller ID** α╕ùα╕╡α╣êα╕úα╕░α╕
+Üα╕╕α╣âα╕Öα╕ÿα╕╕α╕úα╕üα╕úα╕úα╕í
+α╕òα╕úα╕çα╕üα╕▒α╕Ü Biller ID α╣
+âα╕Öα╕úα╕░α╕Üα╕Üα╕½α╕úα╕╖α╕¡α╣ä
+α╕íα╣ê
+  - α╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕ºα╣ê
+α╕▓α╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕üα╕▓α╕úα
+╣éα╕¡α╕Öα╣Çα╕çα╕┤α╕Öα╕¡α╕óα╕╣α╣
+êα╣âα╕Ö **Whitelist** α╕ùα╕╡α╣ê
+α╕üα╕│α╕½α╕Öα╕öα╣äα╕ºα╣ëα╣âα╕Ö 
+Biller Profile 
+α╕½α╕úα╕╖α╕¡α╣äα╕íα╣ê 
+(α╕¬α╕│α╕½α╕úα╕▒α╕Ü e-Donation)
+
+---
+
+### **3. α╕äα╕ºα╕▓α╕íα╕¬α╕▒α╕íα
+╕₧α╕▒α╕Öα╕ÿα╣îα╕úα╕░α╕½α╕ºα╣êα╕
+▓α╕ç Prompt Guard α╣üα╕Ñα╕░ 
+Biller Profile**
+- **Prompt Guard α╣âα╕èα╣ë 
+Biller Profile α╣Çα╕¢α╣çα╕Öα╕Éα
+╕▓α╕Öα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╣âα╕Öα╕
+üα╕▓α╕úα╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕ä
+α╕ºα╕▓α╕íα╕ûα╕╣α╕üα╕òα╣ëα╕¡α╕çα
+╕éα╕¡α╕çα╕ÿα╕╕α╕úα╕üα╕úα╕úα╕í**
+ α╕öα╕▒α╕çα╕Öα╕╡α╣ë:
+  1. **α╕üα╕▓α╕úα╕òα╕úα╕ºα╕êα╕¬
+α╕¡α╕Üα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕£α╕╣α
+╣ëα╕úα╕▒α╕Üα╣Çα╕çα╕┤α╕Ö**:
+     - α╣Çα╕íα╕╖α╣êα╕¡α╕£α╕╣α╣ë
+α╣âα╕èα╣ëα╕¬α╣üα╕üα╕Ö QR Code α
+╕½α╕úα╕╖α╕¡α╕úα╕░α╕Üα╕╕α╕éα╣ëα╕
+¡α╕íα╕╣α╕Ñα╕£α╕╣α╣ëα╕úα╕▒α╕Üα╣Ç
+α╕çα╕┤α╕Öα╣âα╕Öα╕úα╕░α╕Üα╕Ü 
+PromptPay, **Prompt Guard** α╕ê
+α╕░α╣Çα╕¢α╕úα╕╡α╕óα╕Üα╣Çα╕ùα╕╡α
+╕óα╕Üα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕Öα╕▒α╣
+ëα╕Öα╕üα╕▒α╕Ü **Biller 
+Profile** α╣Çα╕₧α╕╖α╣êα╕¡α╕òα╕ú
+α╕ºα╕êα╕¬α╕¡α╕Üα╕ºα╣êα╕▓α╕£α╕╣α
+╣ëα╕úα╕▒α╕Üα╣Çα╕çα╕┤α╕Öα╕Öα╕▒α╣
+ëα╕Öα╕ûα╕╣α╕üα╕òα╣ëα╕¡α╕çα╣üα╕Ñ
+α╕░α╣äα╕öα╣ëα╕úα╕▒α╕Üα╕¡α╕Öα╕╕α
+╕ìα╕▓α╕ò
+  2. **α╕üα╕▓α╕úα╕¢α╣ëα╕¡α╕çα╕ü
+α╕▒α╕Öα╕üα╕▓α╕úα╣éα╕¡α╕Öα╣Çα╕çα
+╕┤α╕Öα╕£α╕┤α╕öα╕₧α╕Ñα╕▓α╕ö**:
+     - α╕½α╕▓α╕üα╕éα╣ëα╕¡α╕íα╕╣
+α╕Ñα╕£α╕╣α╣ëα╕úα╕▒α╕Üα╣Çα╕çα╕┤α
+╕Öα╣äα╕íα╣êα╕òα╕úα╕çα╕üα╕▒α╕Ü 
+Biller Profile, **Prompt 
+Guard** α╕êα╕░α╕¢α╕Åα╕┤α╣Çα╕¬α╕
+ÿα╕üα╕▓α╕úα╣éα╕¡α╕Öα╣Çα╕çα╕┤α╕Ö
+α╣üα╕Ñα╕░α╣üα╕êα╣ëα╕çα╣Çα╕òα╕╖α
+╕¡α╕Öα╕£α╕╣α╣ëα╣âα╕èα╣ë
+  3. **α╕üα╕▓α╕úα╕òα╕úα╕ºα╕êα╕¬
+α╕¡α╕Üα╕äα╕ºα╕▓α╕íα╕¢α╕Ñα╕¡α╕öα
+╕áα╕▒α╕ó**:
+     - **Prompt Guard** α╕¡α╕▓α
+╕êα╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕ºα╣êα╕
+▓α╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╣âα╕Ö XML 
+Tags (α╣Çα╕èα╣êα╕Ö `OrgMsg`, 
+`MchBillId`, `RecvTaxId`) α╕òα╕
+úα╕çα╕üα╕▒α╕Üα╕éα╣ëα╕¡α╕íα╕╣α╕Ñ
+α╣âα╕Ö Biller Profile 
+α╕½α╕úα╕╖α╕¡α╣äα╕íα╣ê α╣Çα╕₧α╕╖
+α╣êα╕¡α╕¢α╣ëα╕¡α╕çα╕üα╕▒α╕Öα╕üα
+╕▓α╕úα╕öα╕▒α╕öα╣üα╕¢α╕Ñα╕çα╕éα╣
+ëα╕¡α╕íα╕╣α╕Ñ
+
+- **α╕òα╕▒α╕ºα╕¡α╕óα╣êα╕▓α╕çα╕ü
+α╕▓α╕úα╣âα╕èα╣ëα╕çα╕▓α╕Öα╕úα╣êα
+╕ºα╕íα╕üα╕▒α╕Ö**:
+  - **α╕üα╕úα╕ôα╕╡ 
+e-Donation**: 
+α╕úα╕░α╕Üα╕Üα╕êα╕░α╣âα╕èα╣ë 
+**Whitelist** α╕êα╕▓α╕ü Biller 
+Profile α╣Çα╕₧α╕╖α╣êα╕¡α╕òα╕úα╕
+ºα╕êα╕¬α╕¡α╕Üα╕ºα╣êα╕▓α╕£α╕╣α╣ë
+α╕úα╕▒α╕Üα╣Çα╕çα╕┤α╕Öα╣Çα╕¢α╣çα
+╕Öα╕£α╕╣α╣ëα╕ùα╕╡α╣êα╣äα╕öα╣ëα╕
+úα╕▒α╕Üα╕¡α╕Öα╕╕α╕ìα╕▓α╕ò 
+(α╣Çα╕èα╣êα╕Ö α╕¡α╕çα╕äα╣îα╕üα╕
+úα╕üα╕▓α╕úα╕üα╕╕α╕¿α╕Ñ) α╕üα╣êα
+╕¡α╕Öα╕ùα╕╡α╣êα╕êα╕░α╕¡α╕Öα╕╕α╕
+íα╕▒α╕òα╕┤α╕üα╕▓α╕úα╣éα╕¡α╕Öα╣Ç
+α╕çα╕┤α╕Ö
+  - **α╕üα╕úα╕ôα╕╡α╕üα╕▓α╕úα╕èα
+╕│α╕úα╕░α╣Çα╕çα╕┤α╕Öα╕£α╣êα╕▓α╕
+Ö QR Code**: **Prompt Guard** α
+╕êα╕░α╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕ºα╣
+êα╕▓α╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╣âα╕Ö 
+QR Code (α╣Çα╕èα╣êα╕Ö Tax ID, 
+Biller ID) α╕òα╕úα╕çα╕üα╕▒α╕Ü 
+Biller Profile 
+α╕½α╕úα╕╖α╕¡α╣äα╕íα╣ê
+
+---
+
+### **4. α╕éα╣ëα╕¡α╕üα╕│α╕½α╕Öα
+╕öα╣üα╕Ñα╕░α╕íα╕▓α╕òα╕úα╕Éα╕▓α╕
+Öα╕ùα╕╡α╣êα╣Çα╕üα╕╡α╣êα╕óα╕ºα╕é
+α╣ëα╕¡α╕ç**
+- **ISO 20022**: α╣âα╕èα╣ëα╣âα╕
+Öα╣éα╕äα╕úα╕çα╕¬α╕úα╣ëα╕▓α╕ç 
+XML Tags α╕ùα╕╡α╣êα╣Çα╕üα╕╡α╣êα
+╕óα╕ºα╕éα╣ëα╕¡α╕çα╕üα╕▒α╕Üα╕üα╕
+▓α╕úα╣éα╕¡α╕Öα╣Çα╕çα╕┤α╕Öα╕£α╣ê
+α╕▓α╕Ö PromptPay (α╣Çα╕èα╣êα╕Ö 
+`OrgMsg`, `MchBillId`, 
+`RecvTaxId`)
+- **PromptPay API**: α╕úα╕░α╕Üα
+╕╕α╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕ùα╕╡α╣êα╕
+òα╣ëα╕¡α╕çα╕íα╕╡α╣âα╕Öα╕ÿα╕╕α╕ú
+α╕üα╕úα╕úα╕í α╣Çα╕èα╣êα╕Ö 
+`Message Type Indicator`, 
+`Agent`, `Financial 
+Institution Identification` α╕ï
+α╕╢α╣êα╕çα╕¡α╕▓α╕êα╕ûα╕╣α╕üα╕òα
+╕úα╕ºα╕êα╕¬α╕¡α╕Üα╣éα╕öα╕ó 
+**Prompt Guard**
+
+---
+
+### **α╕¬α╕úα╕╕α╕¢**
+**Prompt Guard α╣üα╕Ñα╕░ 
+Biller Profile α╕ùα╕│α╕çα╕▓α╕Öα
+╕úα╣êα╕ºα╕íα╕üα╕▒α╕Öα╣Çα╕₧α╕╖α╣
+êα╕¡α╣âα╕½α╣ëα╣üα╕Öα╣êα╣âα╕êα╕º
+α╣êα╕▓α╕üα╕▓α╕úα╣éα╕¡α╕Öα╣Çα╕çα
+╕┤α╕Öα╕£α╣êα╕▓α╕Öα╕úα╕░α╕Üα╕Ü 
+PromptPay α╕íα╕╡α╕äα╕ºα╕▓α╕íα╕¢
+α╕Ñα╕¡α╕öα╕áα╕▒α╕óα╣üα╕Ñα╕░α╕ûα
+╕╣α╕üα╕òα╣ëα╕¡α╕ç** α╣éα╕öα╕ó:
+- **Biller Profile** α╣Çα╕¢α╣çα
+╕Öα╣üα╕½α╕Ñα╣êα╕çα╕éα╣ëα╕¡α╕íα╕
+╣α╕Ñα╕ùα╕╡α╣êα╣âα╕èα╣ëα╕òα╕úα╕º
+α╕êα╕¬α╕¡α╕Üα╕äα╕ºα╕▓α╕íα╕ûα╕╣α
+╕üα╕òα╣ëα╕¡α╕çα╕éα╕¡α╕çα╕£α╕╣α╣
+ëα╕úα╕▒α╕Üα╣Çα╕çα╕┤α╕Ö
+- **Prompt Guard** α╣Çα╕¢α╣çα╕Ö
+α╕úα╕░α╕Üα╕Üα╕òα╕úα╕ºα╕êα╕¬α╕¡α
+╕Üα╕ùα╕╡α╣êα╣âα╕èα╣ëα╕éα╣ëα╕¡α╕
+íα╕╣α╕Ñα╕êα╕▓α╕ü Biller 
+Profile α╣Çα╕₧α╕╖α╣êα╕¡α╕¢α╣ëα╕
+¡α╕çα╕üα╕▒α╕Öα╕üα╕▓α╕úα╣éα╕êα╕í
+α╕òα╕╡α╕½α╕úα╕╖α╕¡α╕éα╣ëα╕¡α╕£α
+╕┤α╕öα╕₧α╕Ñα╕▓α╕öα╣âα╕Öα╕üα╕▓α╕
+úα╣éα╕¡α╕Öα╣Çα╕çα╕┤α╕Ö
+
+α╕½α╕▓α╕üα╕òα╣ëα╕¡α╕çα╕üα╕▓α╕úα
+╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╣Çα╕₧α╕┤α╣êα╕
+íα╣Çα╕òα╕┤α╕íα╣Çα╕üα╕╡α╣êα╕óα╕º
+α╕üα╕▒α╕Üα╕úα╕▓α╕óα╕Ñα╕░α╣Çα╕¡α
+╕╡α╕óα╕öα╣âα╕Öα╣Çα╕¡α╕üα╕¬α╕▓α╕
+ú α╕¬α╕▓α╕íα╕▓α╕úα╕ûα╕¡α╣ëα╕▓α╕
+çα╕¡α╕┤α╕çα╣Çα╕¡α╕üα╕¬α╕▓α╕úα╕ù
+α╕╡α╣êα╣âα╕½α╣ëα╕íα╕▓α╣äα╕öα╣ëα
+╣Çα╕èα╣êα╕Öα╕üα╕▒α╕Ö 
+(α╣Çα╕èα╣êα╕Ö 
+α╕üα╕▓α╕úα╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Ü 
+Whitelist α╣âα╕Ö Biller 
+Profile α╕½α╕úα╕╖α╕¡α╣éα╕äα╕úα╕
+çα╕¬α╕úα╣ëα╕▓α╕ç XML Tags 
+α╣âα╕Ö PromptPay API)
+INFO:  == LLM cache == saving: 
+global:query:e062c0b2f27341f3dd
+b7bf77aca306bf
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=0.29s
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+ERROR:main:Embedding failed: 
+The truth value of an array 
+with more than one element is 
+ambiguous. Use a.any() or 
+a.all()
+INFO:main:Total RAG Query 
+Duration: 128.89s
+INFO:main:LLM Call [Start]: 
+Job='Unknown Job', Type=local, 
+Model=qwen3:14b, PromptLen=2831
+INFO:main:LLM Config: {'type': 
+'local', 'apiKey': '', 
+'baseUrl': 'http://host.docker.
+internal:11434/v1', 'model': 
+'qwen3:14b ', 'stream_queue': 
+<Queue at 0x7fc39aadb990 
+maxsize=0 _queue=[{'type': 
+'status', 'content': 
+'Processing (Unknown Job)... 
+(Model: qwen3:14b)'}, {'type': 
+'status', 'content': 
+'Processing (Unknown Job)... 
+(Model: qwen3:14b)'}] 
+tasks=7>, 'last_response': 
+'**Prompt Guard α╣üα╕Ñα╕░ 
+Biller Profile α╕íα╕╡α╕äα╕ºα╕▓α
+╕íα╣Çα╕üα╕╡α╣êα╕óα╕ºα╕éα╣ëα╕¡α╕
+çα╕üα╕▒α╕Öα╣âα╕Öα╕Üα╕úα╕┤α╕Üα╕ù
+α╕éα╕¡α╕çα╕üα╕▓α╕úα╕úα╕▒α╕üα╕⌐α
+╕▓α╕äα╕ºα╕▓α╕íα╕¢α╕Ñα╕¡α╕öα╕áα╕
+▒α╕óα╣üα╕Ñα╕░α╕òα╕úα╕ºα╕êα╕¬α╕¡
+α╕Üα╕äα╕ºα╕▓α╕íα╕ûα╕╣α╕üα╕òα╣ëα
+╕¡α╕çα╕éα╕¡α╕çα╕éα╣ëα╕¡α╕íα╕╣α╕
+Ñα╣âα╕Öα╕üα╕▓α╕úα╣éα╕¡α╕Öα╣Çα╕ç
+α╕┤α╕Öα╕£α╣êα╕▓α╕Öα╕úα╕░α╕Üα╕Ü 
+PromptPay** α╕öα╕▒α╕çα╕Öα╕╡α╣ë:
+\n\n---\n\n### **1. 
+α╕Üα╕ùα╕Üα╕▓α╕ùα╕éα╕¡α╕ç 
+Biller Profile**\n- **Biller 
+Profile** α╣Çα╕¢α╣çα╕Öα╕éα╣ëα╕¡
+α╕íα╕╣α╕Ñα╕¬α╣êα╕ºα╕Öα╕òα╕▒α╕ºα
+╕éα╕¡α╕çα╕£α╕╣α╣ëα╣âα╕½α╣ëα╕Üα╕
+úα╕┤α╕üα╕▓α╕úα╕½α╕úα╕╖α╕¡α╕£α╕╣
+α╣ëα╕úα╕▒α╕Üα╣Çα╕çα╕┤α╕Ö 
+(α╣Çα╕èα╣êα╕Ö 
+α╣éα╕úα╕çα╕₧α╕óα╕▓α╕Üα╕▓α╕Ñ 
+α╣éα╕úα╕çα╣Çα╕úα╕╡α╕óα╕Ö α╕½α╕ú
+α╕╖α╕¡α╕Üα╕úα╕┤α╕⌐α╕▒α╕ù) α╕ùα╕
+╡α╣êα╕úα╕░α╕Üα╕╕α╕éα╣ëα╕¡α╕íα╕╣
+α╕Ñα╕¬α╕│α╕äα╕▒α╕ì 
+α╣Çα╕èα╣êα╕Ö:\n  - **Biller 
+ID** (α╕úα╕½α╕▒α╕¬α╕£α╕╣α╣ëα╕úα
+╕▒α╕Üα╣Çα╕çα╕┤α╕Ö)\n  - **Tax 
+ID** (α╣Çα╕Ñα╕éα╕¢α╕úα╕░α╕êα╕│α
+╕òα╕▒α╕ºα╕£α╕╣α╣ëα╣Çα╕¬α╕╡α╕óα╕
+áα╕▓α╕⌐α╕╡)\n  - **α╕èα╕╖α╣êα╕¡
+α╕£α╕╣α╣ëα╕úα╕▒α╕Üα╣Çα╕çα╕┤α╕Ö 
+(α╕áα╕▓α╕⌐α╕▓α╣äα╕ùα╕ó/α╕áα╕▓α╕
+⌐α╕▓α╕¡α╕▒α╕çα╕üα╕ñα╕⌐)**\n  - 
+**α╕ùα╕╡α╣êα╕¡α╕óα╕╣α╣ê** (α╕úα
+╕▓α╕óα╕Ñα╕░α╣Çα╕¡α╕╡α╕óα╕öα╕ùα╕
+╡α╣êα╕¡α╕óα╕╣α╣êα╕éα╕¡α╕çα╕£α╕╣
+α╣ëα╕úα╕▒α╕Üα╣Çα╕çα╕┤α╕Ö)\n  - 
+**α╕¢α╕úα╕░α╣Çα╕áα╕ùα╕ÿα╕╕α╕úα╕
+üα╕úα╕úα╕í** (α╣Çα╕èα╣êα╕Ö α╕üα
+╕▓α╕úα╕èα╕│α╕úα╕░α╕äα╣êα╕▓α╕¬α╕
+▓α╕ÿα╕▓α╕úα╕ôα╕╣α╕¢α╣éα╕áα╕ä α╕
+üα╕▓α╕úα╕èα╕│α╕úα╕░α╕äα╣êα╕▓α╕Ü
+α╕úα╕┤α╕üα╕▓α╕ú)\n  - **α╕éα╣ëα
+╕¡α╕íα╕╣α╕Ñα╕üα╕▓α╕úα╕òα╕úα╕ºα╕
+êα╕¬α╕¡α╕Ü** (α╣Çα╕èα╣êα╕Ö 
+Whitelist α╕¬α╕│α╕½α╕úα╕▒α╕Ü 
+e-Donation)\n\n- **Biller 
+Profile** α╕ûα╕╣α╕üα╣âα╕èα╣ëα╣â
+α╕Öα╕üα╕▓α╕úα╕òα╕úα╕ºα╕êα╕¬α╕¡α
+╕Üα╕ºα╣êα╕▓α╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕
+üα╕▓α╕úα╣éα╕¡α╕Öα╣Çα╕çα╕┤α╕Öα╕ò
+α╕úα╕çα╕üα╕▒α╕Üα╕£α╕╣α╣ëα╕úα╕▒α
+╕Üα╣Çα╕çα╕┤α╕Öα╕ùα╕╡α╣êα╕úα╕░α╕
+Üα╕╕α╣äα╕ºα╣ëα╣âα╕Öα╕úα╕░α╕Üα╕Ü
+ α╣Çα╕₧α╕╖α╣êα╕¡α╕¢α╣ëα╕¡α╕çα╕ü
+α╕▒α╕Öα╕üα╕▓α╕úα╣éα╕¡α╕Öα╣Çα╕çα
+╕┤α╕Öα╣äα╕¢α╕óα╕▒α╕çα╕£α╕╣α╣ëα╣
+äα╕íα╣êα╣äα╕öα╣ëα╕úα╕▒α╕Üα╕¡α╕Ö
+α╕╕α╕ìα╕▓α╕òα╕½α╕úα╕╖α╕¡α╕£α╕┤α
+╕öα╕₧α╕Ñα╕▓α╕ö\n\n---\n\n### 
+**2. α╕Üα╕ùα╕Üα╕▓α╕ùα╕éα╕¡α╕ç 
+Prompt Guard**\n- **Prompt 
+Guard** α╕¡α╕▓α╕êα╣Çα╕¢α╣çα╕Öα╕
+úα╕░α╕Üα╕Üα╕½α╕úα╕╖α╕¡α╣éα╕íα╕ö
+α╕╣α╕Ñα╕áα╕▓α╕óα╣âα╕Öα╕úα╕░α╕Üα
+╕Ü PromptPay α╕ùα╕╡α╣êα╕ùα╕│α╕½
+α╕Öα╣ëα╕▓α╕ùα╕╡α╣ê **α╕òα╕úα╕ºα
+╕êα╕¬α╕¡α╕Üα╕äα╕ºα╕▓α╕íα╕ûα╕╣α╕
+üα╕òα╣ëα╕¡α╕çα╕éα╕¡α╕çα╕éα╣ëα╕¡
+α╕íα╕╣α╕Ñα╕ÿα╕╕α╕úα╕üα╕úα╕úα╕í*
+* α╕üα╣êα╕¡α╕Öα╕ùα╕╡α╣êα╕êα╕░α╕
+¬α╣êα╕çα╕òα╣êα╕¡α╣äα╕¢α╕óα╕▒α╕ç
+α╕£α╕╣α╣ëα╕úα╕▒α╕Üα╣Çα╕çα╕┤α╕Ö 
+α╕ïα╕╢α╣êα╕çα╕úα╕ºα╕íα╕ûα╕╢α╕ç:
+\n  - **α╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕
+éα╣ëα╕¡α╕íα╕╣α╕Ñα╕£α╕╣α╣ëα╕¬α╣ê
+α╕çα╣üα╕Ñα╕░α╕£α╕╣α╣ëα╕úα╕▒α╕Üα
+╣Çα╕çα╕┤α╕Ö** α╕ºα╣êα╕▓α╕òα╕úα╕
+çα╕üα╕▒α╕Üα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╣â
+α╕Ö Biller Profile 
+α╕½α╕úα╕╖α╕¡α╣äα╕íα╣ê\n  - **α╕
+¢α╣ëα╕¡α╕çα╕üα╕▒α╕Öα╕üα╕▓α╕úα╣é
+α╕êα╕íα╕òα╕╡α╕ùα╕▓α╕çα╣äα╕ïα╣Çα
+╕Üα╕¡α╕úα╣î** α╣Çα╕èα╣êα╕Ö α╕üα
+╕▓α╕úα╕¢α╕Ñα╕¡α╕íα╣üα╕¢α╕Ñα╕çα╕
+éα╣ëα╕¡α╕íα╕╣α╕Ñ QR Code α╕½α╕ú
+α╕╖α╕¡α╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╣âα╕Ö 
+XML Tags\n  - **α╕òα╕úα╕ºα╕êα╕¬
+α╕¡α╕Üα╕üα╕▓α╕úα╕¬α╕¡α╕öα╣üα╕ùα
+╕úα╕üα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╣Çα╕₧α╕
+┤α╣êα╕íα╣Çα╕òα╕┤α╕í** 
+(α╣Çα╕èα╣êα╕Ö Additional Data 
+α╣âα╕Ö XML) α╕ùα╕╡α╣êα╕¡α╕▓α╕êα
+╕¬α╣êα╕çα╕£α╕Ñα╕òα╣êα╕¡α╕üα╕▓α╕
+úα╣éα╕¡α╕Öα╣Çα╕çα╕┤α╕Ö\n\n- 
+**Prompt Guard** α╕¡α╕▓α╕êα╣âα╕
+èα╣ëα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕êα╕▓α╕ü
+ Biller Profile α╣Çα╕₧α╕╖α╣êα╕¡
+α╣Çα╕¢α╕úα╕╡α╕óα╕Üα╣Çα╕ùα╕╡α╕óα
+╕Üα╕üα╕▒α╕Üα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╣
+âα╕Öα╕ÿα╕╕α╕úα╕üα╕úα╕úα╕í 
+α╣Çα╕èα╣êα╕Ö:\n  - 
+α╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕ºα╣êα╕▓ 
+**Tax ID** α╕éα╕¡α╕çα╕£α╕╣α╣ëα╕
+úα╕▒α╕Üα╣Çα╕çα╕┤α╕Öα╣âα╕Ö 
+Biller Profile α╕òα╕úα╕çα╕üα╕▒α
+╕Üα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╣âα╕Ö XML 
+Tags α╕½α╕úα╕╖α╕¡ QR Code 
+α╕½α╕úα╕╖α╕¡α╣äα╕íα╣ê\n  - 
+α╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕ºα╣êα╕▓ 
+**Biller ID** α╕ùα╕╡α╣êα╕úα╕░α╕
+Üα╕╕α╣âα╕Öα╕ÿα╕╕α╕úα╕üα╕úα╕úα╕í
+α╕òα╕úα╕çα╕üα╕▒α╕Ü Biller ID α╣
+âα╕Öα╕úα╕░α╕Üα╕Üα╕½α╕úα╕╖α╕¡α╣ä
+α╕íα╣ê\n  - α╕òα╕úα╕ºα╕êα╕¬α╕¡α
+╕Üα╕ºα╣êα╕▓α╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕
+üα╕▓α╕úα╣éα╕¡α╕Öα╣Çα╕çα╕┤α╕Öα╕¡
+α╕óα╕╣α╣êα╣âα╕Ö **Whitelist** α
+╕ùα╕╡α╣êα╕üα╕│α╕½α╕Öα╕öα╣äα╕ºα╣
+ëα╣âα╕Ö Biller Profile 
+α╕½α╕úα╕╖α╕¡α╣äα╕íα╣ê 
+(α╕¬α╕│α╕½α╕úα╕▒α╕Ü 
+e-Donation)\n\n---\n\n### **3. 
+α╕äα╕ºα╕▓α╕íα╕¬α╕▒α╕íα╕₧α╕▒α╕Öα
+╕ÿα╣îα╕úα╕░α╕½α╕ºα╣êα╕▓α╕ç 
+Prompt Guard α╣üα╕Ñα╕░ Biller 
+Profile**\n- **Prompt Guard 
+α╣âα╕èα╣ë Biller Profile α╣Çα╕¢
+α╣çα╕Öα╕Éα╕▓α╕Öα╕éα╣ëα╕¡α╕íα╕╣α
+╕Ñα╣âα╕Öα╕üα╕▓α╕úα╕òα╕úα╕ºα╕êα╕
+¬α╕¡α╕Üα╕äα╕ºα╕▓α╕íα╕ûα╕╣α╕üα╕ò
+α╣ëα╕¡α╕çα╕éα╕¡α╕çα╕ÿα╕╕α╕úα╕üα
+╕úα╕úα╕í** 
+α╕öα╕▒α╕çα╕Öα╕╡α╣ë:\n  1. **α╕ü
+α╕▓α╕úα╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕éα
+╣ëα╕¡α╕íα╕╣α╕Ñα╕£α╕╣α╣ëα╕úα╕▒α╕
+Üα╣Çα╕çα╕┤α╕Ö**:\n     - α╣Çα╕í
+α╕╖α╣êα╕¡α╕£α╕╣α╣ëα╣âα╕èα╣ëα╕¬α
+╣üα╕üα╕Ö QR Code α╕½α╕úα╕╖α╕¡α╕
+úα╕░α╕Üα╕╕α╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕£
+α╕╣α╣ëα╕úα╕▒α╕Üα╣Çα╕çα╕┤α╕Öα╣âα
+╕Öα╕úα╕░α╕Üα╕Ü PromptPay, 
+**Prompt Guard** α╕êα╕░α╣Çα╕¢α╕
+úα╕╡α╕óα╕Üα╣Çα╕ùα╕╡α╕óα╕Üα╕éα╣ë
+α╕¡α╕íα╕╣α╕Ñα╕Öα╕▒α╣ëα╕Öα╕üα╕▒α
+╕Ü **Biller Profile** α╣Çα╕₧α╕╖
+α╣êα╕¡α╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕ºα
+╣êα╕▓α╕£α╕╣α╣ëα╕úα╕▒α╕Üα╣Çα╕çα╕
+┤α╕Öα╕Öα╕▒α╣ëα╕Öα╕ûα╕╣α╕üα╕òα╣ë
+α╕¡α╕çα╣üα╕Ñα╕░α╣äα╕öα╣ëα╕úα╕▒α
+╕Üα╕¡α╕Öα╕╕α╕ìα╕▓α╕ò\n  2. **α╕
+üα╕▓α╕úα╕¢α╣ëα╕¡α╕çα╕üα╕▒α╕Öα╕ü
+α╕▓α╕úα╣éα╕¡α╕Öα╣Çα╕çα╕┤α╕Öα╕£α
+╕┤α╕öα╕₧α╕Ñα╕▓α╕ö**:\n     - α╕
+½α╕▓α╕üα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕£α╕╣
+α╣ëα╕úα╕▒α╕Üα╣Çα╕çα╕┤α╕Öα╣äα╕íα
+╣êα╕òα╕úα╕çα╕üα╕▒α╕Ü Biller 
+Profile, **Prompt Guard** α╕êα╕
+░α╕¢α╕Åα╕┤α╣Çα╕¬α╕ÿα╕üα╕▓α╕úα╣é
+α╕¡α╕Öα╣Çα╕çα╕┤α╕Öα╣üα╕Ñα╕░α╣üα
+╕êα╣ëα╕çα╣Çα╕òα╕╖α╕¡α╕Öα╕£α╕╣α╣
+ëα╣âα╕èα╣ë\n  3. **α╕üα╕▓α╕úα╕ò
+α╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕äα╕ºα╕▓α╕íα
+╕¢α╕Ñα╕¡α╕öα╕áα╕▒α╕ó**:\n     
+- **Prompt Guard** α╕¡α╕▓α╕êα╕ò
+α╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕ºα╣êα╕▓α╕éα
+╣ëα╕¡α╕íα╕╣α╕Ñα╣âα╕Ö XML Tags 
+(α╣Çα╕èα╣êα╕Ö `OrgMsg`, 
+`MchBillId`, `RecvTaxId`) α╕òα╕
+úα╕çα╕üα╕▒α╕Üα╕éα╣ëα╕¡α╕íα╕╣α╕Ñ
+α╣âα╕Ö Biller Profile 
+α╕½α╕úα╕╖α╕¡α╣äα╕íα╣ê α╣Çα╕₧α╕╖
+α╣êα╕¡α╕¢α╣ëα╕¡α╕çα╕üα╕▒α╕Öα╕üα
+╕▓α╕úα╕öα╕▒α╕öα╣üα╕¢α╕Ñα╕çα╕éα╣
+ëα╕¡α╕íα╕╣α╕Ñ\n\n- **α╕òα╕▒α╕ºα
+╕¡α╕óα╣êα╕▓α╕çα╕üα╕▓α╕úα╣âα╕èα╣
+ëα╕çα╕▓α╕Öα╕úα╣êα╕ºα╕íα╕üα╕▒α╕Ö
+**:\n  - **α╕üα╕úα╕ôα╕╡ 
+e-Donation**: 
+α╕úα╕░α╕Üα╕Üα╕êα╕░α╣âα╕èα╣ë 
+**Whitelist** α╕êα╕▓α╕ü Biller 
+Profile α╣Çα╕₧α╕╖α╣êα╕¡α╕òα╕úα╕
+ºα╕êα╕¬α╕¡α╕Üα╕ºα╣êα╕▓α╕£α╕╣α╣ë
+α╕úα╕▒α╕Üα╣Çα╕çα╕┤α╕Öα╣Çα╕¢α╣çα
+╕Öα╕£α╕╣α╣ëα╕ùα╕╡α╣êα╣äα╕öα╣ëα╕
+úα╕▒α╕Üα╕¡α╕Öα╕╕α╕ìα╕▓α╕ò 
+(α╣Çα╕èα╣êα╕Ö α╕¡α╕çα╕äα╣îα╕üα╕
+úα╕üα╕▓α╕úα╕üα╕╕α╕¿α╕Ñ) α╕üα╣êα
+╕¡α╕Öα╕ùα╕╡α╣êα╕êα╕░α╕¡α╕Öα╕╕α╕
+íα╕▒α╕òα╕┤α╕üα╕▓α╕úα╣éα╕¡α╕Öα╣Ç
+α╕çα╕┤α╕Ö\n  - **α╕üα╕úα╕ôα╕╡α╕
+üα╕▓α╕úα╕èα╕│α╕úα╕░α╣Çα╕çα╕┤α╕Ö
+α╕£α╣êα╕▓α╕Ö QR Code**: 
+**Prompt Guard** α╕êα╕░α╕òα╕úα╕
+ºα╕êα╕¬α╕¡α╕Üα╕ºα╣êα╕▓α╕éα╣ëα╕¡
+α╕íα╕╣α╕Ñα╣âα╕Ö QR Code 
+(α╣Çα╕èα╣êα╕Ö Tax ID, Biller 
+ID) α╕òα╕úα╕çα╕üα╕▒α╕Ü Biller 
+Profile α╕½α╕úα╕╖α╕¡α╣äα╕íα╣ê\n
+\n---\n\n### **4. α╕éα╣ëα╕¡α╕üα
+╕│α╕½α╕Öα╕öα╣üα╕Ñα╕░α╕íα╕▓α╕òα╕
+úα╕Éα╕▓α╕Öα╕ùα╕╡α╣êα╣Çα╕üα╕╡α╣ê
+α╕óα╕ºα╕éα╣ëα╕¡α╕ç**\n- **ISO 
+20022**: α╣âα╕èα╣ëα╣âα╕Öα╣éα╕äα
+╕úα╕çα╕¬α╕úα╣ëα╕▓α╕ç XML Tags α
+╕ùα╕╡α╣êα╣Çα╕üα╕╡α╣êα╕óα╕ºα╕éα╣
+ëα╕¡α╕çα╕üα╕▒α╕Üα╕üα╕▓α╕úα╣éα╕¡
+α╕Öα╣Çα╕çα╕┤α╕Öα╕£α╣êα╕▓α╕Ö 
+PromptPay (α╣Çα╕èα╣êα╕Ö 
+`OrgMsg`, `MchBillId`, 
+`RecvTaxId`)\n- **PromptPay 
+API**: α╕úα╕░α╕Üα╕╕α╕éα╣ëα╕¡α╕í
+α╕╣α╕Ñα╕ùα╕╡α╣êα╕òα╣ëα╕¡α╕çα╕íα
+╕╡α╣âα╕Öα╕ÿα╕╕α╕úα╕üα╕úα╕úα╕í 
+α╣Çα╕èα╣êα╕Ö `Message Type 
+Indicator`, `Agent`, 
+`Financial Institution 
+Identification` α╕ïα╕╢α╣êα╕çα╕¡
+α╕▓α╕êα╕ûα╕╣α╕üα╕òα╕úα╕ºα╕êα╕¬α
+╕¡α╕Üα╣éα╕öα╕ó **Prompt 
+Guard**\n\n---\n\n### 
+**α╕¬α╕úα╕╕α╕¢**\n**Prompt 
+Guard α╣üα╕Ñα╕░ Biller Profile 
+α╕ùα╕│α╕çα╕▓α╕Öα╕úα╣êα╕ºα╕íα╕üα
+╕▒α╕Öα╣Çα╕₧α╕╖α╣êα╕¡α╣âα╕½α╣ëα╣
+üα╕Öα╣êα╣âα╕êα╕ºα╣êα╕▓α╕üα╕▓α╕ú
+α╣éα╕¡α╕Öα╣Çα╕çα╕┤α╕Öα╕£α╣êα╕▓α
+╕Öα╕úα╕░α╕Üα╕Ü PromptPay α╕íα╕╡
+α╕äα╕ºα╕▓α╕íα╕¢α╕Ñα╕¡α╕öα╕áα╕▒α
+╕óα╣üα╕Ñα╕░α╕ûα╕╣α╕üα╕òα╣ëα╕¡α╕
+ç** α╣éα╕öα╕ó:\n- **Biller 
+Profile** α╣Çα╕¢α╣çα╕Öα╣üα╕½α╕Ñ
+α╣êα╕çα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕ùα╕╡α
+╣êα╣âα╕èα╣ëα╕òα╕úα╕ºα╕êα╕¬α╕¡α╕
+Üα╕äα╕ºα╕▓α╕íα╕ûα╕╣α╕üα╕òα╣ëα╕¡
+α╕çα╕éα╕¡α╕çα╕£α╕╣α╣ëα╕úα╕▒α╕Üα
+╣Çα╕çα╕┤α╕Ö\n- **Prompt 
+Guard** α╣Çα╕¢α╣çα╕Öα╕úα╕░α╕Üα╕
+Üα╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕ùα╕╡α╣ê
+α╣âα╕èα╣ëα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕êα
+╕▓α╕ü Biller Profile α╣Çα╕₧α╕╖α
+╣êα╕¡α╕¢α╣ëα╕¡α╕çα╕üα╕▒α╕Öα╕üα╕
+▓α╕úα╣éα╕êα╕íα╕òα╕╡α╕½α╕úα╕╖α╕¡
+α╕éα╣ëα╕¡α╕£α╕┤α╕öα╕₧α╕Ñα╕▓α╕öα
+╣âα╕Öα╕üα╕▓α╕úα╣éα╕¡α╕Öα╣Çα╕çα╕
+┤α╕Ö\n\nα╕½α╕▓α╕üα╕òα╣ëα╕¡α╕çα╕
+üα╕▓α╕úα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╣Çα╕₧
+α╕┤α╣êα╕íα╣Çα╕òα╕┤α╕íα╣Çα╕üα╕╡α
+╣êα╕óα╕ºα╕üα╕▒α╕Üα╕úα╕▓α╕óα╕Ñα╕
+░α╣Çα╕¡α╕╡α╕óα╕öα╣âα╕Öα╣Çα╕¡α╕ü
+α╕¬α╕▓α╕ú α╕¬α╕▓α╕íα╕▓α╕úα╕ûα╕¡
+α╣ëα╕▓α╕çα╕¡α╕┤α╕çα╣Çα╕¡α╕üα╕¬α
+╕▓α╕úα╕ùα╕╡α╣êα╣âα╕½α╣ëα╕íα╕▓α╣
+äα╕öα╣ëα╣Çα╕èα╣êα╕Öα╕üα╕▒α╕Ö 
+(α╣Çα╕èα╣êα╕Ö 
+α╕üα╕▓α╕úα╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Ü 
+Whitelist α╣âα╕Ö Biller 
+Profile α╕½α╕úα╕╖α╕¡α╣éα╕äα╕úα╕
+çα╕¬α╕úα╣ëα╕▓α╕ç XML Tags 
+α╣âα╕Ö PromptPay API)'}
+INFO:main:LLM Call [Success]: 
+Job='Unknown Job', 
+Duration=43.40s, 
+ResponseLen=154, 
+PromptSnippet='---Role--- You 
+are an expert keyword 
+extractor, specializing in 
+analyzing user queries for a 
+Retriev...'
+INFO:main:DEBUG: 
+llm_model_func returning: {
+  "high_level_keywords": 
+["Security measures", "Billing 
+systems", "Technical 
+integration"],
+  "low_level_keywords": 
+["Prompt guard", "Biller 
+profile"]
+}
+INFO:  == LLM cache == saving: 
+hybrid:keywords:6a7e699fcdb441e
+7b2dd80e80ace114c
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=0.33s
+INFO: Query nodes: Prompt 
+guard, Biller profile 
+(top_k:40, cosine:0.2)
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=0.81s
+INFO: Local query: 40 entites, 
+84 relations
+INFO: Query edges: Security 
+measures, Billing systems, 
+Technical integration 
+(top_k:40, cosine:0.2)
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=0.39s
+INFO: Global query: 60 
+entites, 40 relations
+INFO: Raw search results: 95 
+entities, 119 relations, 0 
+vector chunks
+INFO: After truncation: 79 
+entities, 119 relations
+INFO: Selecting 167 from 167 
+entity-related chunks by 
+vector similarity
+INFO: Find 3 additional chunks 
+in 3 relations (deduplicated 
+56)
+INFO: Selecting 3 from 3 
+relation-related chunks by 
+vector similarity
+INFO: Round-robin merged 
+chunks: 170 -> 170 
+(deduplicated 0)
+WARNING: Rerank is enabled but 
+no rerank model is configured. 
+Please set up a rerank model 
+or set enable_rerank=False in 
+query parameters.
+INFO: Final context: 79 
+entities, 119 relations, 16 
+chunks
+INFO: Final chunks S+F/O: E2/1 
+R1/1 E1/2 R1/2 E5/3 R1/3 E1/4 
+E5/5 E2/6 E1/7 E8/8 E1/9 E3/10 
+E7/11 E3/12 E1/13
+INFO:main:LLM Call [Start]: 
+Job='Unknown Job', Type=local, 
+Model=qwen3:14b, PromptLen=52
+INFO:main:LLM Config: {'type': 
+'local', 'apiKey': '', 
+'baseUrl': 'http://host.docker.
+internal:11434/v1', 'model': 
+'qwen3:14b ', 'stream_queue': 
+<Queue at 0x7fc39aadb990 
+maxsize=0 _queue=[{'type': 
+'status', 'content': 
+'Processing (Unknown Job)... 
+(Model: qwen3:14b)'}, {'type': 
+'status', 'content': 
+'Processing (Unknown Job)... 
+(Model: qwen3:14b)'}, {'type': 
+'status', 'content': 
+'Processing (Unknown Job)... 
+(Model: qwen3:14b)'}] 
+tasks=8>, 'last_response': 
+'{\n  "high_level_keywords": 
+["Security measures", "Billing 
+systems", "Technical 
+integration"],\n  
+"low_level_keywords": ["Prompt 
+guard", "Biller profile"]\n}'}
+INFO:main:LLM Call [Success]: 
+Job='Unknown Job', 
+Duration=69.59s, 
+ResponseLen=2553, 
+PromptSnippet='prompt guard 
+α╣üα╕Ñα╕░ biller profile α╣Çα╕ü
+α╕╡α╣êα╕óα╕ºα╕éα╣ëα╕¡α╕çα╕üα╕▒α
+╕Öα╕¡α╕óα╣êα╕▓α╕çα╣äα╕ú'
+INFO:main:DEBUG: 
+llm_model_func returning: 
+Prompt Guard α╣üα╕Ñα╕░ Biller 
+Profile α╕íα╕╡α╕äα╕ºα╕▓α╕íα╣Çα╕
+üα╕╡α╣êα╕óα╕ºα╕éα╣ëα╕¡α╕çα╕üα╕▒
+α╕Öα╣âα╕Öα╕Üα╕úα╕┤α╕Üα╕ùα╕éα╕¡α
+╕çα╕úα╕░α╕Üα╕Ü PromptPay α╣éα╕ö
+α╕óα╕¬α╕▓α╕íα╕▓α╕úα╕ûα╕¡α╕ÿα╕┤α
+╕Üα╕▓α╕óα╣äα╕öα╣ëα╕öα╕▒α╕çα╕Öα╕
+╡α╣ë:
+
+### 1. 
+**α╕Üα╕ùα╕Üα╕▓α╕ùα╕éα╕¡α╕ç 
+Prompt Guard**
+Prompt Guard α╣Çα╕¢α╣çα╕Ö 
+**Interface Definition 
+Language (IDL)** α╕ùα╕╡α╣êα╣âα╕
+èα╣ëα╕üα╕│α╕½α╕Öα╕öα╕¬α╕▒α╕ìα╕ì
+α╕▓ (contract) α╕¬α╕│α╕½α╕úα╕▒α
+╕Üα╕üα╕▓α╕úα╕¬α╕╖α╣êα╕¡α╕¬α╕▓α╕
+úα╕£α╣êα╕▓α╕Ö gRPC/Protobuf α╣é
+α╕öα╕óα╕íα╕╡α╕êα╕╕α╕öα╕¢α╕úα╕░α
+╕¬α╕çα╕äα╣îα╕½α╕Ñα╕▒α╕üα╣âα╕Öα╕
+üα╕▓α╕ú:
+- α╕üα╕│α╕½α╕Öα╕öα╣éα╕äα╕úα╕çα╕
+¬α╕úα╣ëα╕▓α╕çα╕éα╣ëα╕¡α╕íα╕╣α╕Ñ
+ (data schema) α╕ùα╕╡α╣êα╣âα╕èα
+╣ëα╣âα╕Öα╕üα╕▓α╕úα╕¬α╕╖α╣êα╕¡α╕
+¬α╕▓α╕úα╕úα╕░α╕½α╕ºα╣êα╕▓α╕çα╕ú
+α╕░α╕Üα╕Üα╕òα╣êα╕▓α╕ç α╣å
+- α╕¬α╕úα╣ëα╕▓α╕çα╕íα╕▓α╕òα╕úα╕
+Éα╕▓α╕Öα╣âα╕Öα╕üα╕▓α╕úα╕₧α╕▒α╕Æ
+α╕Öα╕▓ API 
+α╣üα╕Ñα╕░α╕Üα╕úα╕┤α╕üα╕▓α╕ú 
+(α╣Çα╕èα╣êα╕Ö 
+α╕üα╕▓α╕úα╣âα╕èα╣ë Protobuf, 
+Go, Python, α╕úα╕ºα╕íα╕ûα╕╢α╕çα
+╕üα╕▓α╕úα╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕
+üα╕▓α╕úα╣Çα╕¢α╕Ñα╕╡α╣êα╕óα╕Öα╣ü
+α╕¢α╕Ñα╕çα╕öα╣ëα╕ºα╕ó Buf)
+- α╣âα╕èα╣ëα╣âα╕Öα╕üα╕▓α╕úα╕òα╕
+úα╕ºα╕êα╕¬α╕¡α╕Üα╕äα╕ºα╕▓α╕íα╕¢
+α╕Ñα╕¡α╕öα╕áα╕▒α╕ó (security 
+policies) α╣üα╕Ñα╕░α╕üα╕▓α╕úα╕ú
+α╕▒α╕üα╕⌐α╕▓α╕äα╕ºα╕▓α╕íα╕¬α╕íα
+╣êα╕│α╣Çα╕¬α╕íα╕¡α╕éα╕¡α╕çα╕éα╣
+ëα╕¡α╕íα╕╣α╕Ñ
+
+### 2. 
+**α╕Üα╕ùα╕Üα╕▓α╕ùα╕éα╕¡α╕ç 
+Biller Profile**
+Biller Profile α╣Çα╕¢α╣çα╕Ö **α
+╣éα╕äα╕úα╕çα╕¬α╕úα╣ëα╕▓α╕çα╕éα╣
+ëα╕¡α╕íα╕╣α╕Ñ** α╕ùα╕╡α╣êα╣Çα╕ü
+α╕╡α╣êα╕óα╕ºα╕éα╣ëα╕¡α╕çα╕üα╕▒α
+╕Üα╕üα╕▓α╕úα╕Ñα╕çα╕ùα╕░α╣Çα╕Üα╕
+╡α╕óα╕Öα╣üα╕Ñα╕░α╕êα╕▒α╕öα╕üα╕▓
+α╕úα╕Üα╕┤α╕Ñα╣Çα╕Ñα╕¡α╕úα╣î 
+(Biller) α╣âα╕Öα╕úα╕░α╕Üα╕Ü 
+PromptPay α╣éα╕öα╕óα╕íα╕╡α╕úα╕▓
+α╕óα╕Ñα╕░α╣Çα╕¡α╕╡α╕óα╕öα╕öα╕▒α
+╕çα╕Öα╕╡α╣ë:
+- α╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕₧α╕╖α╣ëα╕
+Öα╕Éα╕▓α╕Öα╕éα╕¡α╕çα╕Üα╕┤α╕Ñα╣Ç
+α╕Ñα╕¡α╕úα╣î (α╣Çα╕èα╣êα╕Ö 
+α╕èα╕╖α╣êα╕¡, α╕úα╕½α╕▒α╕¬α╕Üα╕
+┤α╕Ñα╣Çα╕Ñα╕¡α╕úα╣î, 
+α╕ÿα╕Öα╕▓α╕äα╕▓α╕ú)
+- α╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╣Çα╕üα╕╡α╣
+êα╕óα╕ºα╕üα╕▒α╕Üα╕äα╣êα╕▓α╕ÿα╕ú
+α╕úα╕íα╣Çα╕Öα╕╡α╕óα╕í (Fee 
+Charge Type, α╕¢α╕úα╕░α╣Çα╕áα╕ù
+α╕üα╕▓α╕úα╕äα╕┤α╕öα╕äα╣êα╕▓α╕ÿα
+╕úα╕úα╕íα╣Çα╕Öα╕╡α╕óα╕í)
+- α╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╣Çα╕üα╕╡α╣
+êα╕óα╕ºα╕üα╕▒α╕Üα╕üα╕▓α╕úα╕¢α╕Å
+α╕┤α╕Üα╕▒α╕òα╕┤α╕òα╕▓α╕íα╕üα╕Ä 
+(Tax ID, α╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕ùα
+╕╡α╣êα╣Çα╕üα╕╡α╣êα╕óα╕ºα╕éα╣ëα╕
+¡α╕çα╕üα╕▒α╕Üα╕üα╕▓α╕úα╕òα╕úα╕º
+α╕êα╕¬α╕¡α╕Ü)
+- α╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕ùα╕╡α╣êα╣
+âα╕èα╣ëα╣âα╕Öα╕üα╕▓α╕úα╕¢α╕úα╕░
+α╣Çα╕íα╕┤α╕Öα╕äα╕ºα╕▓α╕íα╣Çα╕¬α
+╕╡α╣êα╕óα╕ç (Risk Score) 
+α╕éα╕¡α╕çα╕ÿα╕╕α╕úα╕üα╕úα╕úα╕í
+
+### 3. **α╕äα╕ºα╕▓α╕íα╣Çα╕èα╕╖α
+╣êα╕¡α╕íα╣éα╕óα╕çα╕úα╕░α╕½α╕ºα╣
+êα╕▓α╕ç Prompt Guard α╣üα╕Ñα╕░ 
+Biller Profile**
+α╣üα╕íα╣ëα╕ºα╣êα╕▓α╣Çα╕¡α╕üα╕¬α
+╕▓α╕úα╕êα╕░α╣äα╕íα╣êα╣äα╕öα╣ëα╕
+úα╕░α╕Üα╕╕α╕äα╕ºα╕▓α╕íα╕¬α╕▒α╕í
+α╕₧α╕▒α╕Öα╕ÿα╣îα╣éα╕öα╕óα╕òα╕úα
+╕ç α╣üα╕òα╣êα╕¬α╕▓α╕íα╕▓α╕úα╕ûα
+╕¡α╕Öα╕╕α╕íα╕▓α╕Öα╣äα╕öα╣ëα╕ºα╣
+êα╕▓ **Prompt Guard α╕¡α╕▓α╕êα╣
+Çα╕¢α╣çα╕Öα╕¬α╣êα╕ºα╕Öα╕½α╕Öα╕╢
+α╣êα╕çα╕éα╕¡α╕çα╕úα╕░α╕Üα╕Üα╕ùα
+╕╡α╣êα╣âα╕èα╣ëα╕òα╕úα╕ºα╕êα╕¬α╕
+¡α╕Üα╣üα╕Ñα╕░α╕úα╕▒α╕üα╕⌐α╕▓α╕ä
+α╕ºα╕▓α╕íα╕¬α╕íα╣êα╕│α╣Çα╕¬α╕íα
+╕¡α╕éα╕¡α╕ç Biller Profile** 
+α╕öα╕▒α╕çα╕Öα╕╡α╣ë:
+- **α╕üα╕▓α╕úα╕üα╕│α╕½α╕Öα╕öα╣é
+α╕äα╕úα╕çα╕¬α╕úα╣ëα╕▓α╕çα╕éα╣ëα
+╕¡α╕íα╕╣α╕Ñ**: Prompt Guard 
+(α╕£α╣êα╕▓α╕Ö Protobuf) α╕¡α╕▓α
+╕êα╣âα╕èα╣ëα╕üα╕│α╕½α╕Öα╕öα╕úα╕
+╣α╕¢α╣üα╕Üα╕Üα╕éα╣ëα╕¡α╕íα╕╣α╕Ñ
+α╕éα╕¡α╕ç Biller Profile α╣Çα╕₧
+α╕╖α╣êα╕¡α╣âα╕½α╣ëα╕úα╕░α╕Üα╕Üα
+╕òα╣êα╕▓α╕ç α╣å α╕¬α╕▓α╕íα╕▓α╕ú
+α╕ûα╕¬α╕╖α╣êα╕¡α╕¬α╕▓α╕úα╣üα╕Ñα
+╕░α╕¢α╕úα╕░α╕íα╕ºα╕Ñα╕£α╕Ñα╕éα╣
+ëα╕¡α╕íα╕╣α╕Ñα╣äα╕öα╣ëα╕¡α╕óα╣ê
+α╕▓α╕çα╕ûα╕╣α╕üα╕òα╣ëα╕¡α╕ç
+- **α╕üα╕▓α╕úα╕òα╕úα╕ºα╕êα╕¬α╕¡
+α╕Üα╕äα╕ºα╕▓α╕íα╕ûα╕╣α╕üα╕òα╣ëα
+╕¡α╕ç**: α╕úα╕░α╕Üα╕Ü Prompt 
+Guard α╕¡α╕▓α╕êα╣âα╕èα╣ëα╕òα╕úα
+╕ºα╕êα╕¬α╕¡α╕Üα╕éα╣ëα╕¡α╕íα╕╣α╕
+Ñα╣âα╕Ö Biller Profile 
+α╣Çα╕èα╣êα╕Ö 
+α╕äα╣êα╕▓α╕éα╕¡α╕ç `Fee Charge 
+Type`, `Category`, `Tax ID` α╕ò
+α╕▓α╕íα╣Çα╕çα╕╖α╣êα╕¡α╕Öα╣äα╕éα
+╕ùα╕╡α╣êα╕úα╕░α╕Üα╕╕α╣âα╕Öα╣Çα╕
+¡α╕üα╕¬α╕▓α╕ú (α╣Çα╕èα╣êα╕Ö α╕ü
+α╕▓α╕úα╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕ºα
+╣êα╕▓α╕äα╣êα╕▓α╣âα╕Ö `C9_TQRC` 
+α╕½α╕úα╕╖α╕¡ `C10_XQRC` α╕òα╕úα
+╕çα╕üα╕▒α╕Üα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╣
+âα╕Ö Biller Profile 
+α╕½α╕úα╕╖α╕¡α╣äα╕íα╣ê)
+- **α╕üα╕▓α╕úα╕¢α╕úα╕░α╣Çα╕íα╕┤
+α╕Öα╕äα╕ºα╕▓α╕íα╣Çα╕¬α╕╡α╣êα╕óα
+╕ç**: α╕½α╕▓α╕üα╕íα╕╡α╕üα╕▓α╕úα
+╣âα╕èα╣ë **PromptPay Message 
+Schema** (α╣Çα╕èα╣êα╕Ö 
+txn-risk-score) α╕úα╕░α╕Üα╕Ü 
+Prompt Guard α╕¡α╕▓α╕êα╕èα╣êα╕º
+α╕óα╣âα╕Öα╕üα╕▓α╕úα╣üα╕¢α╕Ñα╕çα
+╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕êα╕▓α╕ü 
+Biller Profile α╣äα╕¢α╕óα╕▒α╕çα
+╕úα╕╣α╕¢α╣üα╕Üα╕Üα╕ùα╕╡α╣êα╣âα╕
+èα╣ëα╣âα╕Öα╕üα╕▓α╕úα╕äα╕│α╕Öα╕º
+α╕ôα╕äα╕ºα╕▓α╕íα╣Çα╕¬α╕╡α╣êα╕óα
+╕çα╕éα╕¡α╕çα╕ÿα╕╕α╕úα╕üα╕úα╕úα╕
+í
+
+### 4. **α╕òα╕▒α╕ºα╕¡α╕óα╣êα╕▓α
+╕çα╕üα╕▓α╕úα╣âα╕èα╣ëα╕çα╕▓α╕Öα╕
+úα╣êα╕ºα╕íα╕üα╕▒α╕Ö**
+- α╣Çα╕íα╕╖α╣êα╕¡α╕Üα╕┤α╕Ñα╣Çα╕
+Ñα╕¡α╕úα╣îα╕¬α╣êα╕çα╕éα╣ëα╕¡α╕í
+α╕╣α╕Ñ Biller Profile 
+α╣äα╕¢α╕óα╕▒α╕çα╕úα╕░α╕Üα╕Ü 
+PromptPay 
+α╕úα╕░α╕Üα╕Üα╕¡α╕▓α╕êα╣âα╕èα╣ë 
+**Protobuf** (α╕êα╕▓α╕ü Prompt 
+Guard) α╣Çα╕₧α╕╖α╣êα╕¡α╕òα╕úα╕º
+α╕êα╕¬α╕¡α╕Üα╕ºα╣êα╕▓α╕éα╣ëα╕¡α
+╕íα╕╣α╕Ñα╕òα╕úα╕çα╕üα╕▒α╕Üα╕úα╕
+╣α╕¢α╣üα╕Üα╕Üα╕ùα╕╡α╣êα╕üα╕│α╕½
+α╕Öα╕öα╣äα╕ºα╣ë (α╣Çα╕èα╣êα╕Ö 
+α╕äα╣êα╕▓α╕éα╕¡α╕ç `Fee Charge 
+Type` 
+α╕òα╣ëα╕¡α╕çα╕òα╕úα╕çα╕üα╕▒α╕Ü 
+`Category` 
+α╕ùα╕╡α╣êα╕üα╕│α╕½α╕Öα╕ö)
+- α╕½α╕▓α╕üα╕íα╕╡α╕éα╣ëα╕¡α╕£α╕
+┤α╕öα╕₧α╕Ñα╕▓α╕ö (α╣Çα╕èα╣êα╕Ö 
+α╕äα╣êα╕▓α╣äα╕íα╣êα╕òα╕úα╕çα╕üα
+╕▒α╕Üα╣Çα╕çα╕╖α╣êα╕¡α╕Öα╣äα╕éα╣
+âα╕Öα╣Çα╕¡α╕üα╕¬α╕▓α╕ú) 
+α╕úα╕░α╕Üα╕Üα╕êα╕░α╕¬α╣êα╕ç 
+response code 
+α╕üα╕Ñα╕▒α╕Üα╕íα╕▓ 
+(α╣Çα╕èα╣êα╕Ö `917 Value 
+mismatch`) α╕ïα╕╢α╣êα╕çα╕¡α╕▓α╕
+êα╕ûα╕╣α╕üα╕êα╕▒α╕öα╕üα╕▓α╕úα╕£
+α╣êα╕▓α╕Ö Prompt Guard 
+α╕öα╣ëα╕ºα╕ó
+
+### α╕¬α╕úα╕╕α╕¢
+Prompt Guard α╣üα╕Ñα╕░ Biller 
+Profile **α╣äα╕íα╣êα╣äα╕öα╣ëα╣Ç
+α╕üα╕╡α╣êα╕óα╕ºα╕éα╣ëα╕¡α╕çα╕üα
+╕▒α╕Öα╣éα╕öα╕óα╕òα╕úα╕çα╣âα╕Öα╣
+Çα╕¡α╕üα╕¬α╕▓α╕ú** α╣üα╕òα╣ê **
+α╕¡α╕▓α╕êα╕íα╕╡α╕äα╕ºα╕▓α╕íα╕¬α
+╕▒α╕íα╕₧α╕▒α╕Öα╕ÿα╣îα╕ùα╕▓α╕çα╕
+¡α╣ëα╕¡α╕íα╕£α╣êα╕▓α╕Öα╕üα╕▓α╕ú
+α╣âα╕èα╣ëα╕çα╕▓α╕Ö Protobuf α╣ü
+α╕Ñα╕░α╕üα╕▓α╕úα╕òα╕úα╕ºα╕êα╕¬α
+╕¡α╕Üα╕éα╣ëα╕¡α╕íα╕╣α╕Ñ** α╕ùα╕
+╡α╣êα╕úα╕░α╕Üα╕╕α╣âα╕Öα╕úα╕░α╕Ü
+α╕Ü PromptPay α╣éα╕öα╕ó Prompt 
+Guard α╕¡α╕▓α╕êα╕ùα╕│α╕½α╕Öα╣ëα
+╕▓α╕ùα╕╡α╣êα╕üα╕│α╕½α╕Öα╕öα╣éα╕
+äα╕úα╕çα╕¬α╕úα╣ëα╕▓α╕çα╣üα╕Ñα╕░
+α╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕éα╣ëα╕¡α
+╕íα╕╣α╕Ñα╕ùα╕╡α╣êα╣âα╕èα╣ëα╣âα╕
+Ö Biller Profile α╣Çα╕₧α╕╖α╣êα╕
+¡α╣âα╕½α╣ëα╕úα╕░α╕Üα╕Üα╕ùα╕│α╕ç
+α╕▓α╕Öα╣äα╕öα╣ëα╕¡α╕óα╣êα╕▓α╕çα
+╕¢α╕Ñα╕¡α╕öα╕áα╕▒α╕óα╣üα╕Ñα╕░α╕
+íα╕╡α╕¢α╕úα╕░α╕¬α╕┤α╕ùα╕ÿα╕┤α╕á
+α╕▓α╕₧
+INFO:  == LLM cache == saving: 
+hybrid:query:f0abdc8ef888fcc2ea
+c2111e8601d117
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:     172.22.0.5:48670 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:43304 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:52508 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.8:53292 - "POST /query HTTP/1.1" 200 OK
+INFO:     172.22.0.5:49388 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:58086 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:53522 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:38298 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:49950 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:42254 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:50992 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:47520 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:52082 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:60888 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:53756 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:36842 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:45662 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:38344 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:48816 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:58352 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:55460 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:55068 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:54796 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:35534 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:34302 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:57672 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:51816 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:36160 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:35814 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:57734 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:47492 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:40904 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:45760 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:41518 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:48514 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:42276 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:51450 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:59056 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:42808 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:57006 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:38674 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:56830 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:34748 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:37108 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:40352 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:36932 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:59198 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:46794 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:54606 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:60102 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:42754 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:57148 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:59614 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:50226 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:35736 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:44348 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:44328 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:35000 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.1:34838 - "POST /query HTTP/1.1" 200 OK
+INFO:main:Embedding [Success]: 
+Duration=0.27s
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+ERROR:main:Embedding failed: 
+The truth value of an array 
+with more than one element is 
+ambiguous. Use a.any() or 
+a.all()
+INFO:main:Total RAG Query 
+Duration: 115.58s
+INFO:main:LLM Call [Start]: 
+Job='Unknown Job', Type=local, 
+Model=qwen3:14b, PromptLen=2826
+INFO:     172.22.0.5:34084 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:57250 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:34960 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:45926 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:38010 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:46932 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:52874 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.1:46212 - "POST /query HTTP/1.1" 200 OK
+INFO:     172.22.0.5:51688 - "GET /metrics HTTP/1.1" 200 OK
+INFO:main:LLM Config: {'type': 
+'local', 'apiKey': '', 
+'baseUrl': 'http://host.docker.
+internal:11434/v1', 'model': 
+'qwen3:14b ', 'stream_queue': 
+<Queue at 0x7fc39aadb990 
+maxsize=0 _queue=[{'type': 
+'status', 'content': 
+'Processing (Unknown Job)... 
+(Model: qwen3:14b)'}, {'type': 
+'status', 'content': 
+'Processing (Unknown Job)... 
+(Model: qwen3:14b)'}, {'type': 
+'status', 'content': 
+'Processing (Unknown Job)... 
+(Model: qwen3:14b)'}, {'type': 
+'status', 'content': 
+'Processing (Unknown Job)... 
+(Model: qwen3:14b)'}] 
+tasks=9>, 'last_response': 
+'Prompt Guard α╣üα╕Ñα╕░ Biller 
+Profile α╕íα╕╡α╕äα╕ºα╕▓α╕íα╣Çα╕
+üα╕╡α╣êα╕óα╕ºα╕éα╣ëα╕¡α╕çα╕üα╕▒
+α╕Öα╣âα╕Öα╕Üα╕úα╕┤α╕Üα╕ùα╕éα╕¡α
+╕çα╕úα╕░α╕Üα╕Ü PromptPay α╣éα╕ö
+α╕óα╕¬α╕▓α╕íα╕▓α╕úα╕ûα╕¡α╕ÿα╕┤α
+╕Üα╕▓α╕óα╣äα╕öα╣ëα╕öα╕▒α╕çα╕Öα╕
+╡α╣ë:\n\n### 1. 
+**α╕Üα╕ùα╕Üα╕▓α╕ùα╕éα╕¡α╕ç 
+Prompt Guard**\nPrompt Guard 
+α╣Çα╕¢α╣çα╕Ö **Interface 
+Definition Language (IDL)** α╕ù
+α╕╡α╣êα╣âα╕èα╣ëα╕üα╕│α╕½α╕Öα╕öα
+╕¬α╕▒α╕ìα╕ìα╕▓ (contract) α╕¬α╕
+│α╕½α╕úα╕▒α╕Üα╕üα╕▓α╕úα╕¬α╕╖α╣ê
+α╕¡α╕¬α╕▓α╕úα╕£α╣êα╕▓α╕Ö 
+gRPC/Protobuf α╣éα╕öα╕óα╕íα╕╡α╕
+êα╕╕α╕öα╕¢α╕úα╕░α╕¬α╕çα╕äα╣îα╕½
+α╕Ñα╕▒α╕üα╣âα╕Öα╕üα╕▓α╕ú:\n- α╕
+üα╕│α╕½α╕Öα╕öα╣éα╕äα╕úα╕çα╕¬α╕ú
+α╣ëα╕▓α╕çα╕éα╣ëα╕¡α╕íα╕╣α╕Ñ 
+(data schema) α╕ùα╕╡α╣êα╣âα╕èα╣
+ëα╣âα╕Öα╕üα╕▓α╕úα╕¬α╕╖α╣êα╕¡α╕¬
+α╕▓α╕úα╕úα╕░α╕½α╕ºα╣êα╕▓α╕çα╕úα
+╕░α╕Üα╕Üα╕òα╣êα╕▓α╕ç α╣å\n- α╕¬
+α╕úα╣ëα╕▓α╕çα╕íα╕▓α╕òα╕úα╕Éα╕▓α
+╕Öα╣âα╕Öα╕üα╕▓α╕úα╕₧α╕▒α╕Æα╕Öα╕
+▓ API 
+α╣üα╕Ñα╕░α╕Üα╕úα╕┤α╕üα╕▓α╕ú 
+(α╣Çα╕èα╣êα╕Ö 
+α╕üα╕▓α╕úα╣âα╕èα╣ë Protobuf, 
+Go, Python, α╕úα╕ºα╕íα╕ûα╕╢α╕çα
+╕üα╕▓α╕úα╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕
+üα╕▓α╕úα╣Çα╕¢α╕Ñα╕╡α╣êα╕óα╕Öα╣ü
+α╕¢α╕Ñα╕çα╕öα╣ëα╕ºα╕ó Buf)\n- α
+╣âα╕èα╣ëα╣âα╕Öα╕üα╕▓α╕úα╕òα╕úα╕
+ºα╕êα╕¬α╕¡α╕Üα╕äα╕ºα╕▓α╕íα╕¢α╕Ñ
+α╕¡α╕öα╕áα╕▒α╕ó (security 
+policies) α╣üα╕Ñα╕░α╕üα╕▓α╕úα╕ú
+α╕▒α╕üα╕⌐α╕▓α╕äα╕ºα╕▓α╕íα╕¬α╕íα
+╣êα╕│α╣Çα╕¬α╕íα╕¡α╕éα╕¡α╕çα╕éα╣
+ëα╕¡α╕íα╕╣α╕Ñ\n\n### 2. 
+**α╕Üα╕ùα╕Üα╕▓α╕ùα╕éα╕¡α╕ç 
+Biller Profile**\nBiller 
+Profile α╣Çα╕¢α╣çα╕Ö **α╣éα╕äα╕
+úα╕çα╕¬α╕úα╣ëα╕▓α╕çα╕éα╣ëα╕¡α╕í
+α╕╣α╕Ñ** α╕ùα╕╡α╣êα╣Çα╕üα╕╡α╣êα
+╕óα╕ºα╕éα╣ëα╕¡α╕çα╕üα╕▒α╕Üα╕üα╕
+▓α╕úα╕Ñα╕çα╕ùα╕░α╣Çα╕Üα╕╡α╕óα╕Ö
+α╣üα╕Ñα╕░α╕êα╕▒α╕öα╕üα╕▓α╕úα╕Üα
+╕┤α╕Ñα╣Çα╕Ñα╕¡α╕úα╣î (Biller) 
+α╣âα╕Öα╕úα╕░α╕Üα╕Ü PromptPay α╣
+éα╕öα╕óα╕íα╕╡α╕úα╕▓α╕óα╕Ñα╕░α╣Ç
+α╕¡α╕╡α╕óα╕öα╕öα╕▒α╕çα╕Öα╕╡α╣ë:
+\n- α╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕₧α╕╖α╣ë
+α╕Öα╕Éα╕▓α╕Öα╕éα╕¡α╕çα╕Üα╕┤α╕Ñα
+╣Çα╕Ñα╕¡α╕úα╣î (α╣Çα╕èα╣êα╕Ö 
+α╕èα╕╖α╣êα╕¡, α╕úα╕½α╕▒α╕¬α╕Üα╕
+┤α╕Ñα╣Çα╕Ñα╕¡α╕úα╣î, 
+α╕ÿα╕Öα╕▓α╕äα╕▓α╕ú)\n- α╕éα╣ëα╕
+¡α╕íα╕╣α╕Ñα╣Çα╕üα╕╡α╣êα╕óα╕ºα╕ü
+α╕▒α╕Üα╕äα╣êα╕▓α╕ÿα╕úα╕úα╕íα╣Çα
+╕Öα╕╡α╕óα╕í (Fee Charge Type, α
+╕¢α╕úα╕░α╣Çα╕áα╕ùα╕üα╕▓α╕úα╕äα╕
+┤α╕öα╕äα╣êα╕▓α╕ÿα╕úα╕úα╕íα╣Çα╕Ö
+α╕╡α╕óα╕í)\n- α╕éα╣ëα╕¡α╕íα╕╣α╕
+Ñα╣Çα╕üα╕╡α╣êα╕óα╕ºα╕üα╕▒α╕Üα╕ü
+α╕▓α╕úα╕¢α╕Åα╕┤α╕Üα╕▒α╕òα╕┤α╕òα
+╕▓α╕íα╕üα╕Ä (Tax ID, α╕éα╣ëα╕¡α
+╕íα╕╣α╕Ñα╕ùα╕╡α╣êα╣Çα╕üα╕╡α╣êα╕
+óα╕ºα╕éα╣ëα╕¡α╕çα╕üα╕▒α╕Üα╕üα╕▓
+α╕úα╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Ü)\n- α╕
+éα╣ëα╕¡α╕íα╕╣α╕Ñα╕ùα╕╡α╣êα╣âα╕è
+α╣ëα╣âα╕Öα╕üα╕▓α╕úα╕¢α╕úα╕░α╣Çα
+╕íα╕┤α╕Öα╕äα╕ºα╕▓α╕íα╣Çα╕¬α╕╡α╣
+êα╕óα╕ç (Risk Score) α╕éα╕¡α╕çα
+╕ÿα╕╕α╕úα╕üα╕úα╕úα╕í\n\n### 3. 
+**α╕äα╕ºα╕▓α╕íα╣Çα╕èα╕╖α╣êα╕¡α╕
+íα╣éα╕óα╕çα╕úα╕░α╕½α╕ºα╣êα╕▓α╕ç
+ Prompt Guard α╣üα╕Ñα╕░ Biller 
+Profile**\nα╣üα╕íα╣ëα╕ºα╣êα╕▓α╣
+Çα╕¡α╕üα╕¬α╕▓α╕úα╕êα╕░α╣äα╕íα╣ê
+α╣äα╕öα╣ëα╕úα╕░α╕Üα╕╕α╕äα╕ºα╕▓α
+╕íα╕¬α╕▒α╕íα╕₧α╕▒α╕Öα╕ÿα╣îα╣éα╕
+öα╕óα╕òα╕úα╕ç α╣üα╕òα╣êα╕¬α╕▓α╕
+íα╕▓α╕úα╕ûα╕¡α╕Öα╕╕α╕íα╕▓α╕Öα╣ä
+α╕öα╣ëα╕ºα╣êα╕▓ **Prompt Guard 
+α╕¡α╕▓α╕êα╣Çα╕¢α╣çα╕Öα╕¬α╣êα╕ºα
+╕Öα╕½α╕Öα╕╢α╣êα╕çα╕éα╕¡α╕çα╕úα╕
+░α╕Üα╕Üα╕ùα╕╡α╣êα╣âα╕èα╣ëα╕òα╕ú
+α╕ºα╕êα╕¬α╕¡α╕Üα╣üα╕Ñα╕░α╕úα╕▒α
+╕üα╕⌐α╕▓α╕äα╕ºα╕▓α╕íα╕¬α╕íα╣êα╕
+│α╣Çα╕¬α╕íα╕¡α╕éα╕¡α╕ç Biller 
+Profile** 
+α╕öα╕▒α╕çα╕Öα╕╡α╣ë:\n- **α╕üα╕▓
+α╕úα╕üα╕│α╕½α╕Öα╕öα╣éα╕äα╕úα╕çα
+╕¬α╕úα╣ëα╕▓α╕çα╕éα╣ëα╕¡α╕íα╕╣α╕
+Ñ**: Prompt Guard 
+(α╕£α╣êα╕▓α╕Ö Protobuf) α╕¡α╕▓α
+╕êα╣âα╕èα╣ëα╕üα╕│α╕½α╕Öα╕öα╕úα╕
+╣α╕¢α╣üα╕Üα╕Üα╕éα╣ëα╕¡α╕íα╕╣α╕Ñ
+α╕éα╕¡α╕ç Biller Profile α╣Çα╕₧
+α╕╖α╣êα╕¡α╣âα╕½α╣ëα╕úα╕░α╕Üα╕Üα
+╕òα╣êα╕▓α╕ç α╣å α╕¬α╕▓α╕íα╕▓α╕ú
+α╕ûα╕¬α╕╖α╣êα╕¡α╕¬α╕▓α╕úα╣üα╕Ñα
+╕░α╕¢α╕úα╕░α╕íα╕ºα╕Ñα╕£α╕Ñα╕éα╣
+ëα╕¡α╕íα╕╣α╕Ñα╣äα╕öα╣ëα╕¡α╕óα╣ê
+α╕▓α╕çα╕ûα╕╣α╕üα╕òα╣ëα╕¡α╕ç\n- 
+**α╕üα╕▓α╕úα╕òα╕úα╕ºα╕êα╕¬α╕¡α╕
+Üα╕äα╕ºα╕▓α╕íα╕ûα╕╣α╕üα╕òα╣ëα╕¡
+α╕ç**: α╕úα╕░α╕Üα╕Ü Prompt 
+Guard α╕¡α╕▓α╕êα╣âα╕èα╣ëα╕òα╕úα
+╕ºα╕êα╕¬α╕¡α╕Üα╕éα╣ëα╕¡α╕íα╕╣α╕
+Ñα╣âα╕Ö Biller Profile 
+α╣Çα╕èα╣êα╕Ö 
+α╕äα╣êα╕▓α╕éα╕¡α╕ç `Fee Charge 
+Type`, `Category`, `Tax ID` α╕ò
+α╕▓α╕íα╣Çα╕çα╕╖α╣êα╕¡α╕Öα╣äα╕éα
+╕ùα╕╡α╣êα╕úα╕░α╕Üα╕╕α╣âα╕Öα╣Çα╕
+¡α╕üα╕¬α╕▓α╕ú (α╣Çα╕èα╣êα╕Ö α╕ü
+α╕▓α╕úα╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕ºα
+╣êα╕▓α╕äα╣êα╕▓α╣âα╕Ö `C9_TQRC` 
+α╕½α╕úα╕╖α╕¡ `C10_XQRC` α╕òα╕úα
+╕çα╕üα╕▒α╕Üα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╣
+âα╕Ö Biller Profile 
+α╕½α╕úα╕╖α╕¡α╣äα╕íα╣ê)\n- **α╕ü
+α╕▓α╕úα╕¢α╕úα╕░α╣Çα╕íα╕┤α╕Öα╕äα
+╕ºα╕▓α╕íα╣Çα╕¬α╕╡α╣êα╕óα╕ç**: α
+╕½α╕▓α╕üα╕íα╕╡α╕üα╕▓α╕úα╣âα╕èα╣
+ë **PromptPay Message Schema** 
+(α╣Çα╕èα╣êα╕Ö txn-risk-score) 
+α╕úα╕░α╕Üα╕Ü Prompt Guard α╕¡α╕
+▓α╕êα╕èα╣êα╕ºα╕óα╣âα╕Öα╕üα╕▓α╕ú
+α╣üα╕¢α╕Ñα╕çα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα
+╕êα╕▓α╕ü Biller Profile α╣äα╕¢α
+╕óα╕▒α╕çα╕úα╕╣α╕¢α╣üα╕Üα╕Üα╕ùα╕
+╡α╣êα╣âα╕èα╣ëα╣âα╕Öα╕üα╕▓α╕úα╕ä
+α╕│α╕Öα╕ºα╕ôα╕äα╕ºα╕▓α╕íα╣Çα╕¬α
+╕╡α╣êα╕óα╕çα╕éα╕¡α╕çα╕ÿα╕╕α╕úα╕
+üα╕úα╕úα╕í\n\n### 4. **α╕òα╕▒α╕
+ºα╕¡α╕óα╣êα╕▓α╕çα╕üα╕▓α╕úα╣âα╕è
+α╣ëα╕çα╕▓α╕Öα╕úα╣êα╕ºα╕íα╕üα╕▒α
+╕Ö**\n- α╣Çα╕íα╕╖α╣êα╕¡α╕Üα╕┤α╕
+Ñα╣Çα╕Ñα╕¡α╕úα╣îα╕¬α╣êα╕çα╕éα╣ë
+α╕¡α╕íα╕╣α╕Ñ Biller Profile 
+α╣äα╕¢α╕óα╕▒α╕çα╕úα╕░α╕Üα╕Ü 
+PromptPay 
+α╕úα╕░α╕Üα╕Üα╕¡α╕▓α╕êα╣âα╕èα╣ë 
+**Protobuf** (α╕êα╕▓α╕ü Prompt 
+Guard) α╣Çα╕₧α╕╖α╣êα╕¡α╕òα╕úα╕º
+α╕êα╕¬α╕¡α╕Üα╕ºα╣êα╕▓α╕éα╣ëα╕¡α
+╕íα╕╣α╕Ñα╕òα╕úα╕çα╕üα╕▒α╕Üα╕úα╕
+╣α╕¢α╣üα╕Üα╕Üα╕ùα╕╡α╣êα╕üα╕│α╕½
+α╕Öα╕öα╣äα╕ºα╣ë (α╣Çα╕èα╣êα╕Ö 
+α╕äα╣êα╕▓α╕éα╕¡α╕ç `Fee Charge 
+Type` 
+α╕òα╣ëα╕¡α╕çα╕òα╕úα╕çα╕üα╕▒α╕Ü 
+`Category` 
+α╕ùα╕╡α╣êα╕üα╕│α╕½α╕Öα╕ö)\n- α╕
+½α╕▓α╕üα╕íα╕╡α╕éα╣ëα╕¡α╕£α╕┤α╕ö
+α╕₧α╕Ñα╕▓α╕ö (α╣Çα╕èα╣êα╕Ö α╕äα
+╣êα╕▓α╣äα╕íα╣êα╕òα╕úα╕çα╕üα╕▒α╕
+Üα╣Çα╕çα╕╖α╣êα╕¡α╕Öα╣äα╕éα╣âα╕Ö
+α╣Çα╕¡α╕üα╕¬α╕▓α╕ú) 
+α╕úα╕░α╕Üα╕Üα╕êα╕░α╕¬α╣êα╕ç 
+response code 
+α╕üα╕Ñα╕▒α╕Üα╕íα╕▓ 
+(α╣Çα╕èα╣êα╕Ö `917 Value 
+mismatch`) α╕ïα╕╢α╣êα╕çα╕¡α╕▓α╕
+êα╕ûα╕╣α╕üα╕êα╕▒α╕öα╕üα╕▓α╕úα╕£
+α╣êα╕▓α╕Ö Prompt Guard 
+α╕öα╣ëα╕ºα╕ó\n\n### 
+α╕¬α╕úα╕╕α╕¢\nPrompt Guard 
+α╣üα╕Ñα╕░ Biller Profile **α╣äα
+╕íα╣êα╣äα╕öα╣ëα╣Çα╕üα╕╡α╣êα╕óα╕
+ºα╕éα╣ëα╕¡α╕çα╕üα╕▒α╕Öα╣éα╕öα╕ó
+α╕òα╕úα╕çα╣âα╕Öα╣Çα╕¡α╕üα╕¬α╕▓α
+╕ú** α╣üα╕òα╣ê **α╕¡α╕▓α╕êα╕íα╕
+╡α╕äα╕ºα╕▓α╕íα╕¬α╕▒α╕íα╕₧α╕▒α╕Ö
+α╕ÿα╣îα╕ùα╕▓α╕çα╕¡α╣ëα╕¡α╕íα╕£α
+╣êα╕▓α╕Öα╕üα╕▓α╕úα╣âα╕èα╣ëα╕çα╕
+▓α╕Ö Protobuf α╣üα╕Ñα╕░α╕üα╕▓α╕
+úα╕òα╕úα╕ºα╕êα╕¬α╕¡α╕Üα╕éα╣ëα╕¡
+α╕íα╕╣α╕Ñ** α╕ùα╕╡α╣êα╕úα╕░α╕Üα
+╕╕α╣âα╕Öα╕úα╕░α╕Üα╕Ü PromptPay 
+α╣éα╕öα╕ó Prompt Guard α╕¡α╕▓α╕
+êα╕ùα╕│α╕½α╕Öα╣ëα╕▓α╕ùα╕╡α╣êα╕ü
+α╕│α╕½α╕Öα╕öα╣éα╕äα╕úα╕çα╕¬α╕úα
+╣ëα╕▓α╕çα╣üα╕Ñα╕░α╕òα╕úα╕ºα╕êα╕
+¬α╕¡α╕Üα╕éα╣ëα╕¡α╕íα╕╣α╕Ñα╕ùα╕╡
+α╣êα╣âα╕èα╣ëα╣âα╕Ö Biller 
+Profile α╣Çα╕₧α╕╖α╣êα╕¡α╣âα╕½α╣
+ëα╕úα╕░α╕Üα╕Üα╕ùα╕│α╕çα╕▓α╕Öα╣ä
+α╕öα╣ëα╕¡α╕óα╣êα╕▓α╕çα╕¢α╕Ñα╕¡α
+╕öα╕áα╕▒α╕óα╣üα╕Ñα╕░α╕íα╕╡α╕¢α╕
+úα╕░α╕¬α╕┤α╕ùα╕ÿα╕┤α╕áα╕▓α╕₧'}
+INFO:main:LLM Call [Success]: 
+Job='Unknown Job', 
+Duration=40.58s, 
+ResponseLen=129, 
+PromptSnippet='---Role--- You 
+are an expert keyword 
+extractor, specializing in 
+analyzing user queries for a 
+Retriev...'
+INFO:main:DEBUG: 
+llm_model_func returning: {
+  "high_level_keywords": 
+["Document content", "Py 
+verification"],
+  "low_level_keywords": ["Py 
+verification doc", "Document"]
+}
+INFO:  == LLM cache == saving: 
+hybrid:keywords:d72069879e31166
+9e0d7fefd6bbc0c11
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=0.97s
+INFO: Query nodes: Py 
+verification doc, Document 
+(top_k:40, cosine:0.2)
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=0.25s
+INFO: Local query: 40 entites, 
+53 relations
+INFO: Query edges: Document 
+content, Py verification 
+(top_k:40, cosine:0.2)
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=0.24s
+INFO: Global query: 56 
+entites, 40 relations
+INFO: Raw search results: 81 
+entities, 73 relations, 0 
+vector chunks
+INFO: After truncation: 81 
+entities, 73 relations
+INFO: Selecting 139 from 139 
+entity-related chunks by 
+vector similarity
+INFO: Find no additional 
+relations-related chunks from 
+73 relations
+INFO: Round-robin merged 
+chunks: 139 -> 139 
+(deduplicated 0)
+WARNING: Rerank is enabled but 
+no rerank model is configured. 
+Please set up a rerank model 
+or set enable_rerank=False in 
+query parameters.
+INFO: Final context: 81 
+entities, 73 relations, 20 
+chunks
+INFO: Final chunks S+F/O: E1/1 
+E3/2 E2/3 E4/4 E2/5 E1/6 E3/7 
+E1/8 E1/9 E2/10 E1/11 E9/12 
+E2/13 E6/14 E1/15 E3/16 E1/17 
+E6/18 E2/19 E1/20
+INFO:main:LLM Call [Start]: 
+Job='Unknown Job', Type=local, 
+Model=qwen3:14b, PromptLen=47
+INFO:main:LLM Config: {'type': 
+'local', 'apiKey': '', 
+'baseUrl': 'http://host.docker.
+internal:11434/v1', 'model': 
+'qwen3:14b ', 'stream_queue': 
+<Queue at 0x7fc39aadb990 
+maxsize=0 _queue=[{'type': 
+'status', 'content': 
+'Processing (Unknown Job)... 
+(Model: qwen3:14b)'}, {'type': 
+'status', 'content': 
+'Processing (Unknown Job)... 
+(Model: qwen3:14b)'}, {'type': 
+'status', 'content': 
+'Processing (Unknown Job)... 
+(Model: qwen3:14b)'}, {'type': 
+'status', 'content': 
+'Processing (Unknown Job)... 
+(Model: qwen3:14b)'}, {'type': 
+'status', 'content': 
+'Processing (Unknown Job)... 
+(Model: qwen3:14b)'}] 
+tasks=10>, 'last_response': 
+'{\n  "high_level_keywords": 
+["Document content", "Py 
+verification"],\n  
+"low_level_keywords": ["Py 
+verification doc", 
+"Document"]\n}'}
+INFO:main:LLM Call [Success]: 
+Job='Unknown Job', 
+Duration=30.62s, 
+ResponseLen=2285, 
+PromptSnippet='What is the 
+content of the py verification 
+doc?'
+INFO:main:DEBUG: 
+llm_model_func returning: The 
+term "py verification doc" is 
+not explicitly mentioned in 
+the provided reference 
+documents or chunks. However, 
+based on the context of the 
+documents, if you're referring 
+to **Python-related 
+verification processes** 
+(e.g., code verification, API 
+validation, or cryptographic 
+checks), hereΓÇÖs what might 
+be relevant from the materials:
+
+### 1. **JWT Verification 
+(Python Context)**
+   - The document in 
+**reference [1]** discusses 
+**JWT (JSON Web Token)** 
+verification using **RS512 
+(RSA + SHA512)** for digital 
+signatures. While not 
+explicitly mentioning Python, 
+this process would typically 
+involve Python libraries like 
+`PyJWT` or `cryptography` for:
+     - **Verifying 
+signatures**: Ensuring the 
+tokenΓÇÖs integrity and 
+authenticity using the 
+senderΓÇÖs public key.
+     - **Checking claims**: 
+Validating standard claims 
+like `iss` (issuer), `exp` 
+(expiration), and `aud` 
+(audience).
+     - **Example**: A Python 
+script might decode the JWT, 
+verify the signature with the 
+public key, and validate 
+claims.
+
+### 2. **Lab Environment 
+Verification**
+   - **Reference [13]** 
+describes **lab environment 
+hardware specifications** 
+(e.g., Kubernetes clusters, 
+storage systems like 
+SeaweedFS). Verification here 
+might involve:
+     - **Hardware checks**: 
+Confirming resources (CPU, 
+memory, storage) meet 
+requirements.
+     - **System validation**: 
+Ensuring components like 
+Kubernetes, Docker, or 
+SeaweedFS are properly 
+configured.
+
+### 3. **Fraud Risk Score 
+Verification**
+   - **Reference [11]** and 
+**[5]** mention **fraud risk 
+scoring models** and **API 
+specifications** for 
+transaction risk evaluation. 
+Verification could involve:
+     - **Model validation**: 
+Ensuring machine learning 
+models (e.g., fraud detection) 
+are accurate and up-to-date.
+     - **API testing**: 
+Confirming endpoints for risk 
+scoring return correct results.
+
+### 4. **Version Control and 
+Documentation**
+   - **Reference [2]** 
+discusses **fraud engine 
+versioning control**, which 
+might involve verifying 
+documentation (e.g., ensuring 
+"py" scripts or configurations 
+are versioned correctly).
+
+---
+
+### If You Meant a Specific 
+Document:
+- The term "py verification 
+doc" is not directly 
+referenced in the provided 
+materials. If you have 
+additional context (e.g., a 
+specific file name, API, or 
+process), please clarify!
+INFO:  == LLM cache == saving: 
+hybrid:query:e0db1a959de69ede51
+c856d4f444b23e
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=0.36s
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+ERROR:main:Embedding failed: 
+The truth value of an array 
+with more than one element is 
+ambiguous. Use a.any() or 
+a.all()
+INFO:main:Total RAG Query 
+Duration: 73.53s
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=0.40s
+INFO: Query nodes: Py 
+verification doc, Document 
+(top_k:40, cosine:0.2)
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=0.23s
+INFO: Local query: 40 entites, 
+53 relations
+INFO: Query edges: Document 
+content, Py verification 
+(top_k:40, cosine:0.2)
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=0.31s
+INFO: Global query: 56 
+entites, 40 relations
+INFO: Raw search results: 81 
+entities, 73 relations, 0 
+vector chunks
+INFO: After truncation: 81 
+entities, 73 relations
+INFO: Selecting 139 from 139 
+entity-related chunks by 
+vector similarity
+INFO: Find no additional 
+relations-related chunks from 
+73 relations
+INFO: Round-robin merged 
+chunks: 139 -> 139 
+(deduplicated 0)
+WARNING: Rerank is enabled but 
+no rerank model is configured. 
+Please set up a rerank model 
+or set enable_rerank=False in 
+query parameters.
+INFO: Final context: 81 
+entities, 73 relations, 20 
+chunks
+INFO: Final chunks S+F/O: E1/1 
+E3/2 E2/3 E4/4 E2/5 E1/6 E3/7 
+E1/8 E1/9 E2/10 E1/11 E9/12 
+E2/13 E6/14 E1/15 E3/16 E1/17 
+E6/18 E2/19 E1/20
+INFO:  == LLM cache == Query 
+cache hit, using cached 
+response as query result
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=0.23s
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+ERROR:main:Embedding failed: 
+The truth value of an array 
+with more than one element is 
+ambiguous. Use a.any() or 
+a.all()
+INFO:main:Total RAG Query 
+Duration: 1.42s
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=0.29s
+INFO: Query nodes: Py 
+verification doc, Document 
+(top_k:40, cosine:0.2)
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=0.34s
+INFO: Local query: 40 entites, 
+53 relations
+INFO: Query edges: Document 
+content, Py verification 
+(top_k:40, cosine:0.2)
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=0.25s
+INFO: Global query: 56 
+entites, 40 relations
+INFO: Raw search results: 81 
+entities, 73 relations, 0 
+vector chunks
+INFO: After truncation: 81 
+entities, 73 relations
+INFO: Selecting 139 from 139 
+entity-related chunks by 
+vector similarity
+INFO: Find no additional 
+relations-related chunks from 
+73 relations
+INFO: Round-robin merged 
+chunks: 139 -> 139 
+(deduplicated 0)
+WARNING: Rerank is enabled but 
+no rerank model is configured. 
+Please set up a rerank model 
+or set enable_rerank=False in 
+query parameters.
+INFO: Final context: 81 
+entities, 73 relations, 20 
+chunks
+INFO: Final chunks S+F/O: E1/1 
+E3/2 E2/3 E4/4 E2/5 E1/6 E3/7 
+E1/8 E1/9 E2/10 E1/11 E9/12 
+E2/13 E6/14 E1/15 E3/16 E1/17 
+E6/18 E2/19 E1/20
+INFO:  == LLM cache == Query 
+cache hit, using cached 
+response as query result
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=0.42s
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+ERROR:main:Embedding failed: 
+The truth value of an array 
+with more than one element is 
+ambiguous. Use a.any() or 
+a.all()
+INFO:main:Total RAG Query 
+Duration: 1.54s
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=0.86s
+INFO: Query nodes: Py 
+verification doc, Document 
+(top_k:40, cosine:0.2)
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=0.24s
+INFO: Local query: 40 entites, 
+53 relations
+INFO: Query edges: Document 
+content, Py verification 
+(top_k:40, cosine:0.2)
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=0.27s
+INFO: Global query: 56 
+entites, 40 relations
+INFO: Raw search results: 81 
+entities, 73 relations, 0 
+vector chunks
+INFO: After truncation: 81 
+entities, 73 relations
+INFO: Selecting 139 from 139 
+entity-related chunks by 
+vector similarity
+INFO: Find no additional 
+relations-related chunks from 
+73 relations
+INFO: Round-robin merged 
+chunks: 139 -> 139 
+(deduplicated 0)
+WARNING: Rerank is enabled but 
+no rerank model is configured. 
+Please set up a rerank model 
+or set enable_rerank=False in 
+query parameters.
+INFO: Final context: 81 
+entities, 73 relations, 20 
+chunks
+INFO: Final chunks S+F/O: E1/1 
+E3/2 E2/3 E4/4 E2/5 E1/6 E3/7 
+E1/8 E1/9 E2/10 E1/11 E9/12 
+E2/13 E6/14 E1/15 E3/16 E1/17 
+E6/18 E2/19 E1/20
+INFO:  == LLM cache == Query 
+cache hit, using cached 
+response as query result
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=0.26s
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+ERROR:main:Embedding failed: 
+The truth value of an array 
+with more than one element is 
+ambiguous. Use a.any() or 
+a.all()
+INFO:main:Total RAG Query 
+Duration: 1.85s
+INFO:     Shutting down
+INFO:     Waiting for 
+application shutdown.
+INFO:main:Application 
+shutdown...
+INFO: Successfully finalized 
+12 storages
+INFO:     Application shutdown 
+complete.
+INFO:     Finished server 
+process [1]
+INFO:     Started server 
+process [1]
+INFO:     Waiting for 
+application startup.
+INFO:main:Application startup: 
+Waiting for dependent 
+services...
+INFO:main:Waiting for service 
+at neo4j:7687...
+INFO:main:Service at 
+neo4j:7687 is available.
+INFO:main:Waiting for service 
+at qdrant:6333...
+INFO:main:Service at 
+qdrant:6333 is available.
+INFO:main:All dependent 
+services are reachable. 
+Initializing RAG Engine...
+INFO:main:Initializing 
+LightRAG in 
+/app/public_data/rag_index...
+WARNING: Qdrant collection: 
+lightrag_vdb_entities missing 
+suffix. Pls add model_name to 
+embedding_func for proper 
+workspace data isolation.
+WARNING: Qdrant collection: 
+lightrag_vdb_relationships 
+missing suffix. Pls add 
+model_name to embedding_func 
+for proper workspace data 
+isolation.
+WARNING: Qdrant collection: 
+lightrag_vdb_chunks missing 
+suffix. Pls add model_name to 
+embedding_func for proper 
+workspace data isolation.
+INFO:main:Initializing 
+LightRAG storages...
+INFO: [] Process 1 KV load 
+full_docs with 107 records
+INFO: [] Process 1 KV load 
+text_chunks with 304 records
+INFO: [] Process 1 KV load 
+full_entities with 95 records
+INFO: [] Process 1 KV load 
+full_relations with 76 records
+INFO: [] Process 1 KV load 
+entity_chunks with 2356 records
+INFO: [] Process 1 KV load 
+relation_chunks with 1961 
+records
+INFO: Qdrant: Found legacy 
+collection 
+'lightrag_vdb_entities' 
+(namespace=entities, 
+workspace=_)
+INFO: [] Qdrant collection 
+'entities' initialized 
+successfully
+INFO: Qdrant: Found legacy 
+collection 
+'lightrag_vdb_relationships' 
+(namespace=relationships, 
+workspace=_)
+INFO: [] Qdrant collection 
+'relationships' initialized 
+successfully
+INFO: Qdrant: Found legacy 
+collection 
+'lightrag_vdb_chunks' 
+(namespace=chunks, workspace=_)
+INFO: [] Qdrant collection 
+'chunks' initialized 
+successfully
+INFO: [base] Database 
+chunk-entity-relation at 
+bolt://neo4j:7687 not found. 
+Try to create specified 
+database.
+WARNING: [base] This Neo4j 
+instance does not support 
+creating databases. Try to use 
+Neo4j Desktop/Enterprise 
+version or DozerDB instead. 
+Fallback to use the default 
+database.
+INFO: [base] Connected to None 
+at bolt://neo4j:7687
+INFO: [base] Ensured B-Tree 
+index on entity_id for base in 
+None
+INFO: [base] Found existing 
+index 
+'entity_id_fulltext_idx_base' 
+with state: ONLINE
+INFO: [base] Full-text index 
+'entity_id_fulltext_idx_base' 
+already exists and is online. 
+Skipping recreation.
+INFO: [] Process 1 KV load 
+llm_response_cache with 692 
+records
+INFO: [] Process 1 doc status 
+load doc_status with 107 
+records
+INFO:main:LightRAG initialized 
+successfully with Neo4j and 
+Qdrant.
+INFO:main:Graph Storage 
+Instance: <class 'lightrag.kg.n
+eo4j_impl.Neo4JStorage'>
+INFO:main:Vector Storage 
+Instance: <class 'lightrag.kg.q
+drant_impl.QdrantVectorDBStorag
+e'>
+INFO:main:KV Storage Instance: 
+<class 'lightrag.kg.json_kv_imp
+l.JsonKVStorage'>
+INFO:main:Doc Status Storage 
+Instance: <class 'lightrag.kg.j
+son_doc_status_impl.JsonDocStat
+usStorage'>
+INFO:     Application startup 
+complete.
+INFO:     Uvicorn running on 
+http://0.0.0.0:8000 (Press 
+CTRL+C to quit)
+INFO:     172.22.0.5:41890 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:58758 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:60216 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:38086 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:43886 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:43566 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:55904 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.1:55542 - "POST /query HTTP/1.1" 200 OK
+INFO:     172.22.0.5:39614 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:36644 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:48510 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:53052 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:42558 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.1:59206 - "POST /query HTTP/1.1" 200 OK
+INFO:     172.22.0.5:40396 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:55864 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:38828 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:55344 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:39096 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:48488 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:36352 - "GET /metrics HTTP/1.1" 200 OK
+INFO: Embedding func: 8 new 
+workers initialized (Timeouts: 
+Func: 30s, Worker: 60s, Health 
+Check: 75s)
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=0.41s
+WARNING: Failed to pre-compute 
+query embedding: 'list' object 
+has no attribute 'size'
+INFO: Query nodes: Py 
+verification doc, Document 
+(top_k:40, cosine:0.2)
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=0.46s
+ERROR: Query failed: 'list' 
+object has no attribute 'size'
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=0.30s
+INFO:main:Embedding generated. 
+Shape: 1x1536
+INFO:main:Executing 
+chunks_vdb.query...
+INFO:     172.22.0.5:35256 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:35006 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:44646 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:57206 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:52770 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:49838 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.1:40378 - "POST /query HTTP/1.1" 200 OK
+INFO:     172.22.0.5:40330 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:32818 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:52512 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:44900 - "GET /metrics HTTP/1.1" 200 OK
+INFO:     172.22.0.5:46464 - "GET /metrics HTTP/1.1" 200 OK
+INFO:main:Embedding [Start]: 
+Type=public, Count=1
+INFO:main:Embedding [Success]: 
+Duration=0.27s
+ERROR:main:Failed to retrieve 
+sources: 'list' object has no 
+attribute 'size'
+Traceback (most recent call 
+last):
+  File "/app/main.py", line 
+1240, in run_rag
+    sources_results = await rag
+_engine.rag.chunks_vdb.query(ve
+ctor, top_k=5)
+                      ^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.
+11/site-packages/lightrag/kg/qd
+rant_impl.py", line 569, in 
+query
+    embedding_result = await 
+self.embedding_func(
+                       
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.
+11/site-packages/lightrag/utils
+.py", line 506, in __call__
+    total_elements = 
+result.size  # Total number of 
+elements in the numpy array
+                     
+^^^^^^^^^^^
+AttributeError: 'list' object 
+has no attribute 'size'
+INFO:main:Total RAG Query 
+Duration: 1.45s

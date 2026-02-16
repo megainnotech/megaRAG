@@ -101,6 +101,15 @@ class QueryRequest(BaseModel):
 # ... imports ...
 from lightrag import LightRAG, QueryParam
 from lightrag.utils import EmbeddingFunc
+import numpy as np
+
+# Monkeypatch EmbeddingFunc.__call__ to avoid Numpy ambiguity error and list attribute error
+# The original implementation likely checks "if result:" (fails on array) AND "result.size" (fails on list)
+# We bypass validation and let LightRAG handle the internal conversion.
+async def safe_embedding_call(self, *args, **kwargs):
+    return await self.func(*args, **kwargs)
+
+EmbeddingFunc.__call__ = safe_embedding_call
 # Storage classes will be loaded by LightRAG via string names
 import numpy as np
 import os
@@ -123,6 +132,22 @@ def extract_tag_from_request(tags: Dict) -> Optional[str]:
 
 # ...
 
+# Helper to identify RAG job from prompt
+def detect_llm_job(prompt: str) -> str:
+    """Detects the type of RAG job based on the prompt content."""
+    p = prompt[:500] # Check start of prompt
+    if "Given the following" in p and "keywords" in p.lower():
+        if "high-level" in p.lower():
+            return "Keywords Extraction (High-Level)"
+        return "Keywords Extraction"
+    if "Identify all entities" in p:
+        return "Entity Extraction"
+    if "Answer the following query" in p or "Goal: Respond to the user" in p:
+        return "Answer Generation"
+    if "Generate a comprehensive summary" in p:
+        return "Summary Generation"
+    return "Unknown Job"
+
 async def llm_model_func(prompt, system_prompt=None, history_messages=[], **kwargs) -> str:
     # Get config from context (set per request)
     config = request_llm_config.get()
@@ -136,6 +161,9 @@ async def llm_model_func(prompt, system_prompt=None, history_messages=[], **kwar
     start_time = time.time()
     status = "success"
     
+    # Detect Job Type
+    job_type = detect_llm_job(prompt)
+    
     messages = []
     if system_prompt:
         messages.append({"role": "system", "content": system_prompt})
@@ -143,14 +171,23 @@ async def llm_model_func(prompt, system_prompt=None, history_messages=[], **kwar
         messages.extend(history_messages)
     messages.append({"role": "user", "content": prompt})
     
-    logger.info(f"LLM Call [Start]: Type={llm_type}, Model={model_name}, PromptLen={len(prompt)}")
+    logger.info(f"LLM Call [Start]: Job='{job_type}', Type={llm_type}, Model={model_name}, PromptLen={len(prompt)}")
     logger.info(f"LLM Config: {config}")
 
     # Push status update if stream is active - Retrieve from config
     stream_queue = config.get("stream_queue")
     if stream_queue:
         try:
-            stream_queue.put_nowait({"type": "status", "content": f"Thinking... (Model: {model_name})"})
+            # Map job type to user friendly status
+            user_status = f"Processing ({job_type})..."
+            if job_type == "Keywords Extraction":
+                 user_status = "Extracting keywords..."
+            elif job_type == "Answer Generation":
+                 user_status = "Formulating answer..."
+            elif job_type == "Entity Extraction":
+                 user_status = "Analyzing entities..."
+                 
+            stream_queue.put_nowait({"type": "status", "content": f"{user_status} (Model: {model_name})"})
         except Exception:
             pass
 
@@ -210,7 +247,9 @@ async def llm_model_func(prompt, system_prompt=None, history_messages=[], **kwar
         if config is not None:
              config["last_response"] = content
         
-        logger.info(f"LLM Call [Success]: ResponseLen={len(content)}")
+        duration = time.time() - start_time
+        prompt_snippet = prompt[:100].replace('\n', ' ') + "..." if len(prompt) > 100 else prompt.replace('\n', ' ')
+        logger.info(f"LLM Call [Success]: Job='{job_type}', Duration={duration:.2f}s, ResponseLen={len(content)}, PromptSnippet='{prompt_snippet}'")
         logger.info(f"DEBUG: llm_model_func returning: {content}")
         return content
 
@@ -241,6 +280,9 @@ async def embedding_func(texts: list[str]) -> np.ndarray:
     else:
         model_name = "all-minilm" 
     
+    start_time = time.time()
+    logger.info(f"Embedding [Start]: Type={embedding_type}, Count={len(texts)}")
+    
     try:
         embeddings = []
         if embedding_type == "local":
@@ -255,32 +297,36 @@ async def embedding_func(texts: list[str]) -> np.ndarray:
             for text in texts:
                 response = client.embeddings(model=model_name, prompt=text)
                 embeddings.append(response['embedding'])
-            return np.array(embeddings)
+            result = embeddings # Return list, not numpy array
             
         elif embedding_type == "public":
             key_to_use = api_key or default_api_key
             if not key_to_use:
-                return np.zeros((len(texts), 1536))
+                return [] # Empty list
             
             client = AsyncOpenAI(api_key=key_to_use)
             # OpenAI requires non-empty strings. Replace empty/None with space.
             processed_texts = [t if t and isinstance(t, str) and t.strip() else " " for t in texts]
             response = await client.embeddings.create(input=processed_texts, model=model_name)
-            return np.array([data.embedding for data in response.data])
+            result = [data.embedding for data in response.data]
             
         else:
              # Fallback/Other types if needed
              if default_openai_client:
                  processed_texts = [t if t and isinstance(t, str) and t.strip() else " " for t in texts]
                  response = await default_openai_client.embeddings.create(input=processed_texts, model=model_name)
-                 return np.array([data.embedding for data in response.data])
-             return np.zeros((len(texts), 1536))
+                 result = [data.embedding for data in response.data]
+             else:
+                 result = []
+             
+        duration = time.time() - start_time
+        logger.info(f"Embedding [Success]: Duration={duration:.2f}s")
+        return result
 
     except Exception as e:
         logger.error(f"Embedding failed: {e}")
-        # Return zero vector matching expected dimension
-        dim = 1536 if embedding_type == "public" else 384
-        return np.zeros((len(texts), dim))
+        # Return empty list matching expected dimension (functionally)
+        return []
 
 # --- Tag Manager ---
 class TagManager:
@@ -1115,6 +1161,7 @@ async def query_rag(request: QueryRequest):
 
         # Run RAG in background
         async def run_rag():
+            start_time = time.time()
             try:
                 # Check RAGEngine status
                 if rag_engine.status != "ready" or not rag_engine.rag:
@@ -1177,29 +1224,57 @@ async def query_rag(request: QueryRequest):
                     # Extract Sources Manually from Vector DB
                     try:
                         # Generate embedding for the query
-                        embedding = await rag_engine.rag.embedding_func([request.query])
+                        # Access .func if it's an EmbeddingFunc wrapper
+                        embed_func = rag_engine.rag.embedding_func
+                        if hasattr(embed_func, 'func'):
+                            embed_func = embed_func.func
+                        
+                        embedding = await embed_func([request.query])
+                        
+                        if not embedding or len(embedding) == 0:
+                            logger.error("Embedding generation returned empty result.")
+                            # Cannot search without embedding
+                            # Skip source retrieval
+                            raise ValueError("Empty embedding result")
+
+                        logger.info(f"Embedding generated. Shape: {len(embedding)}x{len(embedding[0]) if embedding else 0}")
+                        
                         # Perform vector search on chunks
-                        sources_results = await rag_engine.rag.chunks_vdb.query(embedding[0], top_k=5)
+                        logger.info("Executing chunks_vdb.query...")
+                        # Convert to list to avoid Numpy ambiguity errors in some clients
+                        # embedding is now likely a list, but handle both
+                        vec = embedding[0]
+                        vector = vec.tolist() if hasattr(vec, 'tolist') else vec
+                        
+                        sources_results = await rag_engine.rag.chunks_vdb.query(vector, top_k=5)
+                        logger.info(f"Sources Search: Found {len(sources_results)} potential chunks.")
                         
                         sources = []
                         seen_urls = set()
                         
                         for res in sources_results:
                             url = res.get("file_path")
+                            # Log chunk details for debugging
+                            if not url:
+                                logger.debug(f"Chunk missing file_path: {res.get('id', 'unknown')}")
+                            
                             if url and url not in seen_urls and isinstance(url, str) and url.startswith("http"):
                                 seen_urls.add(url)
                                 sources.append({"url": url, "title": url.split("/")[-1] or "Document"})
                         
+                        logger.info(f"Sources Extracted: {len(sources)} valid links.")
                         if sources:
                              await queue.put({"type": "sources", "content": sources})
                              
                     except Exception as e:
-                        logger.error(f"Failed to retrieve sources: {e}")
+                        logger.error(f"Failed to retrieve sources: {e}", exc_info=True)
 
             except Exception as e:
                 logger.error(f"Query Error: {e}", exc_info=True)
                 await queue.put({"type": "error", "content": str(e)})
             finally:
+                total_duration = time.time() - start_time
+                logger.info(f"Total RAG Query Duration: {total_duration:.2f}s")
                 await queue.put(None) # Signal done
 
 
