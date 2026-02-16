@@ -522,12 +522,20 @@ class QdrantVectorDBStorage(BaseVectorStorage):
         import time
 
         current_time = int(time.time())
+        
+        # Try to get doc_id from context variable if available
+        try:
+            from main import current_doc_id
+            doc_id = current_doc_id.get()
+        except (ImportError, LookupError):
+            doc_id = None
 
         list_data = [
             {
                 ID_FIELD: k,
                 WORKSPACE_ID_FIELD: self.effective_workspace,
                 CREATED_AT_FIELD: current_time,
+                **({"doc_id": doc_id} if doc_id else {}),  # Add doc_id if available
                 **{k1: v1 for k1, v1 in v.items() if k1 in self.meta_fields},
             }
             for k, v in data.items()

@@ -6,6 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2, Send, Bot, User, Settings2 } from 'lucide-react';
 import { toast } from 'sonner';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const RetrievePage = () => {
     const [query, setQuery] = useState('');
@@ -13,6 +15,7 @@ const RetrievePage = () => {
     const [loading, setLoading] = useState(false);
     const [mode, setMode] = useState('hybrid');
     const [statusMessage, setStatusMessage] = useState('');
+    const [sources, setSources] = useState([]);
 
     const handleQuery = async (e) => {
         e.preventDefault();
@@ -20,6 +23,7 @@ const RetrievePage = () => {
 
         setLoading(true);
         setResponse(''); // Clear previous response
+        setSources([]); // Clear previous sources
         setStatusMessage('Initializing...');
 
         try {
@@ -70,6 +74,8 @@ const RetrievePage = () => {
                                 setResponse(accumulatedResponse);
                                 // We keep loading true until done? Or stream might continue?
                                 // Usually answer is final. But let's keep loading until loop finishes.
+                            } else if (data.type === 'sources') {
+                                setSources(data.content);
                             }
                         } catch (e) {
                             console.error('Error parsing SSE data', e);
@@ -136,11 +142,35 @@ const RetrievePage = () => {
                                         <Bot className="h-5 w-5" />
                                     </div>
                                     <div className="flex-1 space-y-2">
-                                        <div className="prose prose-sm dark:prose-invert max-w-none p-4 rounded-lg bg-muted/30 border">
-                                            <p className="whitespace-pre-wrap leading-relaxed">{response}</p>
+                                        <div className="prose prose-sm dark:prose-invert max-w-none p-4 rounded-lg bg-muted/30 border overflow-x-auto">
+                                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                                {response}
+                                            </ReactMarkdown>
                                         </div>
                                     </div>
                                 </div>
+
+                                {/* Sources Display */}
+                                {sources && sources.length > 0 && (
+                                    <div className="ml-11 p-4 rounded-lg bg-muted/20 border text-sm">
+                                        <h4 className="font-semibold mb-2 text-muted-foreground">Sources:</h4>
+                                        <ul className="space-y-1">
+                                            {sources.map((source, index) => (
+                                                <li key={index} className="flex items-center gap-2">
+                                                    <span className="text-muted-foreground w-4 text-center">{index + 1}.</span>
+                                                    <a
+                                                        href={source.url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-blue-600 hover:underline break-all"
+                                                    >
+                                                        {source.url}
+                                                    </a>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
                             </div>
                         )}
 

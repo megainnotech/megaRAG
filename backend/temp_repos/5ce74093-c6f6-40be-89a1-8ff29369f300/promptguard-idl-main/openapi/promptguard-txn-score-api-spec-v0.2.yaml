@@ -1,0 +1,403 @@
+openapi: '3.1.0'
+info:
+  title: PromptGuard - Transaction Score
+  version: '0.1'
+  description: |
+    This specification provides the Transaction score service API standard to ITMX internal staffs. 
+    
+    It includes the following API modules:  
+    1. **Trasaction Score Service**
+    This module is for client to query the score. It won't predict the score, but query from a cache or foward the query to the 2nd module.
+
+    2. **Core Trasaction Score Prediction**  
+    This module infer a transaction risk score real-time, based-on the information of sender and receiver.
+
+servers:
+  - url: https://sandbox.itmx.co.th/promptguard/txn-score
+
+paths:
+  /svc/health:
+    get:
+      summary: Health check for transaction score service
+      parameters:
+        - $ref: '#/components/parameters/X-API-Version'
+
+      responses:
+        '200':
+          $ref: '#/components/responses/Health200'
+        '500':
+          $ref: '#/components/responses/Health500'
+
+  /svc/qry:
+    post:
+      summary: Query risk score of requesting transaction.
+      description: |
+         This API backend won't predict the score, but query from a cache or foward the query to the "Core Transaction Score Prediction" module.
+      parameters:
+        - $ref: '#/components/parameters/X-API-Version'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TxnRequest'
+            example:
+              transactions:
+              - sender_fi_code: '002'
+                sender_proxy_id: '1234567890'
+                receiver_fi_code: '004'
+                receiver_proxy_id: '0987654321'
+                amount: '49000.00'
+                timestamp: '2024-05-13T09:45:33+07:00'
+              - sender_fi_code: '002'
+                sender_proxy_id: '1234567890'
+                receiver_proxy_id: '0854321234'
+                receiver_proxy_type: 'mobile'
+                amount: '49000.50'
+                timestamp: '2024-05-13T09:45:34+07:00'
+
+      responses:
+        '200':
+          description: Successful transaction score query.
+          headers:
+            X-API-Version:
+              $ref: '#/components/headers/X-API-Version'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ResponseStatus'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TxnScoreResponseData'
+              examples:
+                Success:
+                  value:
+                    status:
+                      code: '0000'
+                      message: SUCCESS
+                    data:
+                    - correlation_id: '0123456789'
+                      risk_score: 23
+                    - correlation_id: '0123456790'
+                      risk_score: 85
+                    timestamp: '2024-05-13T09:45:33+07:00'
+        '400':
+          description: Invalid field input.
+          headers:
+            X-API-Version:
+              $ref: '#/components/headers/X-API-Version'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseStatus'
+              examples:
+                InvalidInput:
+                  value:
+                    status:
+                      code: '4000'
+                      message: Invalid input for field 'amount'. Value must be positive.
+                    timestamp: '2024-05-13T09:45:33+07:00'
+        '500':
+          description: Internal server error.
+          headers:
+            X-API-Version:
+              $ref: '#/components/headers/X-API-Version'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseStatus'
+              examples:
+                InternalError:
+                  value:
+                    status:
+                      code: '5000'
+                      message: An unexpected error occurred.
+                    timestamp: '2024-05-13T09:45:33+07:00'
+                    
+  /predict/health:
+    get:
+      summary: Health check for transaction score prediction
+      parameters:
+        - $ref: '#/components/parameters/X-API-Version'
+
+      responses:
+        '200':
+          $ref: '#/components/responses/Health200'
+        '500':
+          $ref: '#/components/responses/Health500'
+  
+  /predict/infer:
+    post:
+      summary: Infer risk score of requesting transaction.
+      description: |
+         This API backend will predict the score real-time, based-on the information of sender and receiver.
+      parameters:
+        - $ref: '#/components/parameters/X-API-Version'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TxnRequest'
+            example:
+              transactions:
+              - sender_fi_code: '002'
+                sender_proxy_id: '1234567890'
+                receiver_fi_code: '004'
+                receiver_proxy_id: '0987654321'
+                amount: '49000.00'
+                timestamp: '2024-05-13T09:45:33+07:00'
+              - sender_fi_code: '002'
+                sender_proxy_id: '1234567890'
+                receiver_proxy_id: '0854321234'
+                receiver_proxy_type: 'mobile'
+                amount: '49000.50'
+                timestamp: '2024-05-13T09:45:34+07:00'
+
+      responses:
+        '200':
+          description: Successful transaction score inference.
+          headers:
+            X-API-Version:
+              $ref: '#/components/headers/X-API-Version'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ResponseStatus'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TxnScoreResponseData'
+              examples:
+                Success:
+                  value:
+                    status:
+                      code: '0000'
+                      message: SUCCESS
+                    data:
+                    - correlation_id: '0123456789'
+                      risk_score: 26
+                    - correlation_id: '0123456790'
+                      risk_score: 5
+                    timestamp: '2024-05-13T09:45:33+07:00'
+        '400':
+          description: Invalid field input.
+          headers:
+            X-API-Version:
+              $ref: '#/components/headers/X-API-Version'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseStatus'
+              examples:
+                InvalidInput:
+                  value:
+                    status:
+                      code: '4000'
+                      message: Invalid input for field 'amount'. Value must be positive.
+                    timestamp: '2024-05-13T09:45:33+07:00'
+        '500':
+          description: Internal server error.
+          headers:
+            X-API-Version:
+              $ref: '#/components/headers/X-API-Version'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseStatus'
+              examples:
+                InternalError:
+                  value:
+                    status:
+                      code: '5000'
+                      message: An unexpected error occurred.
+                    timestamp: '2024-05-13T09:45:33+07:00'
+
+components:
+  parameters:
+    X-API-Version:
+      name: X-API-Version
+      in: header
+      required: true
+      schema:
+        type: string
+        example: v1
+      description: Caller must specify API version in every call to ITMX using HTTP header name "X-API-Version" for example "v1".
+
+  headers:  # response headers
+    X-API-Version:
+      schema:
+        type: string
+      description: Echo back the API running version
+    X-TXN-ID:
+      schema:
+        type: string
+      description: UUID v.4, 36 characters (dashes included), which unique for every transaction
+
+  schemas:
+    timestamp:
+      type: string
+      minLength: 25
+      maxLength: 25
+      format: ISO-8601 datetime
+      pattern: YYYY-MM-DDThh:mm:ssZ
+      example: '2024-05-13T09:45:33+07:00'
+
+    ResponseStatus:
+      type: object
+      required:
+        - "status"
+        - "timestamp"
+      properties:
+        status:
+          type: object
+          description: สถานะรายการ
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              description: รหัสตอบกลับ
+              maxLength: 4
+            message:
+              type: string
+              description: ข้อความรหัสตอบกลับ
+              maxLength: 256
+        timestamp:
+          description: The timestamp when the response was generated (e.g., prediction result timestamp).
+          $ref: '#/components/schemas/timestamp'
+        data:
+          type: object
+          description: ข้อมูลรายการ
+
+    TxnInput:
+      type: object
+      required:
+        - sender_proxy_id
+        - receiver_proxy_id
+        - amount
+        - timestamp
+      properties:
+        sender_proxy_id:
+          type: string
+          maxLength: 20
+        receiver_proxy_id:
+          type: string
+          maxLength: 20
+        amount:
+          type: string
+          description: transaction amount in THB, from 0.00 to 9999999999.99
+          pattern: B.SS which B is baht and S is stang.
+          minLength: 4
+          maxLength: 13
+          example: '1.05'
+        timestamp:
+          description: The timestamp of the original transaction.
+          $ref: '#/components/schemas/timestamp'
+        sender_fi_code:
+          description: This field is required, if the sender_proxy_type is account.
+          type: string
+          maxLength: 10
+        receiver_fi_code:
+          description: This field is required, if the receiver_proxy_type is account.
+          type: string
+          maxLength: 10
+        sender_proxy_type:
+          type: string
+          maxLength: 20
+          default: account
+          enum:
+            - account
+            - mobile
+            - nat_id
+            - biller_id
+            - ewallet
+        receiver_proxy_type:
+          type: string
+          maxLength: 20
+          default: account
+          enum:
+            - account
+            - mobile
+            - nat_id
+            - biller_id
+            - ewallet
+        correlation_id:
+          type: string
+          description: An id to distinguish a transaction in batch request. If it's null, PromptGuard will fill a internal correlation_id when response back to the client.
+          maxLength: 35
+
+    TxnRequest:
+      type: object
+      required:
+        - transactions
+      properties:
+        transactions:
+          type: array
+          description: List of transaction transactions for query. Can be query multiple transactions a time
+          items:
+            $ref: '#/components/schemas/TxnInput'
+    TxnScoreData:
+      type: object
+      required:
+        - correlation_id
+        - risk_score
+      properties:
+        correlation_id:
+          type: string
+          description: transaction end-to-end id
+        risk_score:
+          type: integer
+          description: The predicted risk score, from 0 to 100. Higher score means more risk.
+    TxnScoreResponseData:
+      type: array
+      items:
+        $ref: '#/components/schemas/TxnScoreData'
+  
+  securitySchemes:
+    jwtBearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    Health200:
+      description: |
+        Service is healthy.
+      headers:
+        X-API-Version:
+          $ref: '#/components/headers/X-API-Version'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ResponseStatus'
+          examples:
+            Success:
+              value:
+                status:
+                  code: '0000'
+                  message: healthy
+                timestamp: '2025-11-13T09:45:33+07:00'
+    Health500:
+      description: Service is down
+      headers:
+        X-API-Version:
+          $ref: '#/components/headers/X-API-Version'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ResponseStatus'
+          examples:
+            Fail:
+              value:
+                status:
+                  code: '0000'
+                  message: service is unavailable!
+                timestamp: '2025-11-13T09:45:33+07:00'
+
+security:
+  - jwtBearer: []

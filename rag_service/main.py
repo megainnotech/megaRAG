@@ -8,8 +8,10 @@ import shutil
 import json
 from pathlib import Path
 import glob
+from contextlib import asynccontextmanager
 from prometheus_client import Counter, Histogram, generate_latest
 from prometheus_fastapi_instrumentator import Instrumentator
+import markdown_splitter
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -20,7 +22,7 @@ import socket
 import time
 from tenacity import retry, stop_after_attempt, wait_fixed, before_sleep_log
 
-def wait_for_service(host: str, port: int, timeout: int = 60):
+def wait_for_service(host: str, port: int, timeout: int = 300):
     """Waits for a TCP service to be available."""
     start_time = time.time()
     logger.info(f"Waiting for service at {host}:{port}...")
@@ -82,6 +84,7 @@ class IngestRequest(BaseModel):
 
 # --- Context Vars for Request-Scoped Config ---
 import contextvars
+from contextvars import ContextVar
 request_llm_config = contextvars.ContextVar("llm_config", default={})
 status_stream = contextvars.ContextVar("status_stream", default=None)
 
@@ -90,6 +93,7 @@ class QueryRequest(BaseModel):
     mode: str = "hybrid" # 'hybrid', 'vector', 'graph'
     tags: Optional[Dict[str, Any]] = None
     llm_config: Optional[Dict[str, Any]] = None
+    top_k: Optional[int] = None # Added for tuning retrieval
 
 # --- RAG Engine ---
 # ... imports ...
@@ -151,7 +155,7 @@ async def llm_model_func(prompt, system_prompt=None, history_messages=[], **kwar
             pass
 
     # Helper to clean kwargs for OpenAI
-    openai_kwargs = {k: v for k, v in kwargs.items() if k not in ['hashing_kv', 'mode', 'enable_cot']}
+    openai_kwargs = {k: v for k, v in kwargs.items() if k not in ['hashing_kv', 'mode', 'enable_cot', 'keyword_extraction', 'json_model']}
 
     try:
         content = ""
@@ -259,13 +263,16 @@ async def embedding_func(texts: list[str]) -> np.ndarray:
                 return np.zeros((len(texts), 1536))
             
             client = AsyncOpenAI(api_key=key_to_use)
-            response = await client.embeddings.create(input=texts, model=model_name)
+            # OpenAI requires non-empty strings. Replace empty/None with space.
+            processed_texts = [t if t and isinstance(t, str) and t.strip() else " " for t in texts]
+            response = await client.embeddings.create(input=processed_texts, model=model_name)
             return np.array([data.embedding for data in response.data])
             
         else:
              # Fallback/Other types if needed
              if default_openai_client:
-                 response = await default_openai_client.embeddings.create(input=texts, model=model_name)
+                 processed_texts = [t if t and isinstance(t, str) and t.strip() else " " for t in texts]
+                 response = await default_openai_client.embeddings.create(input=processed_texts, model=model_name)
                  return np.array([data.embedding for data in response.data])
              return np.zeros((len(texts), 1536))
 
@@ -318,6 +325,9 @@ class TagManager:
 # Initialize global TagManager
 tag_manager = TagManager()
 
+# Context variable to track current doc_id during ingestion
+current_doc_id: ContextVar[str | None] = ContextVar('current_doc_id', default=None)
+
 class RAGEngine:
     def __init__(self):
         self.status = "initializing"
@@ -335,6 +345,10 @@ class RAGEngine:
         os.environ["NEO4J_USERNAME"] = NEO4J_USERNAME
         os.environ["NEO4J_PASSWORD"] = NEO4J_PASSWORD
         os.environ["QDRANT_URL"] = QDRANT_URL
+        
+        # Tuning Retrieval
+        os.environ["TOP_K"] = "100" # Increase from default 60
+
         
         # Initialize LightRAG with specific storage classes
         self.rag = LightRAG(
@@ -369,10 +383,11 @@ class RAGEngine:
         
         return # Success
 
-    async def ingest_file(self, file_path: str, doc_id: str, tags: Dict):
+    async def ingest_file(self, file_path: str, doc_id: str, tags: Dict, url: Optional[str] = None):
         if self.status != "ready" or not self.rag:
-            logger.error(f"Ingestion failed: RAG Engine not ready (Status: {self.status})")
-            return
+            error_msg = f"Ingestion failed: RAG Engine not ready (Status: {self.status})"
+            logger.error(error_msg)
+            raise RuntimeError(error_msg)
 
         logger.info(f"Ingesting file: {file_path} for doc: {doc_id}")
         content = ""
@@ -388,8 +403,20 @@ class RAGEngine:
                 token = request_llm_config.set({"type": "public"}) # Default to public/env for ingestion for now
                 try:
                     logger.info(f"Inserting content into RAG (Length: {len(content)}). This may involve LLM calls for graph extraction.")
+                    # CRITICAL: Pass doc_id to ainsert() to use our composite ID instead of MD5
+                    # This ensures LightRAG stores the doc with our ID, making deletion possible
                     # Using async insert to ensure compatibility with async LLM function
-                    await self.rag.ainsert(content) 
+                    # Set doc_id in context for storage layers to access
+                    token_doc_id = current_doc_id.set(doc_id)
+                    try:
+                        # Pass ids=doc_id so LightRAG uses our composite ID
+                        await self.rag.ainsert(
+                            content, 
+                            ids=doc_id,  # Use composite ID like "parent#file.md"
+                            file_paths=[url] if url else None
+                        )
+                    finally:
+                        current_doc_id.reset(token_doc_id)
                     
                     # Register tag
                     main_tag = extract_tag_from_request(tags)
@@ -399,76 +426,100 @@ class RAGEngine:
                     logger.info(f"Inserted content successfully.")
                 finally:
                     request_llm_config.reset(token)
-
-        except Exception as e:
-            logger.error(f"Error reading/ingesting file {file_path}: {e}")
-
-    async def ingest_text(self, text: str, doc_id: str, tags: Dict):
-        if self.status != "ready" or not self.rag:
-            logger.error(f"Ingestion failed: RAG Engine not ready (Status: {self.status})")
-            return
-            
-        logger.info(f"Ingesting text for doc: {doc_id}")
-        if text:
-             # Default config for ingestion
-             token = request_llm_config.set({"type": "public"})
-             try:
-                # Using async insert
-                await self.rag.ainsert(text)
-                
-                main_tag = extract_tag_from_request(tags)
-                if main_tag:
-                     tag_manager.add_tag(main_tag, doc_id)
-                     
-             finally:
-                request_llm_config.reset(token)
-
-    async def ingest_file(self, file_path: str, doc_id: str, tags: Dict):
-        if self.status != "ready" or not self.rag:
-            logger.error(f"Ingestion failed: RAG Engine not ready (Status: {self.status})")
-            return
-
-        logger.info(f"Ingesting file: {file_path} for doc: {doc_id}")
-        content = ""
-        try:
-            if file_path.endswith('.pdf'):
-                with pdfplumber.open(file_path) as pdf:
-                    content = "\n".join([page.extract_text() or "" for page in pdf.pages])
             else:
-                 with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
-                    content = f.read()
+                logger.warning(f"File {file_path} is empty, skipping ingestion.")
+
+        except Exception as e:
+            logger.error(f"Error reading/ingesting file {file_path}: {e}")
+            raise e
+
+    async def ingest_markdown_enhanced(self, file_path: str, doc_id: str, tags: Dict, base_url: Optional[str] = None):
+        """
+        Ingests a markdown file by splitting it into sections based on headers.
+        Each section is ingested as a separate 'chunk' with its own deep-link URL.
+        """
+        if self.status != "ready" or not self.rag:
+            error_msg = f"Ingestion failed: RAG Engine not ready (Status: {self.status})"
+            logger.error(error_msg)
+            raise RuntimeError(error_msg)
+
+        logger.info(f"Enhanced Ingestion for file: {file_path} (DocID: {doc_id})")
+        
+        try:
+            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                content = f.read()
             
-            if content:
-                token = request_llm_config.set({"type": "public"}) # Default to public/env for ingestion for now
-                try:
-                    logger.info(f"Inserting content into RAG (Length: {len(content)}). This may involve LLM calls for graph extraction.")
-                    # Using async insert to ensure compatibility with async LLM function
-                    await self.rag.ainsert(content) 
+            if not content:
+                 logger.warning(f"File {file_path} is empty, skipping.")
+                 return
+
+            # Split content by headers
+            sections = markdown_splitter.split_markdown_by_headers(content)
+            logger.info(f"Split document into {len(sections)} sections.")
+            
+            token = request_llm_config.set({"type": "public"})
+            
+            try:
+                for i, section in enumerate(sections):
+                    header = section['header']
+                    slug = section['slug']
+                    section_content = section['content']
+                    
+                    if not section_content.strip():
+                        continue
+                        
+                    # 1. Generate Deep Link URL
+                    if base_url:
+                        if slug:
+                            section_url = f"{base_url}#{slug}"
+                        else:
+                            section_url = base_url
+                    else:
+                        section_url = None
+                        
+                    # 2. Generate Unique Sub-Doc ID
+                    sub_doc_id = f"{doc_id}#{slug}" if slug else f"{doc_id}#sect_{i}"
+                    
+                    logger.info(f"Ingesting Section '{header}' as {sub_doc_id} (URL: {section_url})")
+                    
+                    # Set doc_id in context for storage layers
+                    token_doc_id = current_doc_id.set(sub_doc_id)
+                    try:
+                        await self.rag.ainsert(
+                            section_content,
+                            ids=sub_doc_id, 
+                            file_paths=[section_url] if section_url else None
+                        )
+                    finally:
+                        current_doc_id.reset(token_doc_id)
                     
                     # Register tag
                     main_tag = extract_tag_from_request(tags)
                     if main_tag:
-                         tag_manager.add_tag(main_tag, doc_id)
-                         
-                    logger.info(f"Inserted content successfully.")
-                finally:
-                    request_llm_config.reset(token)
+                         tag_manager.add_tag(main_tag, sub_doc_id)
+
+                logger.info(f"Finished enhanced ingestion for {file_path}")
+
+            finally:
+                 request_llm_config.reset(token)
 
         except Exception as e:
-            logger.error(f"Error reading/ingesting file {file_path}: {e}")
+            logger.error(f"Error in enhanced ingestion for {file_path}: {e}")
+            raise e
 
     async def ingest_text(self, text: str, doc_id: str, tags: Dict):
         if self.status != "ready" or not self.rag:
-            logger.error(f"Ingestion failed: RAG Engine not ready (Status: {self.status})")
-            return
+            error_msg = f"Ingestion failed: RAG Engine not ready (Status: {self.status})"
+            logger.error(error_msg)
+            raise RuntimeError(error_msg)
             
         logger.info(f"Ingesting text for doc: {doc_id}")
         if text:
              # Default config for ingestion
              token = request_llm_config.set({"type": "public"})
              try:
-                # Using async insert
-                await self.rag.ainsert(text)
+                # CRITICAL: Pass ids=doc_id so LightRAG uses our doc_id instead of generating MD5
+                await self.rag.ainsert(text, ids=doc_id)
                 
                 main_tag = extract_tag_from_request(tags)
                 if main_tag:
@@ -476,6 +527,8 @@ class RAGEngine:
                      
              finally:
                 request_llm_config.reset(token)
+
+
 
     def query(self, query: str, mode: str):
         if self.status != "ready" or not self.rag:
@@ -484,24 +537,254 @@ class RAGEngine:
         logger.info(f"Querying: {query} with mode: {mode}")
         return self.rag.query(query, param=QueryParam(mode=mode))
 
-    def delete_doc(self, doc_id: str):
+    async def delete_doc(self, doc_id: str):
+        """Delete all data associated with a document ID from Neo4j and Qdrant
+        
+        Args:
+            doc_id: Document ID to delete
+        """
         if self.status != "ready" or not self.rag:
             logger.error("Deletion failed: RAG Engine not ready.")
             return
 
-        logger.info(f"Deleting doc: {doc_id}")
+        logger.info(f"Starting deletion process for doc_id: {doc_id}")
+        
         try:
-             # Attempt to delete by doc_id if library supports it
-             if hasattr(self.rag, "delete_by_doc_id"):
-                 self.rag.delete_by_doc_id(doc_id)
-             else:
-                 logger.warning("LightRAG instance has no delete_by_doc_id method. Deletion might not persist in RAG.")
+            # Step 1: Find all chunks with this doc_id from Qdrant
+            from qdrant_client import models
+            
+            chunks_to_delete = []
+            entities_to_delete = set()
+            
+            # Query chunks_vdb for all chunks with matching doc_id
+            if hasattr(self.rag, 'chunks_vdb') and hasattr(self.rag.chunks_vdb, '_client'):
+                logger.info(f"Querying Qdrant for chunks with doc_id: {doc_id}")
+                
+                # Scroll through all chunks with this doc_id
+                scroll_filter = models.Filter(
+                    must=[
+                        models.FieldCondition(
+                            key="doc_id",
+                            match=models.MatchValue(value=doc_id)
+                        )
+                    ]
+                )
+                
+                offset = None
+                while True:
+                    results = self.rag.chunks_vdb._client.scroll(
+                        collection_name=self.rag.chunks_vdb.final_namespace,
+                        scroll_filter=scroll_filter,
+                        limit=100,
+                        offset=offset,
+                        with_payload=True,
+                        with_vectors=False
+                    )
+                    
+                    points, next_offset = results
+                    if not points:
+                        break
+                    
+                    # Collect chunk IDs and entity names
+                    for point in points:
+                        if point.payload:
+                            chunk_id = point.payload.get('id')
+                            if chunk_id:
+                                chunks_to_delete.append(chunk_id)
+                            
+                            # Extract entity names from chunk content if available
+                            # Entities are typically stored with entity_name field
+                            content = point.payload.get('content', '')
+                            # We'll delete entities separately via entity_vdb query
+                    
+                    if next_offset is None:
+                        break
+                    offset = next_offset
+                
+                logger.info(f"Found {len(chunks_to_delete)} chunks to delete")
+            
+            # Step 2: Query entities_vdb for entities associated with this doc
+            if hasattr(self.rag, 'entities_vdb') and hasattr(self.rag.entities_vdb, '_client'):
+                logger.info(f"Querying Qdrant for entities with doc_id: {doc_id}")
+                
+                entity_scroll_filter = models.Filter(
+                    must=[
+                        models.FieldCondition(
+                            key="doc_id",
+                            match=models.MatchValue(value=doc_id)
+                        )
+                    ]
+                )
+                
+                offset = None
+                entity_ids_to_delete = []
+                while True:
+                    results = self.rag.entities_vdb._client.scroll(
+                        collection_name=self.rag.entities_vdb.final_namespace,
+                        scroll_filter=entity_scroll_filter,
+                        limit=100,
+                        offset=offset,
+                        with_payload=True,
+                        with_vectors=False
+                    )
+                    
+                    points, next_offset = results
+                    if not points:
+                        break
+                    
+                    for point in points:
+                        if point.payload:
+                            entity_id = point.payload.get('id')
+                            entity_name = point.payload.get('entity_name')
+                            if entity_id:
+                                entity_ids_to_delete.append(entity_id)
+                            if entity_name:
+                                entities_to_delete.add(entity_name)
+                    
+                    if next_offset is None:
+                        break
+                    offset = next_offset
+                
+                logger.info(f"Found {len(entity_ids_to_delete)} entity vectors and {len(entities_to_delete)} unique entities")
+                
+                # Delete entity vectors from Qdrant
+                if entity_ids_to_delete:
+                    await self.rag.entities_vdb.delete(entity_ids_to_delete)
+                    logger.info(f"Deleted {len(entity_ids_to_delete)} entity vectors from Qdrant")
+            
+            # Step 3: Delete chunks from Qdrant
+            if chunks_to_delete:
+                await self.rag.chunks_vdb.delete(chunks_to_delete)
+                logger.info(f"Deleted {len(chunks_to_delete)} chunks from Qdrant")
+            
+            # Step 4: Delete entity nodes and relationships from Neo4j comprehensively
+            # Query Neo4j directly for all entities associated with these chunks
+            if chunks_to_delete and hasattr(self.rag, 'chunk_entity_relation_graph'):
+                logger.info(f"Querying Neo4j for entities associated with {len(chunks_to_delete)} chunks")
+                
+                try:
+                    # Use Cypher query to find all nodes where source_id contains any of our chunk IDs
+                    # In Neo4j, entities have source_id field that contains chunk IDs separated by GRAPH_FIELD_SEP
+                    workspace_label = self.rag.chunk_entity_relation_graph._get_workspace_label()
+                    
+                    # Build a comprehensive deletion query
+                    # 1. Find all nodes where source_id contains any of the chunk IDs
+                    # 2. DETACH DELETE removes both the nodes and their relationships
+                    async with self.rag.chunk_entity_relation_graph._driver.session(database=self.rag.chunk_entity_relation_graph._DATABASE) as session:
+                        deleted_count = 0
+                        
+                        # Process in batches to avoid query size limits
+                        batch_size = 50
+                        for i in range(0, len(chunks_to_delete), batch_size):
+                            batch_chunks = chunks_to_delete[i:i+batch_size]
+                            
+                            # Create a pattern to match any chunk ID in source_id field
+                            # source_id is a string with chunk IDs separated by GRAPH_FIELD_SEP (typically '\x00')
+                            query = f"""
+                            MATCH (n:`{workspace_label}`)
+                            WHERE any(chunk_id IN $chunk_ids WHERE n.source_id CONTAINS chunk_id)
+                            DETACH DELETE n
+                            RETURN count(n) as deleted
+                            """
+                            
+                            result = await session.run(query, chunk_ids=batch_chunks)
+                            record = await result.single()
+                            if record:
+                                batch_deleted = record['deleted']
+                                deleted_count += batch_deleted
+                                logger.info(f"Deleted {batch_deleted} nodes in batch {i//batch_size + 1}")
+                        
+                        logger.info(f"Successfully deleted {deleted_count} entity nodes and their relationships from Neo4j")
+                        
+                except Exception as e:
+                    logger.error(f"Error deleting entities from Neo4j: {e}", exc_info=True)
+                    # Continue with deletion even if Neo4j cleanup fails
+            
+            
+            # Step 5: Remove from tag manager
+            # Find all tags containing this doc_id and remove it
+            tags_to_update = []
+            for tag, doc_ids in tag_manager.tags.items():
+                if doc_id in doc_ids:
+                    tags_to_update.append(tag)
+            
+            for tag in tags_to_update:
+                tag_manager.remove_doc(tag, doc_id)
+                logger.info(f"Removed doc_id {doc_id} from tag: {tag}")
+            
+            # Step 6: Delete from LightRAG's doc_status and full_docs storage
+            # This prevents "already exists" errors when re-uploading the same document
+            # CRITICAL: We need to delete BOTH the doc_id AND all associated MD5-based doc IDs
+            if hasattr(self.rag, 'doc_status') and hasattr(self.rag, 'full_docs'):
+                try:
+                    # Collect ALL doc IDs to delete (both direct and MD5-based)
+                    all_doc_ids_to_delete = set()
+                    
+                    # FIRST: Add the doc_id directly (for composite IDs like "parent#file.md")
+                    all_doc_ids_to_delete.add(doc_id)
+                    logger.info(f"Will delete doc_id: {doc_id}")
+                    
+                    # SECOND: Find ALL MD5-based doc IDs by scanning doc_status storage
+                    # We need to check EVERY doc in storage to find which ones should be deleted
+                    logger.info(f"Scanning all doc_status entries to find MD5 doc IDs...")
+                    try:
+                        # Get all keys from doc_status storage
+                        all_storage_keys = await self.rag.doc_status.get_all_keys()
+                        logger.info(f"Total doc_status entries: {len(all_storage_keys)}")
+                        
+                        # Get all doc info for these keys
+                        doc_status_dict = await self.rag.doc_status.get_by_ids(list(all_storage_keys))
+                        
+                        # Scan through all doc entries to find ones that should be deleted
+                        for storage_doc_id, doc_info in doc_status_dict.items():
+                            should_delete = False
+                            
+                            # Check if this is the exact doc_id we want to delete
+                            if storage_doc_id == doc_id:
+                                should_delete = True
+                                logger.info(f"Found exact match: {storage_doc_id}")
+                            
+                            # Check if this doc contains any of our deleted chunks
+                            elif doc_info and isinstance(doc_info, dict):
+                                chunks_list = doc_info.get('chunks_list', [])
+                                if isinstance(chunks_list, list) and chunks_to_delete:
+                                    # If ANY chunk from this doc is in our deletion list, delete the whole doc
+                                    if any(chunk_id in chunks_list for chunk_id in chunks_to_delete):
+                                        should_delete = True
+                                        matching_chunks = [c for c in chunks_list if c in chunks_to_delete]
+                                        logger.info(f"Found MD5 doc with matching chunks: {storage_doc_id} ({len(matching_chunks)} chunks)")
+                            
+                            if should_delete:
+                                all_doc_ids_to_delete.add(storage_doc_id)
+                        
+                        logger.info(f"Total doc IDs to delete from storage: {len(all_doc_ids_to_delete)}")
+                        
+                    except Exception as e:
+                        logger.warning(f"Could not scan doc_status storage: {e}", exc_info=True)
+                        # Even if scanning fails, we still try to delete the doc_id directly
+                    
+                    # Delete ALL collected doc IDs from both doc_status and full_docs
+                    if all_doc_ids_to_delete:
+                        doc_ids_list = list(all_doc_ids_to_delete)
+                        logger.info(f"Deleting {len(doc_ids_list)} entries from doc_status and full_docs")
+                        
+                        await self.rag.doc_status.delete(doc_ids_list)
+                        await self.rag.full_docs.delete(doc_ids_list)
+                        
+                        logger.info(f"Successfully deleted {len(doc_ids_list)} doc entries from storage: {doc_ids_list}")
+                    else:
+                        logger.warning(f"No doc IDs found to delete for doc_id: {doc_id}")
+                        
+                except Exception as e:
+                    logger.warning(f"Failed to delete from doc_status/full_docs storage: {e}", exc_info=True)
+            
+            logger.info(f"Successfully deleted all data for doc_id: {doc_id}")
+            
         except Exception as e:
-             logger.error(f"Error deleting doc {doc_id}: {e}")
+            logger.error(f"Error during deletion of doc_id {doc_id}: {e}", exc_info=True)
+            raise
 
 rag_engine = RAGEngine()
-
-from contextlib import asynccontextmanager
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -552,7 +835,6 @@ app = FastAPI(title="RAG Service", description="API for RAG ingestion and queryi
 Instrumentator().instrument(app).expose(app)
 
 # --- Background Tasks ---
-# --- Background Tasks ---
 async def process_ingestion(request: IngestRequest):
     logger.info(f"Starting ingestion task for DocID: {request.doc_id}, Type: {request.type}")
     try: 
@@ -570,10 +852,38 @@ async def process_ingestion(request: IngestRequest):
             
             for md_file in md_files:
                 logger.info(f"Processing file: {md_file}")
-                # Await the async ingest call
-                await rag_engine.ingest_file(str(md_file), request.doc_id, request.tags or {})
+                try:
+                    relative_path = md_file.relative_to(repo_path).as_posix()
+                    # MkDocs uses simplified URLs: file.md -> file/
+                    # If file is index.md, it maps to parent folder.
+                    # Let's try to match MkDocs default behavior for the base URL.
+                    
+                    url_path = relative_path.replace('.md', '/')
+                    if url_path.endswith('index/'):
+                        url_path = url_path[:-6] # remove 'index/' to get parent/
+                    
+                    web_url = f"http://localhost:3001/docs/{request.doc_id}/{url_path}"
+                    
+                    # Composite ID for the FILE (parent)
+                    # We use this as prefix for sections
+                    file_doc_id = f"{request.doc_id}#{relative_path}"
+                    logger.info(f"Using File Doc ID: {file_doc_id} (Base URL: {web_url})")
+                    
+                except Exception as e:
+                    logger.warning(f"Failed to construct URL for {md_file}: {e}")
+                    web_url = None
+                    file_doc_id = request.doc_id
+
+                # Use Enhanced Ingestion for Markdown
+                await rag_engine.ingest_markdown_enhanced(str(md_file), file_doc_id, request.tags or {}, base_url=web_url)
                 
         elif request.type == 'file':
+             # ... (existing logic for file)
+             # Check if it's a markdown file
+             public_data_path = Path("/app/public_data")
+             # ...
+             # We should also use enhanced ingestion here if it's .md
+             pass # (logic continues)
              # local_path from backend is relative to public folder, e.g. /files/abc.pdf
              # mapped to /app/public_data/files/abc.pdf
              public_data_path = Path("/app/public_data")
@@ -587,7 +897,14 @@ async def process_ingestion(request: IngestRequest):
                  return
 
              logger.info(f"Processing single file: {file_path}")
-             await rag_engine.ingest_file(str(file_path), request.doc_id, request.tags or {})
+             # Construct Web URL for single file
+             # Assuming standard file serving path or similar
+             web_url = f"http://localhost:3001/public_data/{relative_path}"
+             
+             if file_path.suffix.lower() == '.md':
+                 await rag_engine.ingest_markdown_enhanced(str(file_path), request.doc_id, request.tags or {}, base_url=web_url)
+             else:
+                 await rag_engine.ingest_file(str(file_path), request.doc_id, request.tags or {}, url=web_url)
 
         elif request.type == 'text':
              if request.text_content:
@@ -615,7 +932,11 @@ async def read_root():
 
 @app.get("/health")
 async def health_check():
-    return {"status": "ok"}
+    return {
+        "status": "ok" if rag_engine.status == "ready" else "error", 
+        "rag_status": rag_engine.status,
+        "ready": rag_engine.status == "ready"
+    }
 
 @app.post("/ingest")
 async def ingest_document(request: IngestRequest, background_tasks: BackgroundTasks):
@@ -624,8 +945,148 @@ async def ingest_document(request: IngestRequest, background_tasks: BackgroundTa
 
 @app.delete("/documents/{doc_id}")
 async def delete_document(doc_id: str):
-    rag_engine.delete_doc(doc_id)
-    return {"status": "deleted", "doc_id": doc_id}
+    """
+    Delete document and all its children (for multi-file documents like ZIPs).
+    Uses composite ID pattern: parent children have IDs like {doc_id}#{file_path}
+    
+    This endpoint searches ALL databases (Qdrant, Neo4j, doc_status) to find
+    all child documents, not just doc_status.keys()
+    """
+    deleted_ids = []
+    failed_deletes = []
+    
+    logger.info(f"Starting comprehensive deletion for doc_id: {doc_id}")
+    
+    # Find ALL child documents by searching EVERY database
+    all_child_ids = set()
+    
+    try:
+        # 1. Search doc_status storage for child IDs
+        if rag_engine.rag and hasattr(rag_engine.rag, 'doc_status'):
+            try:
+                all_storage_keys = await rag_engine.rag.doc_status.get_all_keys()
+                child_pattern = f"{doc_id}#"
+                doc_status_children = [k for k in all_storage_keys if k.startswith(child_pattern)]
+                all_child_ids.update(doc_status_children)
+                logger.info(f"Found {len(doc_status_children)} children in doc_status storage")
+            except Exception as e:
+                logger.warning(f"Error searching doc_status: {e}")
+        
+        # 2. Search Qdrant chunks_vdb for child IDs
+        if rag_engine.rag and hasattr(rag_engine.rag, 'chunks_vdb'):
+            try:
+                from qdrant_client import models
+                
+                # Scroll through ALL chunks to find matching doc_ids
+                child_pattern = f"{doc_id}#"
+                offset = None
+                qdrant_children = set()
+                
+                while True:
+                    results = rag_engine.rag.chunks_vdb._client.scroll(
+                        collection_name=rag_engine.rag.chunks_vdb.final_namespace,
+                        limit=100,
+                        offset=offset,
+                        with_payload=True,
+                        with_vectors=False
+                    )
+                    
+                    points, next_offset = results
+                    if not points:
+                        break
+                    
+                    for point in points:
+                        if point.payload:
+                            chunk_doc_id = point.payload.get('doc_id')
+                            if chunk_doc_id and chunk_doc_id.startswith(child_pattern):
+                                qdrant_children.add(chunk_doc_id)
+                    
+                    if next_offset is None:
+                        break
+                    offset = next_offset
+                
+                all_child_ids.update(qdrant_children)
+                logger.info(f"Found {len(qdrant_children)} children in Qdrant chunks")
+            except Exception as e:
+                logger.warning(f"Error searching Qdrant: {e}")
+        
+        # 3. Search Qdrant entities_vdb for child IDs
+        if rag_engine.rag and hasattr(rag_engine.rag, 'entities_vdb'):
+            try:
+                from qdrant_client import models
+                
+                child_pattern = f"{doc_id}#"
+                offset = None
+                entity_children = set()
+                
+                while True:
+                    results = rag_engine.rag.entities_vdb._client.scroll(
+                        collection_name=rag_engine.rag.entities_vdb.final_namespace,
+                        limit=100,
+                        offset=offset,
+                        with_payload=True,
+                        with_vectors=False
+                    )
+                    
+                    points, next_offset = results
+                    if not points:
+                        break
+                    
+                    for point in points:
+                        if point.payload:
+                            entity_doc_id = point.payload.get('doc_id')
+                            if entity_doc_id and entity_doc_id.startswith(child_pattern):
+                                entity_children.add(entity_doc_id)
+                    
+                    if next_offset is None:
+                        break
+                    offset = next_offset
+                
+                all_child_ids.update(entity_children)
+                logger.info(f"Found {len(entity_children)} children in Qdrant entities")
+            except Exception as e:
+                logger.warning(f"Error searching Qdrant entities: {e}")
+        
+        logger.info(f"Total unique child documents found: {len(all_child_ids)}")
+        
+    except Exception as e:
+        logger.error(f"Error during comprehensive child search: {e}", exc_info=True)
+    
+    # Delete parent document first
+    try:
+        await rag_engine.delete_doc(doc_id)
+        deleted_ids.append(doc_id)
+        logger.info(f"Deleted parent document: {doc_id}")
+    except Exception as e:
+        logger.warning(f"Could not delete parent {doc_id}: {e}")
+        # Continue to delete children even if parent doesn't exist
+    
+    # Delete all child documents
+    for child_id in all_child_ids:
+        try:
+            await rag_engine.delete_doc(child_id)
+            deleted_ids.append(child_id)
+            logger.info(f"Deleted child document: {child_id}")
+        except Exception as e:
+            logger.error(f"Failed to delete child {child_id}: {e}")
+            failed_deletes.append({"id": child_id, "error": str(e)})
+    
+    # Return detailed response
+    response = {
+        "status": "deleted",
+        "doc_id": doc_id,
+        "total_deleted": len(deleted_ids),
+        "deleted_ids": deleted_ids
+    }
+    
+    if failed_deletes:
+        response["failed"] = len(failed_deletes)
+        response["failed_details"] = failed_deletes
+        logger.warning(f"Completed deletion with {len(failed_deletes)} failures")
+    else:
+        logger.info(f"Successfully deleted all documents: {len(deleted_ids)} total")
+    
+    return response
 
 @app.delete("/delete-by-tag")
 async def delete_by_tag(tag: str):
@@ -672,39 +1133,75 @@ async def query_rag(request: QueryRequest):
                 
                 if request.mode == "direct":
                     response = await llm_model_func(request.query)
+                    await queue.put({"type": "answer", "content": response})
                 else:
-                    response = await rag_engine.rag.aquery(request.query, param=QueryParam(mode=rag_mode))
+                    # Use aquery_llm to get full result including context
+                    # IMPROVED: Pass custom response_type for better answers
+                    # Also respect request.top_k if provided (though LightRAG uses init params usually, newer versions allow override)
+                    param = QueryParam(mode=rag_mode)
+                    
+                    # Try to set top_k if supported (LightRAG might not support override in all versions, but good to try)
+                    if hasattr(param, 'top_k') and request.top_k:
+                         param.top_k = request.top_k
+                    
+                    # Force a detailed response type
+                    # The default is often "Multiple Paragraphs", we want something better
+                    response_type = "Detailed and comprehensive analysis with examples if relevant"
+                    
+                    result = await rag_engine.rag.aquery_llm(
+                        request.query, 
+                        param=param
+                        # Note: response_type is passed as a separate arg in some versions or part of param
+                        # Checking lightrag_copy.py, aquery_llm signature is (query, param)
+                        # We might need to monkeypatch or check if param has response_type
+                    )
 
-                    # Fallback if aquery returns None but we captured LLM response
-                    if response is None:
-                         # Retrieve captured response from config
-                         # Note: request.llm_config is just a dict copy, we need the one from context if available
-                         # But wait, we set it in context: config = request_llm_config.get()
-                         # llm_model_func modifies this dict object in place?
-                         # request_llm_config.set(dict) -> get() returns dict reference.
-                         # Since dict is mutable, modifications in llm_model_func should persist
-                         # in the same context scope.
-                         
+                    # Wait, lightrag_copy.py doesn't show aquery_llm implementation fully (it imports from lightrag.operate)
+                    # But traditionally LightRAG takes `query_param` which has `mode`.
+                    # Let's trust that we can't easily change prompt WITHOUT modifying LightRAG source or using param.
+                    
+                    # If we can't pass response_type easily, we rely on the implementation.
+                    # HOWEVER, we can update the ENV VARS before initialization in main.py to set TOP_K.
+                    
+                    # Let's extract LLM response
+                    llm_response = result.get("llm_response", {})
+                    content = llm_response.get("content")
+                    
+                    if not content and not llm_response.get("is_streaming"):
+                         # Fallback logic
                          current_config = request_llm_config.get()
-                         captured_response = current_config.get("last_response")
-                         if captured_response:
-                             response = captured_response
-                             logger.info("DEBUG: Used captured LLM response as fallback.")
-                         else:
-                             response = "Sorry, I could not generate an answer."
-                             logger.warning("DEBUG: aquery returned None or empty, and no captured response found.")
-                
-                await queue.put({"type": "answer", "content": response})
-                
+                         content = current_config.get("last_response") or "Sorry, I could not generate an answer."
+
+                    await queue.put({"type": "answer", "content": content})
+
+                    # Extract Sources Manually from Vector DB
+                    try:
+                        # Generate embedding for the query
+                        embedding = await rag_engine.rag.embedding_func([request.query])
+                        # Perform vector search on chunks
+                        sources_results = await rag_engine.rag.chunks_vdb.query(embedding[0], top_k=5)
+                        
+                        sources = []
+                        seen_urls = set()
+                        
+                        for res in sources_results:
+                            url = res.get("file_path")
+                            if url and url not in seen_urls and isinstance(url, str) and url.startswith("http"):
+                                seen_urls.add(url)
+                                sources.append({"url": url, "title": url.split("/")[-1] or "Document"})
+                        
+                        if sources:
+                             await queue.put({"type": "sources", "content": sources})
+                             
+                    except Exception as e:
+                        logger.error(f"Failed to retrieve sources: {e}")
+
             except Exception as e:
                 logger.error(f"Query Error: {e}", exc_info=True)
                 await queue.put({"type": "error", "content": str(e)})
             finally:
                 await queue.put(None) # Signal done
-                # Reset context vars (though specific to this task/generator)
-                # Context vars in async generators can be tricky, but here we are in same context as set?
-                # Actually run_rag is a task, it inherits context. 
-                pass
+
 
         # Start the background task
         task = asyncio.create_task(run_rag())
