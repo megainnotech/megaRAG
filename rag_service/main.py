@@ -81,6 +81,7 @@ class IngestRequest(BaseModel):
     local_path: Optional[str] = None # For 'git' or 'file' (path relative to mount)
     text_content: Optional[str] = None # For 'text'
     tags: Optional[Dict[str, Any]] = None
+    file_path: Optional[str] = None # Source URL or path for reference links
 
 # --- Context Vars for Request-Scoped Config ---
 import contextvars
@@ -553,7 +554,7 @@ class RAGEngine:
             logger.error(f"Error in enhanced ingestion for {file_path}: {e}")
             raise e
 
-    async def ingest_text(self, text: str, doc_id: str, tags: Dict):
+    async def ingest_text(self, text: str, doc_id: str, tags: Dict, file_path: str = None):
         if self.status != "ready" or not self.rag:
             error_msg = f"Ingestion failed: RAG Engine not ready (Status: {self.status})"
             logger.error(error_msg)
@@ -565,7 +566,8 @@ class RAGEngine:
              token = request_llm_config.set({"type": "public"})
              try:
                 # CRITICAL: Pass ids=doc_id so LightRAG uses our doc_id instead of generating MD5
-                await self.rag.ainsert(text, ids=doc_id)
+                # Pass file_paths so chunks get source metdata
+                await self.rag.ainsert(text, ids=doc_id, file_paths=[file_path] if file_path else None)
                 
                 main_tag = extract_tag_from_request(tags)
                 if main_tag:
@@ -955,7 +957,7 @@ async def process_ingestion(request: IngestRequest):
         elif request.type == 'text':
              if request.text_content:
                  logger.info(f"Processing raw text ingestion (Length: {len(request.text_content)})")
-                 await rag_engine.ingest_text(request.text_content, request.doc_id, request.tags or {})
+                 await rag_engine.ingest_text(request.text_content, request.doc_id, request.tags or {}, file_path=request.file_path)
         
         logger.info(f"Ingestion completed successfully for {request.doc_id}")
         RAG_INGESTION_TOTAL.labels(type=request.type, status="success").inc()
@@ -1189,8 +1191,10 @@ async def query_rag(request: QueryRequest):
                     
                     # Try to set top_k if supported (LightRAG might not support override in all versions, but good to try)
                     if hasattr(param, 'top_k') and request.top_k:
-                         param.top_k = request.top_k
-                    
+                        param.top_k = request.top_k
+
+                    """if param.top_k is None:
+                        param.top_k  = 3"""
                     # Force a detailed response type
                     # The default is often "Multiple Paragraphs", we want something better
                     response_type = "Detailed and comprehensive analysis with examples if relevant"
@@ -1221,53 +1225,60 @@ async def query_rag(request: QueryRequest):
 
                     await queue.put({"type": "answer", "content": content})
 
-                    # Extract Sources Manually from Vector DB
+                    # Extract Sources from RAG Context
+                    # The 'result' object from aquery_llm contains 'context_data' which holds the chunks used.
                     try:
-                        # Generate embedding for the query
-                        # Access .func if it's an EmbeddingFunc wrapper
-                        embed_func = rag_engine.rag.embedding_func
-                        if hasattr(embed_func, 'func'):
-                            embed_func = embed_func.func
+                        context_data = result.get("context_data", {})
                         
-                        embedding = await embed_func([request.query])
+                        # context_data might be a dict with keys like 'chunks', 'entities', 'relationships'
+                        # or a list depending on LightRAG version/implementation.
+                        # Based on typical usage, it collects chunks.
+                         
+                        logger.info(f"Result Keys: {result.keys() if isinstance(result, dict) else type(result)}")
                         
-                        if not embedding or len(embedding) == 0:
-                            logger.error("Embedding generation returned empty result.")
-                            # Cannot search without embedding
-                            # Skip source retrieval
-                            raise ValueError("Empty embedding result")
-
-                        logger.info(f"Embedding generated. Shape: {len(embedding)}x{len(embedding[0]) if embedding else 0}")
+                        # Context data is located in result['data'] based on logs
+                        # Logs showed keys: ['entities', 'relationships', 'chunks', 'references'] in result['data']
+                        data_block = result.get("data", {})
                         
-                        # Perform vector search on chunks
-                        logger.info("Executing chunks_vdb.query...")
-                        # Convert to list to avoid Numpy ambiguity errors in some clients
-                        # embedding is now likely a list, but handle both
-                        vec = embedding[0]
-                        vector = vec.tolist() if hasattr(vec, 'tolist') else vec
+                        all_chunks = []
+                        if isinstance(data_block, dict):
+                            all_chunks.extend(data_block.get("chunks", []))
                         
-                        sources_results = await rag_engine.rag.chunks_vdb.query(vector, top_k=5)
-                        logger.info(f"Sources Search: Found {len(sources_results)} potential chunks.")
+                        # Fallback to 'context_data' key if 'data' is empty
+                        if not all_chunks:
+                            context_data = result.get("context_data", {})
+                            if isinstance(context_data, dict):
+                                all_chunks.extend(context_data.get("chunks", []))
+                            elif isinstance(context_data, list):
+                                all_chunks.extend(context_data)
+                        
+                        logger.info(f"Found {len(all_chunks)} chunks in context.")
                         
                         sources = []
                         seen_urls = set()
                         
-                        for res in sources_results:
-                            url = res.get("file_path")
-                            # Log chunk details for debugging
-                            if not url:
-                                logger.debug(f"Chunk missing file_path: {res.get('id', 'unknown')}")
-                            
-                            if url and url not in seen_urls and isinstance(url, str) and url.startswith("http"):
+                        for chunk in all_chunks:
+                            url = None
+                            if isinstance(chunk, dict):
+                                # Check common keys for source
+                                url = chunk.get("file_path") or chunk.get("source") or chunk.get("filename") or chunk.get("doc_id")
+                            elif hasattr(chunk, "file_path"):
+                                url = chunk.file_path
+                            elif hasattr(chunk, "get"):
+                                url = chunk.get("file_path")
+                                
+                            if url and url not in seen_urls and isinstance(url, str):
                                 seen_urls.add(url)
-                                sources.append({"url": url, "title": url.split("/")[-1] or "Document"})
-                        
-                        logger.info(f"Sources Extracted: {len(sources)} valid links.")
+                                # Simple title derivation
+                                title = url.split("/")[-1]
+                                sources.append({"url": url, "title": title})
+
+                        logger.info(f"Sources Extracted from Context: {len(sources)}")
                         if sources:
                              await queue.put({"type": "sources", "content": sources})
                              
                     except Exception as e:
-                        logger.error(f"Failed to retrieve sources: {e}", exc_info=True)
+                        logger.error(f"Failed to extract sources from context: {e}", exc_info=True)
 
             except Exception as e:
                 logger.error(f"Query Error: {e}", exc_info=True)

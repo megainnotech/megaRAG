@@ -2,12 +2,13 @@ import urllib.request
 import json
 import time
 
-url = "http://localhost:8000/ingest"
+url = "http://localhost:8003/ingest"
 payload = {
-    "doc_id": "test_persist_004_py",
+    "doc_id": "apollo_program_wiki",
     "type": "text",
-    "text_content": "Verification content from Python script. Async init check.",
-    "tags": {"project": "python_test"}
+    "text_content": "The Apollo program was an American spaceflight program carried out by NASA, which succeeded in landing the first humans on the Moon from 1969 to 1972.",
+    "tags": {"project": "wiki_test"},
+    "file_path": "https://en.wikipedia.org/wiki/Apollo_program"
 }
 headers = {"Content-Type": "application/json"}
 

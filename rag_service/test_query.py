@@ -4,7 +4,7 @@ import json
 url = "http://localhost:8003/query"
 # Use 'naive' or 'local' mode for faster response if 'hybrid' is slow
 payload = {
-    "query": "What is the content of the py verification doc?",
+    "query": "What is the Apollo program?",
     "mode": "hybrid",
     "llm_config": {
         "type": "public",
